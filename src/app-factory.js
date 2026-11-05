@@ -181,7 +181,7 @@ export function createApp(db, { uploadDir = process.env.UPLOAD_DIR || 'uploads',
   const migrateSettings = (s) => {
     const m = { ...s };
     if (m.card_bg === 96) m.card_bg = 12;      // old solid default → new glass default
-    if (m.card_glass === 0 && m.card_bg <= 30) m.card_glass = 14; // add glass blur when transparent
+    // Removed automatic glass blur migration - let user control card_glass explicitly
     if (m.tilt === false && !Object.prototype.hasOwnProperty.call(s, '_tilt_set')) m.tilt = true; // enable 3D tilt
     return m;
   };
