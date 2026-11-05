@@ -1,6 +1,5 @@
 {
   "buildCommand": null,
   "outputDirectory": null,
-  "framework": null,
-  "includeFiles": ["src/icons.json", "src/badge-icons.json", "src/badge-grants.json", "public/**"]
+  "framework": null
 }
