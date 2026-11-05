@@ -107,6 +107,7 @@ export function sanitize(input = {}, current = DEFAULTS) {
       else if (i.t === 'date') r = v === '' || /^\d{4}-\d{2}-\d{2}$/.test(v) ? v : r;
       else if (i.t === 'color') r = /^#[0-9a-fA-F]{6}$/.test(v) ? v : r;
     }
+    // Always include the key, even if not in input (use default or current)
     out[i.k] = r;
   }
   return out;
