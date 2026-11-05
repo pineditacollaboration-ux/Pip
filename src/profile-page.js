@@ -1,5 +1,14 @@
 import { DEFAULTS } from './settings-spec.js';
-import { ICONS } from './icons-const.js';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+
+let ICONS = {};
+try {
+  const iconsPath = fileURLToPath(new URL('./icons.json', import.meta.url));
+  ICONS = JSON.parse(readFileSync(iconsPath, 'utf8'));
+} catch (e) {
+  console.warn('icons.json not found, using empty object');
+}
 
 export function iconFor(url) {
   let host = ''; try { host = new URL(url).hostname.replace(/^www\./, ''); } catch { return null; }
