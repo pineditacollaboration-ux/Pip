@@ -168,7 +168,7 @@ p, .pg-sub, .hero-sub { text-wrap: pretty; }
   background: rgba(255,255,255,.03);
   border: 1px solid rgba(255,255,255,.08);
   box-shadow: inset 0 1px 0 rgba(255,255,255,.06), 0 4px 16px rgba(0,0,0,.4);
-  transition: all .2s var(--ease);
+  transition: opacity .15s ease;
 }
 .sb-user-card:hover {
   background: rgba(255,255,255,.05);
@@ -201,7 +201,7 @@ p, .pg-sub, .hero-sub { text-wrap: pretty; }
   color: var(--txt-muted); font: 500 12.5px var(--font-display); text-align: left;
   background: rgba(255,255,255,.025);
   box-shadow: inset 0 1px 0 rgba(255,255,255,.03);
-  transition: all .18s var(--ease);
+  transition: opacity .15s ease;
 }
 .sb-search svg { width: 14px; height: 14px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .sb-search span { flex: 1; }
@@ -224,17 +224,17 @@ p, .pg-sub, .hero-sub { text-wrap: pretty; }
   min-height: 36px; padding: 0 12px; border: 0; border-radius: 9px;
   background: transparent; color: var(--txt-body); text-align: left;
   font: 550 13px var(--font-display); letter-spacing: -.01em;
-  transition: all .16s ease;
+  transition: opacity .15s ease;
   touch-action: manipulation;
 }
 .nv .nv-label { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .nv-icon {
   width: 16px; height: 16px; flex: none; fill: none; stroke: currentColor;
   stroke-width: 1.85; stroke-linecap: round; stroke-linejoin: round;
-  opacity: .55; transition: opacity .16s ease, stroke .16s ease, transform .16s ease;
+  opacity: .55; transition: opacity .15s ease;
 }
 .nv:hover { background: rgba(255,255,255,.05); color: #fff; }
-.nv:hover .nv-icon { opacity: .95; transform: translateX(1px); }
+.nv:hover .nv-icon { opacity: .95; }
 .nv[aria-current=page] {
   color: #fff; font-weight: 650;
   background: rgba(56,189,248,.08);
@@ -253,7 +253,7 @@ p, .pg-sub, .hero-sub { text-wrap: pretty; }
 .sb-footer a {
   display: flex; align-items: center; gap: 10px; min-height: 38px; padding: 0 12px; border-radius: 10px;
   color: var(--txt-muted); font: 560 12.5px var(--font-display); text-decoration: none;
-  transition: color var(--t), background var(--t); touch-action: manipulation;
+  transition: opacity .15s ease; touch-action: manipulation;
 }
 .sb-footer a:hover { color: #fff; background: rgba(195,195,195,.06); }
 .sb-footer svg { width: 16px; height: 16px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
@@ -292,7 +292,7 @@ p, .pg-sub, .hero-sub { text-wrap: pretty; }
 .view-tab-btn {
   display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 6px 12px;
   border: 0; border-radius: 9px; background: transparent; color: var(--txt-muted);
-  font: 600 12.5px var(--font-display); touch-action: manipulation; transition: background var(--t), color var(--t);
+  font: 600 12.5px var(--font-display); touch-action: manipulation; transition: opacity .15s ease;
 }
 .view-tab-btn[aria-selected="true"] { background: var(--surf-float); color: #fff; box-shadow: 0 2px 8px rgba(0,0,0,.35), inset 0 0 0 1px var(--line-subtle); }
 
@@ -305,11 +305,11 @@ p, .pg-sub, .hero-sub { text-wrap: pretty; }
   background: linear-gradient(135deg, var(--brand-ice) 0%, var(--brand-cyan) 40%, var(--brand-sky) 100%);
   box-shadow: inset 0 1px 0 rgba(255,255,255,.55), 0 8px 24px -8px rgba(255,255,255,.75);
   /* Only animate transform+opacity (GPU composited, no repaint) */
-  transition: transform var(--t), opacity var(--t), background var(--t), color var(--t);
+  transition: opacity .15s ease;
   touch-action: manipulation;
 }
 .sv::after { content: ""; position: absolute; inset: 0; background: linear-gradient(105deg, transparent 35%, rgba(255,255,255,.5) 50%, transparent 65%); transform: translateX(-130%); }
-.sv:not(:disabled):hover { transform: translateY(-1px); opacity: .92; }
+.sv:not(:disabled):hover { opacity: .92; }
 .sv:not(:disabled):hover::after { transform: translateX(130%); transition: transform .7s var(--ease); }
 .sv:not(:disabled):active { transform: translateY(0) scale(.98); }
 /* Removed pip-ready infinite animation — it was causing non-stop repaints */
