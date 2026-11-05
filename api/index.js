@@ -23,7 +23,15 @@ if (process.env.VERCEL) {
 let app;
 let initError = null;
 try {
-  app = createApp(openDb());
+  console.log('Starting initialization...');
+  console.log('SUPABASE_URL:', process.env.SUPABASE_URL ? 'SET' : 'MISSING');
+  console.log('SUPABASE_SERVICE_KEY:', process.env.SUPABASE_SERVICE_KEY ? 'SET' : 'MISSING');
+  console.log('PINEDA_USER_ID:', process.env.PINEDA_USER_ID);
+  console.log('PINEDA_DISCORD_ID:', process.env.PINEDA_DISCORD_ID);
+  const db = openDb();
+  console.log('Database opened successfully');
+  app = createApp(db);
+  console.log('App created successfully');
 } catch (error) {
   console.error('Error initializing app:', error.message);
   console.error('Error stack:', error.stack);
@@ -48,5 +56,6 @@ export default function handler(req, res) {
     });
     return;
   }
+  // Express app needs to be called with the request and response
   app(req, res);
 }
