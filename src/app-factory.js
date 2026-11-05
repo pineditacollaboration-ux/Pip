@@ -245,8 +245,7 @@ export function createApp(db, { uploadDir = process.env.UPLOAD_DIR || 'uploads',
     _previewCache.set(u0.id, { u, p: profile, links, st, presence: _presenceCache.get(u?.discord_id)?.data ?? null, ts: Date.now() });
     // Fetch presence in background to refresh _presenceCache without blocking me()
     if (u?.discord_id) discordPresence(u).catch(() => {});
-    let s = {};
-    try { s = JSON.parse(profile.settings || '{}'); } catch {}
+    let s = parseSettings(profile?.settings);
     const finalSettings = sanitize(migrateSettings(s), { ...DEFAULTS, ...migrateSettings(s) });
     const presence = _presenceCache.get(u?.discord_id)?.data ?? null;
     return {
