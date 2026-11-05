@@ -1,12 +1,5 @@
 {
-  "functions": {
-    "api/**/*.js": {
-      "runtime": "nodejs22.x"
-    }
-  },
-  "build": {
-    "env": {
-      "VERCEL_FORCE_NO_BUILD_CACHE": "1"
-    }
-  }
+  "buildCommand": null,
+  "outputDirectory": null,
+  "framework": null
 }
