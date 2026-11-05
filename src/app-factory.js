@@ -8,12 +8,19 @@ import { spawnSync } from 'node:child_process';
 import { join, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { renderProfile } from './profile-page.js';
-import ICONS from './icons.json' with { type: 'json' };
 import { SPEC, DEFAULTS, sanitize, designChanged } from './settings-spec.js';
 import { evalBadges, BADGES, styleOf, rarityOf } from './badges.js';
 import BADGE_ICONS from './badge-icons.json' with { type: 'json' };
 import { createQueries } from './supabase-queries.js';
 import { recordProfileVisit } from './visits.js';
+
+// Load icons.json with fallback to empty object
+let ICONS = {};
+try {
+  ICONS = JSON.parse(readFileSync(fileURLToPath(new URL('./icons.json', import.meta.url)), 'utf8'));
+} catch (e) {
+  console.warn('icons.json not found, using empty object');
+}
 
 const PUBLIC = fileURLToPath(new URL('../public', import.meta.url));
 const RESERVED = new Set(['api','go','login','register','confirm','dashboard','static','assets','admin','settings','pip','u','top','help','vendor']);
