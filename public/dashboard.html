@@ -369,7 +369,7 @@ function ctl(i) {
       r.style.setProperty('--p', pct + '%');
     };
     syncP();
-    r.oninput = () => { CFG[i.k] = +r.value; o.textContent = r.value; syncP(); touch(); };
+    r.oninput = () => { CFG[i.k] = +r.value; o.textContent = r.value; syncP(); touch(); console.log('DEBUG: Range changed', i.k, '=', CFG[i.k]); };
     return h('div', {},
       h('div', { class: 'fl' }, h('span', { text: i.l }), o),
       r,
