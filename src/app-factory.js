@@ -295,7 +295,7 @@ export function createApp(db, { uploadDir = process.env.UPLOAD_DIR || 'uploads',
     if (!/^#[0-9a-fA-F]{6}$/.test(accent) || !BACKGROUNDS.includes(background)) return res.status(400).json({ error: 'Color o fondo no válido' });
     if (String(splash_text).length > 40) return res.status(400).json({ error: 'Texto de entrada: máx. 40' });
     await q.updProfile(String(display_name).trim(), String(bio).trim(), accent, background, num(b.bg_blur, 0, 30, 0), num(b.bg_opacity, 20, 100, 100), num(b.bg_vignette, 0, 100, 40), b.particles === false || b.particles === 0 ? 0 : 1, b.splash ? 1 : 0, String(splash_text).trim() || 'Haz clic para entrar', req.user.id);
-    if (b.settings) await q.setSettings(JSON.stringify(sanitize(b.settings, await settingsOf(req.user.id))), req.user.id);
+    if (b.settings) await q.setSettings(sanitize(b.settings, await settingsOf(req.user.id)), req.user.id);
     _profileCache.clear(); // invalidate public profile HTML cache
     res.json(await me(req.user)); // me() repopulates _previewCache with fresh data
   });

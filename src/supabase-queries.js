@@ -76,10 +76,8 @@ export function createQueries(sb) {
         display_name, bio, accent, background, bg_blur, bg_opacity, bg_vignette, particles, splash, splash_text
       }).eq('user_id', user_id));
     },
-    async setSettings(settingsJson, user_id) {
-      let parsed = {};
-      try { parsed = JSON.parse(settingsJson); } catch {}
-      check(await sb.from('profiles').update({ settings: parsed }).eq('user_id', user_id));
+    async setSettings(settingsObj, user_id) {
+      check(await sb.from('profiles').update({ settings: settingsObj }).eq('user_id', user_id));
     },
     async setMedia(col, val, user_id) {
       check(await sb.from('profiles').update({ [col]: val }).eq('user_id', user_id));
