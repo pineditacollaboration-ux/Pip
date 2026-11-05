@@ -5,16 +5,13 @@ import { loadProjectEnv } from '../src/env.js';
 import { fileURLToPath } from 'node:url';
 import { mkdirSync } from 'node:fs';
 
-// Force Vercel rebuild - v2
+// Force Vercel rebuild - v3 - COMPLETE RESTRUCTURE
 
-// Cargar .env solo si existe (local development)
 const envPath = fileURLToPath(new URL('../.env', import.meta.url));
 loadProjectEnv(envPath);
 
-// Use /tmp for uploads in Vercel (only writable directory)
 if (process.env.VERCEL) {
   process.env.UPLOAD_DIR = '/tmp/uploads';
-  // Create the directory if it doesn't exist
   try {
     mkdirSync('/tmp/uploads', { recursive: true });
   } catch (error) {
@@ -41,5 +38,4 @@ try {
   app = null;
 }
 
-// Export the Express app directly for Vercel
 export default app;
