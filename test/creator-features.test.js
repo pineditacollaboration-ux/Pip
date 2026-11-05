@@ -1,0 +1,44 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { JSDOM } from 'jsdom';
+import { BADGES, evalBadges } from '../src/badges.js';
+import { renderProfile } from '../src/profile-page.js';
+const script = readFileSync(new URL('../public/presence.js', import.meta.url), 'utf8');
+test('Pineda tiene todas las distinciones y Premium permanente; otras cuentas no heredan privilegios', () => {
+  assert.equal(evalBadges({username:'pineda'}).filter(b=>b.earned).length,BADGES.length);
+  assert.equal(evalBadges({username:'otro'}).filter(b=>b.earned).length,0);
+  assert.equal(evalBadges({username:'pineda'}, undefined, Date.UTC(2099,0,1)).find(b=>b.id==='premium').earned,true);
+});
+test('Spotify sincroniza el reloj, descarta canciones vencidas y actualiza cambios y desconexiones', async () => {
+  let now=1000000;
+  let presence={sampledAt:now+5000,status:'online',spotify:{title:'Primera',artist:'Artista',timestamps:{start:now-5000,end:now+15000}}};
+  const html=renderProfile({username:'pineda',links:[],discord:{presence}});
+  const dom=new JSDOM(html,{url:'http://localhost:3000/pineda',runScripts:'outside-only',pretendToBeVisual:true});
+  const w=dom.window, intervals=new Map();
+  w.Date.now=()=>now;
+  w.setInterval=(fn,ms)=>{intervals.set(ms,fn);return ms};
+  w.setTimeout=()=>1;w.clearTimeout=()=>{};
+  w.fetch=async()=>({ok:true,json:async()=>({presence})});
+  w.eval(script);
+  await intervals.get(2500)(); await new Promise(r=>setImmediate(r));
+  assert.equal(w.document.getElementById('sp-cur').textContent,'0:10');
+  now+=16000;intervals.get(500)();
+  assert.equal(w.document.getElementById('sp-state').textContent,'Sincronizando');
+  assert.equal(w.document.getElementById('sp-fill').style.width,'0%');
+  presence={sampledAt:now,status:'online',spotify:{title:'Segunda',timestamps:{start:now-1000,end:now+120000}}};
+  await intervals.get(2500)();
+  assert.equal(w.document.getElementById('sp-title').textContent,'Segunda');
+  assert.equal(w.document.getElementById('sp-cur').textContent,'0:01');
+  assert.equal(w.document.getElementById('sp-state').textContent,'Escuchando ahora');
+  presence={sampledAt:now+1,status:'offline',spotify:null};
+  await intervals.get(2500)();
+  assert.equal(w.document.getElementById('gl-spotify').style.display,'none');
+  dom.window.close();
+});
+test('los datos de Spotify se serializan como JSON sin romper el documento',()=>{
+ const html=renderProfile({username:'pineda',links:[],discord:{presence:{spotify:{title:'</script><p>test</p>'}}}});
+ const dom=new JSDOM(html);
+ assert.equal(JSON.parse(dom.window.document.getElementById('pip-presence-data').textContent).presence.spotify.title,'</script><p>test</p>');
+ dom.window.close();
+});

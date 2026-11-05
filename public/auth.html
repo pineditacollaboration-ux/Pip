@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Acceso · pip</title>
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#000000">
+<link rel="icon" type="image/svg+xml" href="/pip-icono.svg">
+<link rel="preconnect" href="https://api.fontshare.com">
+<link rel="preconnect" href="https://cdn.fontshare.com" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f[]=erode@400,500,600&family=general-sans@400,500,700&display=swap" rel="stylesheet">
+<style>
+/* pip — Login Dark Room
+---------------------------------------------- */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg:       #000000;
+  --surface:  #0a0a0a;
+  --ink:      #efefef;
+  --muted:    #8c8c8c;
+  --accent:   #38bdf8; /* Brand blue used as accent */
+  --accent-ink: #000000;
+  --font-d:   'Erode', serif;
+  --font:     'General Sans', sans-serif;
+  --ease:     cubic-bezier(.22,.61,.36,1);
+  --ease-out: cubic-bezier(.16,1,.3,1);
+  --t-mid:    .24s;
+  --r-md:     12px;
+}
+
+html,body{
+  height: 100%;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+/* ── Lit Strip Hero ─────────────────── */
+.hero-strip {
+  position: fixed;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 34vh;
+  transform: translateY(-50%);
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 0 10px;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.4;
+  mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+}
+.hero-strip img {
+  height: 100%;
+  width: auto;
+  object-fit: cover;
+  filter: brightness(0.5) grayscale(1);
+  transition: filter 0.3s ease;
+}
+
+/* ── Four Corners ───────────────────── */
+.corner {
+  position: fixed;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--muted);
+  z-index: 10;
+  padding: 44px 72px;
+}
+.tl { top: 0; left: 0; color: var(--ink); }
+.tr { top: 0; right: 0; }
+.bl { bottom: 0; left: 0; max-width: 36ch; }
+.br { bottom: 0; right: 0; }
+.br a { color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; transition: border 0.2s; }
+.br a:hover { border-bottom-color: var(--accent); }
+
+/* ── Card ───────────────────────────── */
+.page {
+  position: relative;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+}
+.card {
+  width: 100%;
+  max-width: 400px;
+  background: var(--surface);
+  padding: 44px;
+  border-radius: 0; /* Flat look */
+  animation: fadeIn 0.8s var(--ease-out) both;
+}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } }
+
+.logo {
+  display: block;
+  margin-bottom: 32px;
+}
+.logo img { width: 32px; height: 32px; filter: grayscale(1) brightness(1.5); }
+
+h1 {
+  font-family: var(--font-d);
+  font-size: clamp(32px, 4vw, 40px);
+  font-weight: 500;
+  line-height: 0.95;
+  margin-bottom: 12px;
+  letter-spacing: -0.025em;
+}
+.sub {
+  font-size: 17px;
+  color: var(--muted);
+  margin-bottom: 32px;
+}
+
+/* ── Form ───────────────────────────── */
+.err {
+  background: rgba(229, 72, 77, 0.1);
+  color: #ff858b;
+  padding: 12px 16px;
+  font-size: 14px;
+  margin-bottom: 24px;
+  display: none;
+}
+.err.show { display: block; }
+
+.btn-discord {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  padding: 16px;
+  background: var(--ink);
+  color: var(--bg);
+  font-weight: 600;
+  text-decoration: none;
+  margin-bottom: 24px;
+  transition: opacity 0.2s;
+}
+.btn-discord:hover { opacity: 0.9; }
+.btn-discord svg { width: 20px; height: 20px; fill: currentColor; }
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 32px 0 24px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.divider::after { content: ''; flex: 1; height: 1px; background: #222; }
+
+.field { margin-bottom: 20px; }
+.field label {
+  display: block;
+  font-size: 14px;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.field input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #222;
+  padding: 8px 0;
+  color: var(--ink);
+  font-size: 16px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.field input:focus { border-bottom-color: var(--muted); }
+
+.btn-primary {
+  width: 100%;
+  padding: 16px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 12px;
+  transition: opacity 0.2s;
+}
+.btn-primary:hover { opacity: 0.9; }
+.btn-primary:disabled { opacity: 0.4; }
+
+.email-section { display: none; }
+.email-section.visible { display: block; }
+
+.note { display: none; } /* Cleanliness */
+
+@media (max-width: 768px) {
+  .corner { padding: 24px; }
+  .hero-strip { height: 20vh; }
+  .card { padding: 32px; border-radius: 12px; max-width: 90%; }
+}
+
+/* Capa editorial: cálida y clara, sin imágenes remotas ni estética genérica. */
+html,body{overflow:auto;background:#08090b}
+body{background:radial-gradient(900px 600px at 7% 12%,rgba(64,99,120,.16),transparent 62%),radial-gradient(680px 540px at 93% 88%,rgba(70,55,103,.14),transparent 65%),#08090b}
+.auth-backdrop{position:fixed;inset:0;overflow:hidden;pointer-events:none}.auth-backdrop::before{content:"";position:absolute;inset:0;opacity:.38;background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:42px 42px;mask-image:radial-gradient(ellipse at center,black,transparent 75%)}.auth-backdrop i{position:absolute;border-radius:50%;filter:blur(1px);opacity:.7}.auth-backdrop i:nth-child(1){width:480px;height:480px;top:-260px;right:-130px;border:1px solid rgba(125,211,252,.15);box-shadow:0 0 150px rgba(56,189,248,.1),inset 0 0 90px rgba(56,189,248,.04)}.auth-backdrop i:nth-child(2){width:320px;height:320px;bottom:-180px;left:8%;border:1px solid rgba(196,181,253,.14);box-shadow:0 0 130px rgba(139,92,246,.11)}.auth-backdrop i:nth-child(3){width:8px;height:8px;left:17%;top:27%;background:#cbeeff;box-shadow:0 0 0 7px rgba(125,211,252,.07),0 0 28px 3px rgba(125,211,252,.55)}
+.corner{display:flex;align-items:center;gap:8px;padding:28px 36px;font-size:12px;letter-spacing:.02em;color:rgba(231,235,238,.58)}.corner.tl{font:700 16px/1 var(--font);color:#f7f7f5;letter-spacing:-.04em}.corner.tl img{filter:drop-shadow(0 0 10px rgba(125,211,252,.25))}.corner.tr{font-weight:600}.corner.tr span{color:rgba(125,211,252,.8)}.corner.bl{font-size:12px;line-height:1.55;max-width:31ch}.corner.br a{color:#d9f2ff;border-bottom-color:rgba(125,211,252,.32)}
+.page{padding:96px 24px 72px}.card{position:relative;max-width:440px;padding:42px;border:1px solid rgba(255,255,255,.1);border-radius:22px;background:linear-gradient(145deg,rgba(24,25,28,.93),rgba(12,13,15,.92));box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 28px 90px -28px rgba(0,0,0,.9);backdrop-filter:blur(24px);animation:auth-in .65s var(--ease-out) both}.card::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(125deg,rgba(255,255,255,.07),transparent 32%);mask-image:linear-gradient(#000,transparent 40%)}@keyframes auth-in{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:none}}.logo{position:relative;width:42px;height:42px;display:grid;place-items:center;margin:0 0 30px;border:1px solid rgba(255,255,255,.12);border-radius:13px;background:rgba(255,255,255,.05)}.logo img{width:24px;height:24px;filter:none}.auth-kicker{position:relative;display:flex;align-items:center;gap:8px;margin:0 0 12px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#9edcf9}.auth-kicker i,.access-mode i{display:inline-block;width:7px;height:7px;border-radius:50%;background:#5ee7b5;box-shadow:0 0 0 4px rgba(94,231,181,.1),0 0 14px rgba(94,231,181,.55)}h1{position:relative;font-size:clamp(32px,5vw,42px);line-height:1.02;margin-bottom:13px;letter-spacing:-.045em}.sub{position:relative;max-width:30ch;margin-bottom:27px;font-size:15px;line-height:1.55;color:#aeb2b8}.err{position:relative;border:1px solid rgba(255,133,139,.24);border-radius:12px;margin-bottom:18px}.btn-discord{position:relative;min-height:58px;margin:0;border:1px solid rgba(255,255,255,.2);border-radius:13px;background:linear-gradient(135deg,#f3f5f6,#cdd2d6);box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 12px 30px -12px rgba(255,255,255,.35);font-size:14px;transition:transform .22s var(--ease-out),box-shadow .22s ease,filter .22s ease}.btn-discord:hover{opacity:1;filter:brightness(1.04);transform:translateY(-2px);box-shadow:inset 0 1px 0 #fff,0 18px 34px -12px rgba(255,255,255,.48)}.btn-discord em{margin-left:auto;padding:4px 7px;border-radius:999px;background:rgba(0,0,0,.1);font-size:10px;font-style:normal;font-weight:700;color:rgba(0,0,0,.55)}.btn-discord.is-loading{pointer-events:none;opacity:.78}.access-mode{display:flex;align-items:flex-start;gap:10px;margin:15px 0 0;padding:12px 0;font-size:12px;line-height:1.45;color:#9399a1}.access-mode i{width:6px;height:6px;margin-top:6px;flex:none}.email-section{position:relative}.divider{margin:22px 0 20px}.auth-foot{position:relative;margin:23px 0 0;padding-top:17px;border-top:1px solid rgba(255,255,255,.08);font-size:11px;line-height:1.55;color:#737982}.note{position:relative;display:block;margin-top:10px;font-size:11px;color:#707680}
+@media(max-width:768px){.corner{padding:20px}.corner.tr,.corner.bl,.corner.br{display:none}.page{align-items:flex-start;padding:92px 16px 32px}.card{padding:30px 24px;border-radius:18px}.auth-backdrop i:nth-child(1){right:-250px}.auth-backdrop i:nth-child(2){left:-150px}}
+@media(prefers-reduced-motion:reduce){.card{animation:none}.btn-discord{transition:none}}
+</style>
+</head>
+<body>
+
+<div class="auth-backdrop" aria-hidden="true"><i></i><i></i><i></i></div>
+
+<!-- Four Corners -->
+<div class="corner tl"><img src="/pip-icono.svg" alt="" width="24" height="24"> pip</div>
+<div class="corner tr">Estudio del Creador <span>· privado</span></div>
+<div class="corner bl">Tu espacio para construir una presencia propia, clara y memorable.</div>
+<div class="corner br"><a href="/pineda">Ver perfil</a> · 2026</div>
+
+<div class="page">
+  <div class="card">
+    <a class="logo" href="/">
+      <img src="/pip-icono.svg" alt="pip">
+    </a>
+
+    <p class="auth-kicker"><i></i> Área personal</p>
+    <h1>Bienvenido de vuelta.</h1>
+    <p class="sub">Entra a tu estudio y continúa dando forma a tu perfil.</p>
+
+    <div class="err" id="err" role="alert">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>
+      <span id="msg"></span>
+    </div>
+
+    <a class="btn-discord" id="go" href="/api/auth/discord">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.317 4.3698a19.7913 19.7913 0 0 0-4.8851-1.5152.0741.0741 0 0 0-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 0 0-.0785-.037 19.7363 19.7363 0 0 0-4.8852 1.515.0699.0699 0 0 0-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 0 0 .0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 0 0 .0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 0 0-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 0 1-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 0 1 .0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 0 1 .0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 0 1-.0066.1276 12.2986 12.2986 0 0 1-1.873.8914.0766.0766 0 0 0-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 0 0 .0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 0 0 .0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 0 0-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z"/></svg>
+      <span>Continuar con Discord</span><em>Acceso seguro</em>
+    </a>
+
+    <div class="access-mode" id="access_mode"><i></i><span>La identidad se verifica directamente con Discord.</span></div>
+
+    <div class="email-section" id="email_section">
+      <div class="divider">o con email</div>
+      <form id="email_form">
+        <div class="field">
+          <label for="login_input">Usuario o email</label>
+          <input id="login_input" type="text" name="login" autocomplete="username" placeholder="tu@correo.com" required>
+        </div>
+        <div class="field">
+          <label for="pass_input">Contraseña</label>
+          <input id="pass_input" type="password" name="password" autocomplete="current-password" placeholder="••••••••" required>
+        </div>
+        <button class="btn-primary" type="submit" id="submit_btn">Entrar</button>
+      </form>
+    </div>
+
+    <p class="note">Acceso privado · Solo uso personal</p>
+    <p class="auth-foot">Tu sesión se abre solo en este navegador. No compartimos tu información de acceso.</p>
+  </div>
+</div>
+
+<script>
+const q = new URLSearchParams(location.search);
+const $ = id => document.getElementById(id);
+const ERRORS = {
+  state: 'El enlace caducó o no es válido. Inténtalo de nuevo.',
+  discord: 'No pudimos conectar con Discord. Vuelve a intentarlo.',
+  unauthorized: 'Esta instancia es de uso privado.'
+};
+if (q.get('error')) {
+  $('msg').textContent = ERRORS[q.get('error')] || 'Algo salió mal.';
+  $('err').classList.add('show');
+}
+fetch('/api/config').then(r=>r.json()).then(cfg=>{
+  if(cfg.email) { $('email_section').classList.add('visible'); $('access_mode').querySelector('span').textContent='También puedes entrar con tus credenciales de desarrollo.'; }
+}).catch(()=>{});
+
+$('go').addEventListener('click', () => {
+  $('go').classList.add('is-loading');
+  $('go').querySelector('span').textContent='Conectando con Discord…';
+});
+
+$('email_form').addEventListener('submit',submitEmail);
+async function submitEmail(e){
+  e.preventDefault();
+  const btn=$('submit_btn');
+  btn.disabled=true;btn.textContent='Entrando…';
+  try{
+    const r=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({login:$('login_input').value,password:$('pass_input').value})});
+    const d=await r.json();
+    if(r.ok){location.href='/dashboard';return;}
+    $('msg').textContent=d.error||'Credenciales incorrectas.';
+    $('err').classList.add('show');
+  }catch{
+    $('msg').textContent='Error de conexión.';
+    $('err').classList.add('show');
+  }finally{btn.disabled=false;btn.textContent='Entrar';}
+}
+</script>
+</body>
+</html>

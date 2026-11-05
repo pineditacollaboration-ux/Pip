@@ -1,0 +1,289 @@
+/* Modern Animated Badges — Premium Cyber & Luxury Aesthetics */
+
+/* ── Base emblem (.em) — used by dashboard badge cards ──────────────────── */
+.em {
+  --s: 36px;
+  display: inline-grid;
+  place-items: center;
+  width: var(--s);
+  height: var(--s);
+  border-radius: calc(var(--s) * 0.28);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  flex: none;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.em svg {
+  width: calc(var(--s) * 0.52);
+  height: calc(var(--s) * 0.52);
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  overflow: visible;
+  transition: filter 0.3s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+/* Color by rarity */
+.em[data-r=fundador] {
+  color: #c084fc;
+  border-color: rgba(192,132,252,.35);
+  background: radial-gradient(circle at 50% 20%, rgba(192,132,252,.18), rgba(192,132,252,.05));
+  box-shadow: inset 0 1px 0 rgba(192,132,252,.4), 0 4px 16px -4px rgba(192,132,252,.35);
+}
+.em[data-r=oro] {
+  color: #fbbf24;
+  border-color: rgba(251,191,36,.35);
+  background: radial-gradient(circle at 50% 20%, rgba(251,191,36,.18), rgba(251,191,36,.05));
+  box-shadow: inset 0 1px 0 rgba(251,191,36,.4), 0 4px 16px -4px rgba(251,191,36,.35);
+}
+.em[data-r=celeste] {
+  color: #38bdf8;
+  border-color: rgba(56,189,248,.35);
+  background: radial-gradient(circle at 50% 20%, rgba(56,189,248,.18), rgba(56,189,248,.05));
+  box-shadow: inset 0 1px 0 rgba(56,189,248,.4), 0 4px 16px -4px rgba(56,189,248,.35);
+}
+.em[data-r=plata] {
+  color: #f1f5f9;
+  border-color: rgba(226,232,240,.28);
+  background: radial-gradient(circle at 50% 20%, rgba(226,232,240,.15), rgba(226,232,240,.04));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.3), 0 4px 14px -4px rgba(0,0,0,.5);
+}
+
+/* Earned glow */
+.em:not(.off) svg {
+  filter: drop-shadow(0 0 7px currentColor);
+}
+/* Unearned state */
+.em.off {
+  opacity: 0.3;
+  filter: grayscale(1);
+  border-style: dashed;
+}
+.em.off svg { filter: none; }
+
+/* ── Badges bar ──────────────────────────────────────────────────────────── */
+.badges-bar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px auto 14px;
+  padding: 4px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* ── Individual badge item ───────────────────────────────────────────────── */
+.badge-item {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 13px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  cursor: pointer;
+  outline: none;
+  padding: 0;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+              background 0.25s ease,
+              border-color 0.25s ease,
+              box-shadow 0.25s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.08);
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+.badge-item::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(255,255,255,0.2), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.badge-item:hover::before {
+  opacity: 1;
+}
+
+/* ── Badge icon / media ──────────────────────────────────────────────────── */
+.badge-item svg,
+.badge-item .badge-custom-media {
+  width: 24px;
+  height: 24px;
+  display: block;
+  transform-origin: center;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.25s ease;
+  object-fit: contain;
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+.badge-item svg {
+  fill: currentColor;
+}
+
+/* ── Hover state ─────────────────────────────────────────────────────────── */
+.badge-item:hover,
+.badge-item:focus-visible {
+  transform: translateY(-5px) scale(1.18) translateZ(0) !important;
+  z-index: 10;
+}
+
+.badge-item:hover .badge-custom-media,
+.badge-item:hover svg {
+  transform: scale(1.12) translateZ(0);
+  filter: drop-shadow(0 0 10px currentColor);
+}
+
+/* ── Rarity tiers — premium glass with inner gradient ───────────────────── */
+.badge-item[data-r=fundador] {
+  color: #c084fc;
+  border-color: rgba(192, 132, 252, 0.32);
+  background: linear-gradient(135deg, rgba(192,132,252,0.14) 0%, rgba(168,85,247,0.06) 100%);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.38), inset 0 1px 0 rgba(192,132,252,0.22);
+}
+.badge-item[data-r=fundador]:hover {
+  border-color: rgba(192, 132, 252, 0.85);
+  background: linear-gradient(135deg, rgba(192,132,252,0.25) 0%, rgba(168,85,247,0.16) 100%);
+  box-shadow: 0 14px 34px rgba(0,0,0,0.75), 0 0 28px -2px rgba(192,132,252,0.65) !important;
+}
+
+.badge-item[data-r=oro] {
+  color: #fbbf24;
+  border-color: rgba(251, 191, 36, 0.32);
+  background: linear-gradient(135deg, rgba(251,191,36,0.14) 0%, rgba(217,119,6,0.06) 100%);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.38), inset 0 1px 0 rgba(251,191,36,0.22);
+}
+.badge-item[data-r=oro]:hover {
+  border-color: rgba(251, 191, 36, 0.85);
+  background: linear-gradient(135deg, rgba(251,191,36,0.25) 0%, rgba(217,119,6,0.16) 100%);
+  box-shadow: 0 14px 34px rgba(0,0,0,0.75), 0 0 28px -2px rgba(251,191,36,0.65) !important;
+}
+
+.badge-item[data-r=celeste] {
+  color: #38bdf8;
+  border-color: rgba(56, 189, 248, 0.32);
+  background: linear-gradient(135deg, rgba(56,189,248,0.14) 0%, rgba(14,165,233,0.06) 100%);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.38), inset 0 1px 0 rgba(56,189,248,0.22);
+}
+.badge-item[data-r=celeste]:hover {
+  border-color: rgba(56, 189, 248, 0.85);
+  background: linear-gradient(135deg, rgba(56,189,248,0.25) 0%, rgba(14,165,233,0.16) 100%);
+  box-shadow: 0 14px 34px rgba(0,0,0,0.75), 0 0 28px -2px rgba(56,189,248,0.65) !important;
+}
+
+.badge-item[data-r=plata] {
+  color: #e2e8f0;
+  border-color: rgba(226, 232, 240, 0.25);
+  background: linear-gradient(135deg, rgba(226,232,240,0.10) 0%, rgba(148,163,184,0.05) 100%);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.38), inset 0 1px 0 rgba(255,255,255,0.16);
+}
+.badge-item[data-r=plata]:hover {
+  border-color: rgba(226, 232, 240, 0.7);
+  background: linear-gradient(135deg, rgba(226,232,240,0.22) 0%, rgba(148,163,184,0.12) 100%);
+  box-shadow: 0 14px 34px rgba(0,0,0,0.75), 0 0 24px -2px rgba(226,232,240,0.5) !important;
+}
+
+/* ── Badge-specific hover animations ────────────────────────────────────── */
+.badge-item[data-id="owner"]:hover .badge-custom-media,
+.badge-item[data-id="fundador"]:hover .badge-custom-media {
+  transform: rotate(-8deg) scale(1.18) translateZ(0);
+}
+
+.badge-item[data-id="architect"]:hover .badge-custom-media {
+  transform: rotate(14deg) scale(1.18) translateZ(0);
+}
+
+.badge-item[data-id="origin"]:hover .badge-custom-media {
+  transform: scale(1.22) translateZ(0);
+  filter: drop-shadow(0 0 12px #38bdf8);
+}
+
+.badge-item[data-id="lifetime"]:hover .badge-custom-media {
+  transform: rotate(18deg) scale(1.18) translateZ(0);
+}
+
+.badge-item[data-id="creative-director"]:hover .badge-custom-media {
+  transform: rotate(-12deg) translateY(-3px) scale(1.18) translateZ(0);
+}
+
+.badge-item[data-id="first-release"]:hover .badge-custom-media {
+  transform: translateY(-4px) scale(1.22) translateZ(0);
+  filter: drop-shadow(0 0 14px #38bdf8);
+}
+
+.badge-item[data-id="developer"]:hover .badge-custom-media {
+  transform: scale(1.22) translateZ(0);
+  filter: drop-shadow(0 0 12px #38bdf8);
+}
+
+/* ── Tooltip ─────────────────────────────────────────────────────────────── */
+.badge-tooltip {
+  position: absolute;
+  bottom: calc(100% + 12px);
+  left: 50%;
+  transform: translateX(-50%) translateY(8px);
+  z-index: 150;
+  width: max-content;
+  max-width: 220px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: rgba(9, 11, 16, 0.94);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.95), 0 0 20px -5px rgba(56, 189, 248, 0.25);
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              visibility 0.2s;
+  text-align: center;
+}
+
+.badge-tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 5px;
+  border-style: solid;
+  border-color: rgba(9, 11, 16, 0.94) transparent transparent transparent;
+}
+
+.badge-tooltip b {
+  display: block;
+  font: 700 12px/1.2 'Plus Jakarta Sans', system-ui, sans-serif;
+  color: #ffffff;
+  letter-spacing: -0.01em;
+}
+
+.badge-tooltip small {
+  display: block;
+  font: 400 11px/1.35 'Inter', system-ui, sans-serif;
+  color: #94a3b8;
+  margin-top: 3px;
+}
+
+.badge-item:hover .badge-tooltip,
+.badge-item:focus-visible .badge-tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+

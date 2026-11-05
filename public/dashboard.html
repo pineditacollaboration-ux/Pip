@@ -1,0 +1,2039 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>pip · Estudio del Creador</title>
+<link rel="icon" type="image/svg+xml" href="/pip-icono.svg">
+<meta name="theme-color" content="#050505">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Archivo:wdth,wght@112..125,700..800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/badges.css">
+<link rel="stylesheet" href="/dashboard.css">
+<link rel="stylesheet" href="/premium.css">
+<link rel="stylesheet" href="/upgrade.css">
+<link rel="stylesheet" href="/studio-refresh.css">
+<script src="/vendor/qrcode.js" defer></script>
+</head>
+<body>
+<div class="app" id="app" data-tab="editor">
+  <!-- NAVIGATION SIDEBAR -->
+  <nav class="sb" id="sb" aria-label="Secciones del panel">
+    <div class="sb-header">
+      <a class="sb-brand" href="/">
+        <div class="sb-brand-icon"><img src="/pip-icono.svg" alt="" width="36" height="36"></div>
+        <span class="sb-brand-name">pip<span class="sb-brand-badge">Studio</span></span>
+      </a>
+    </div>
+
+    <!-- User Profile Card -->
+    <div class="sb-user-card" id="sb_user">
+      <div class="sb-user-av" id="sb_av"></div>
+      <div class="sb-user-meta">
+        <b id="sb_name">Cargando...</b>
+        <small id="sb_handle">@pip</small>
+      </div>
+      <div class="sb-user-dot" title="Estado de Discord no disponible"></div>
+    </div>
+
+    <button class="sb-search" id="sb_search" type="button" aria-label="Buscar sección o acción (Ctrl K)">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <span>Buscar o ir a…</span><kbd>Ctrl K</kbd>
+    </button>
+
+    <!-- Navigation items populated dynamically -->
+    <div id="sb_links" class="sb-links">
+      <div class="sk nv-sk"></div>
+      <div class="sk nv-sk"></div>
+      <div class="sk nv-sk"></div>
+      <div class="sk nv-sk"></div>
+    </div>
+
+    <div class="sb-footer">
+      <a id="sb_preview_link" href="/#" target="_blank">
+        <svg viewBox="0 0 24 24"><path d="M7 17 17 7M8 7h9v9"/></svg>
+        Ver mi perfil público
+      </a>
+      <a href="/" onclick="logout(event)">
+        <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+        Cerrar sesión
+      </a>
+    </div>
+  </nav>
+
+  <!-- MAIN CONFIGURATION WORKSPACE -->
+  <main class="ed">
+    <div class="tb">
+      <div class="bc" id="bc"></div>
+
+      <!-- Mobile/Tablet Toggle Switcher between Editor and Studio Live -->
+      <div class="view-tabs" role="tablist" aria-label="Cambiar vista">
+        <button class="view-tab-btn" id="tab_ed" role="tab" aria-selected="true" onclick="switchMobileView('editor')">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          <span class="vt-l">Ajustes</span>
+        </button>
+        <button class="view-tab-btn" id="tab_pv" role="tab" aria-selected="false" onclick="switchMobileView('preview')">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg>
+          <span class="vt-l">Vista</span>
+        </button>
+      </div>
+
+      <button class="sync" id="sync" type="button" title="Actualizar métricas ahora" aria-label="Actualizar métricas">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>
+        <span id="sync_t">Actualizado</span>
+      </button>
+
+      <button class="sv" id="save" disabled>
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"/><path d="M7 3v4a1 1 0 0 0 1 1h7"/></svg>
+        <span class="sv-txt">Guardado</span>
+      </button>
+    </div>
+    
+    <div id="view">
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div class="sk" style="height:34px;width:180px"></div>
+        <div class="sk" style="height:140px;border-radius:18px"></div>
+        <div class="sk" style="height:120px;border-radius:18px"></div>
+        <div class="sk" style="height:120px;border-radius:18px"></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- LIVE PROFILE STUDIO PREVIEW -->
+  <section class="pvw" id="pvw">
+    <div class="pbar">
+      <div class="pbar-meta">
+        <span class="live-badge" id="pst">En vivo</span>
+      </div>
+      <div class="dv" role="group" aria-label="Dispositivo de vista previa">
+        <button data-w="100%" aria-pressed="true">
+          <svg class="dv-ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+          Escritorio
+        </button>
+        <button data-w="768px" aria-pressed="false">
+          <svg class="dv-ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18" stroke-linecap="round" stroke-width="2.5"/></svg>
+          Tablet
+        </button>
+        <button data-w="390px" aria-pressed="false">
+          <svg class="dv-ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18" stroke-linecap="round" stroke-width="2.5"/></svg>
+          Móvil
+        </button>
+      </div>
+      <div class="pbar-actions">
+        <button class="ib" id="copy" title="Copiar enlace" aria-label="Copiar enlace de tu perfil">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+        </button>
+        <a class="ib" id="view2" target="_blank" rel="noopener" title="Abrir perfil en otra pestaña" aria-label="Abrir tu perfil en otra pestaña">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>
+        </a>
+      </div>
+    </div>
+    <div class="fr">
+      <div class="box" id="box">
+        <div class="bbar" aria-hidden="true"><i></i><i></i><i></i><span class="burl" id="bar_url"><svg viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><span id="bar_txt">pip</span></span></div>
+        <iframe id="pv" title="Vista previa en vivo de tu perfil" sandbox="allow-scripts"></iframe>
+        <iframe id="pv2" class="bk" aria-hidden="true" tabindex="-1" sandbox="allow-scripts"></iframe>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+let ME, SPEC = [], PLAT = [], CFG, PF, cur = 'resumen', dirty = false, tm, cat = 'Todas';
+
+const NAV_METAS = {
+  resumen:     { label: 'Resumen',      icon: 'LayoutDashboard', desc: 'Métricas clave, progreso de activación y enlaces rápidos.' },
+  perfil:      { label: 'Perfil',       icon: 'User',            desc: 'Nombre público, biografía, acento cromático y avatar.' },
+  enlaces:     { label: 'Enlaces',      icon: 'Link2',           desc: 'Tus canales de contenido y plataformas de contacto.' },
+  discord:     { label: 'Discord',      icon: 'MessageSquare',   desc: 'Identidad conectada al Gateway y presencia en tiempo real.' },
+  insignias:   { label: 'Insignias',    icon: 'Award',           desc: 'Emblemas de colección desbloqueados por mérito propio.' },
+  diseno:      { label: 'Diseño',       icon: 'Palette',         desc: 'Proporciones, bordes, desenfoques y animación de la tarjeta.' },
+  fondo:       { label: 'Fondo',        icon: 'Image',           desc: 'Colores base, fotografía o vídeo cinematográfico de fondo.' },
+  efectos:     { label: 'Efectos',      icon: 'Zap',             desc: 'Pantalla de entrada, estelas de cursor y partículas de fondo.' },
+  estadisticas:{ label: 'Estadísticas', icon: 'BarChart2',       desc: 'Volumen de visitas, distribución horaria y clics en enlaces.' },
+  widgets:     { label: 'Widgets',      icon: 'Box',             desc: 'Reloj, anuncio destacado, cuenta regresiva y botón de compartir.' },
+  compartir:   { label: 'Compartir',    icon: 'Share2',          desc: 'Tu enlace, redes para difundirlo y cómo se ve al compartirlo.' },
+  cuenta:      { label: 'Cuenta',       icon: 'Settings',        desc: 'Dirección de perfil, correo vinculado y opciones de sesión.' }
+};
+
+/* Lucide SVG icon map — paths extracted from lucide-static */
+const ICONS = {
+  LayoutDashboard: '<rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/>',
+  User:            '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+  Link2:           '<path d="M9 17H7A5 5 0 0 1 7 7h2"/><path d="M15 7h2a5 5 0 1 1 0 10h-2"/><line x1="8" x2="16" y1="12" y2="12"/>',
+  MessageSquare:   '<path d="M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z"/>',
+  Award:           '<path d="m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526"/><circle cx="12" cy="8" r="6"/>',
+  Palette:         '<path d="M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z"/><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/>',
+  Image:           '<rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>',
+  Zap:             '<path d="M15.914 4a1.5 1.5 0 00-2.474-1.561l-9 9A1.5 1.5 0 005.5 14h4.002a.5.5 0 01.471.666L8.086 20a1.5 1.5 0 002.475 1.56l9-9A1.5 1.5 0 0018.5 10h-3.997a.5.5 0 01-.472-.667z"/>',
+  BarChart2:       '<path d="M5 21v-6"/><path d="M12 21V3"/><path d="M19 21V9"/>',
+  Box:             '<path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/>',
+  Share2:          '<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/>',
+  Settings:        '<path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"/><circle cx="12" cy="12" r="3"/>'
+};
+
+const NAV = [
+  ['resumen', 'Resumen'],
+  ['Lo que enseñas'],
+  ['perfil', 'Perfil'],
+  ['enlaces', 'Enlaces'],
+  ['discord', 'Discord'],
+  ['insignias', 'Insignias'],
+  ['Cómo se ve'],
+  ['diseno', 'Diseño'],
+  ['fondo', 'Fondo'],
+  ['efectos', 'Efectos'],
+  ['widgets', 'Widgets'],
+  ['Difusión'],
+  ['compartir', 'Compartir'],
+  ['Analíticas'],
+  ['estadisticas', 'Estadísticas'],
+  ['Tu cuenta'],
+  ['cuenta', 'Cuenta']
+];
+
+const BG_ST = { f: 'all', t: 'all', o: 'def' };
+const I_OK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+const I_LOCK = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4.5" y="10.5" width="15" height="10" rx="2.5"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/></svg>';
+const UNIT = { constructor: 'enlaces', 'red-completa': 'enlaces', popular: 'visitas', 'en-llamas': 'visitas', clicker: 'clics', fiel: 'días' };
+const SING = { enlaces: 'enlace', visitas: 'visita', clics: 'clic', 'días': 'día' };
+const falta = (b) => { const n = b.goal - b.progress, u = UNIT[b.id] || ''; return n === 1 ? `Te falta 1 ${SING[u] || u}`.trim() : `Te faltan ${n} ${u}`.trim(); };
+
+function h(t, p, ...k) {
+  const e = document.createElement(t);
+  for (const [a, v] of Object.entries(p || {})) {
+    if (a === 'class') e.className = v;
+    else if (a === 'text') e.textContent = v;
+    else if (a === 'html') e.innerHTML = v;
+    else if (a === 'style') e.style.cssText = v;
+    else if (a.startsWith('on') && typeof v === 'function') e[a] = v;
+    else if (v !== false && v != null) e.setAttribute(a, v);
+  }
+  for (const c of k.flat()) if (c != null) e.append(c);
+  return e;
+}
+
+function switchMobileView(viewName) {
+  const app = $('app');
+  if (!app) return;
+  app.dataset.tab = viewName;
+  $('tab_ed')?.setAttribute('aria-selected', String(viewName === 'editor'));
+  $('tab_pv')?.setAttribute('aria-selected', String(viewName === 'preview'));
+  if (viewName === 'preview') refresh(true);
+}
+
+async function api(p, m = 'GET', b) {
+  const r = await fetch(p, {
+    method: m,
+    headers: { 'Content-Type': 'application/json' },
+    body: b && JSON.stringify(b)
+  });
+  if (r.status === 401) {
+    if (p === '/api/me') location.replace('/login');
+    throw Object.assign(new Error('401'), { status: 401 });
+  }
+  const isJson = (r.headers.get('content-type') || '').includes('application/json');
+  const d = isJson ? await r.json().catch(() => null) : null;
+  if (!r.ok) throw new Error(d?.error || (r.status >= 500 ? 'Error del servidor. Inténtalo de nuevo.' : `Error HTTP ${r.status}`));
+  if (!isJson) throw new Error('El servidor devolvió una respuesta inesperada.');
+  return d;
+}
+
+const payload = () => ({ ...PF, settings: CFG });
+let changeVersion = 0, saving = false;
+
+/* ── Debounced touch: batches rapid input changes into a single preview fetch ── */
+let pvDebTimer = null;
+const DRAFT_KEY = 'pip_dashboard_draft_v1';
+let draftTimer = null;
+function rememberDraft() {
+  clearTimeout(draftTimer);
+  draftTimer = setTimeout(() => lsSet(DRAFT_KEY, JSON.stringify({ profile: PF, settings: CFG, savedAt: Date.now() })), 180);
+}
+function touch(immediate) {
+  dirty = true;
+  changeVersion++;
+  rememberDraft();
+  const sv = $('save');
+  sv.disabled = saving;
+  const txt = sv.querySelector('.sv-txt');
+  if (txt && !saving) txt.textContent = 'Guardar cambios';
+  if (immediate) { pvRun(); return; }
+  clearTimeout(pvDebTimer);
+  /* Enviar la última edición en el siguiente frame: el preview no espera una
+     ventana de debounce perceptible, pero sigue agrupando eventos del teclado. */
+  pvDebTimer = setTimeout(pvRun, 0);
+}
+
+/* Vista previa instantánea: sin retardo ni texto de estado.
+   - La petición sale en el acto; si hay una en curso, la última edición espera y sale justo después (siempre gana la más reciente).
+   - El nuevo render se carga en un iframe oculto y se intercambia al estar listo: la vista nunca parpadea ni se queda en blanco. */
+let pvBusy = false, pvAgain = false, pvShown = false, pvAbort = null;
+function pvSwap(front, back) {
+  back.classList.remove('bk'); front.classList.add('bk');
+  front.id = 'pv2'; back.id = 'pv';
+}
+async function pvRun() {
+  if (pvBusy) {
+    pvAgain = true;
+    if (pvAbort) { try { pvAbort.abort(); } catch {} }
+    return;
+  }
+  pvBusy = true;
+  try {
+    do {
+      pvAgain = false;
+      let html;
+      try {
+        if (pvAbort) { try { pvAbort.abort(); } catch {} }
+        pvAbort = new AbortController();
+        const r = await fetch('/api/preview', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload()),
+          signal: pvAbort.signal
+        });
+        if (!r.ok) continue;
+        html = await r.text();
+      } catch (err) {
+        if (err.name === 'AbortError') continue;
+        continue;
+      } finally {
+        pvAbort = null;
+      }
+      const front = $('pv'), back = $('pv2');
+      if (!pvShown) { front.srcdoc = html; pvShown = true; continue; }
+      await new Promise((done) => {
+        let ok = false;
+        const fin = () => { if (ok) return; ok = true; back.onload = null; pvSwap(front, back); done(); };
+        back.onload = fin;
+        setTimeout(fin, 20);
+        back.srcdoc = html;
+      });
+    } while (pvAgain);
+  } finally { pvBusy = false; }
+}
+function refresh(immediate) { if (immediate) pvRun(); else { clearTimeout(pvDebTimer); pvDebTimer = setTimeout(pvRun, 0); } }
+
+function applyMe(d) {
+  ME = d;
+  render();
+}
+
+const card = (t, s, ...b) => h('div', { class: 'cd' },
+  t ? h('div', { class: 'ch' }, h('h2', { text: t }), s ? h('p', { text: s }) : null) : null,
+  h('div', { class: 'cb' }, ...b)
+);
+
+function toggle(get, set, label = 'Ajuste') {
+  const b = h('button', { class: 'tg', role: 'switch', 'aria-checked': String(!!get()), 'aria-label': label });
+  b.onclick = () => {
+    const v = !(b.getAttribute('aria-checked') === 'true');
+    b.setAttribute('aria-checked', String(v));
+    set(v);
+    touch();
+  };
+  return b;
+}
+
+function ctl(i) {
+  const v = CFG[i.k];
+  if (i.t === 'toggle') {
+    return h('div', { class: 'sw' },
+      h('div', {}, h('b', { text: i.l }), i.desc ? h('small', { text: i.desc }) : null),
+      toggle(() => CFG[i.k], x => CFG[i.k] = x, i.l)
+    );
+  }
+  if (i.t === 'chips') {
+    const w = h('div', {}, h('label', { class: 'l', text: i.l }));
+    const c = h('div', { class: 'chips' });
+    i.o.forEach(([val, lab]) => {
+      const b = h('button', { class: 'chip', 'aria-pressed': String(CFG[i.k] === val), text: lab });
+      b.onclick = () => {
+        CFG[i.k] = val;
+        [...c.children].forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+        touch();
+      };
+      c.append(b);
+    });
+    w.append(c);
+    return w;
+  }
+  if (i.t === 'range') {
+    const o = h('span', { text: v });
+    const r = h('input', { type: 'range', min: i.min, max: i.max, value: v, 'aria-label': i.l });
+    const syncP = () => {
+      const pct = Math.max(0, Math.min(100, Math.round(((+r.value - i.min) / (i.max - i.min)) * 100)));
+      r.style.setProperty('--p', pct + '%');
+    };
+    syncP();
+    r.oninput = () => { CFG[i.k] = +r.value; o.textContent = r.value; syncP(); touch(); };
+    return h('div', {},
+      h('div', { class: 'fl' }, h('span', { text: i.l }), o),
+      r,
+      h('div', { class: 'rg' }, h('span', { text: i.lo || '' }), h('span', { text: i.hi || '' }))
+    );
+  }
+  if (i.t === 'text' || i.t === 'date') {
+    const c = h('input', { type: i.t === 'date' ? 'date' : 'text', value: v || '', maxlength: i.max || 80, placeholder: i.ph || '', 'aria-label': i.l });
+    c.oninput = () => { CFG[i.k] = c.value; touch(); };
+    return h('div', {}, h('label', { class: 'l', text: i.l }), c, i.desc ? h('small', { class: 'hint', text: i.desc }) : null);
+  }
+  if (i.t === 'color') {
+    const c = h('input', { type: 'color', value: v, 'aria-label': i.l });
+    c.oninput = () => { CFG[i.k] = c.value; touch(); };
+    return h('div', {}, h('label', { class: 'l', text: i.l }), c);
+  }
+}
+
+
+function saveFile(name, text, type) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([text], { type: type + ';charset=utf-8' }));
+  a.download = name; document.body.append(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+function exportCsv() {
+  const q = v => '"' + String(v).replace(/"/g, '""') + '"';
+  const rows = [['tipo', 'nombre', 'valor'], ...ME.stats.days.map(d => ['visitas_dia', d.day, d.count]), ...ME.links.map(l => ['clics_enlace', l.label, l.clicks])];
+  saveFile('pip-metricas.csv', rows.map(r => r.map(q).join(',')).join('\n'), 'text/csv');
+}
+function insights(hrs) {
+  const views = ME.stats.views, clicks = ME.links.reduce((a, l) => a + l.clicks, 0), days = ME.stats.days;
+  const best = a => a.reduce((bi, v, i) => v > a[bi] ? i : bi, 0);
+  const ctr = views ? (clicks / views * 100).toFixed(1) + '%' : '—';
+  const hr = Math.max(...hrs) ? String(best(hrs)).padStart(2, '0') + ':00' : '—';
+  const dd = denseDays(), dy = Math.max(...dd.map(d => d.count)) ? ES_DAYS[new Date(dd[best(dd.map(d => d.count))].day + 'T00:00:00Z').getUTCDay()] + ' ' + shortDay(dd[best(dd.map(d => d.count))].day) : '—';
+  const top = [...ME.links].sort((a, b) => b.clicks - a.clicks)[0];
+  const t = (b, s, d) => h('div', { class: 'ins' }, h('b', { text: b }), h('small', { text: s }), h('span', { text: d }));
+  return h('div', { class: 'ins-g' },
+    t(ctr, 'Tasa de clics', 'clics por cada 100 visitas'),
+    t(hr, 'Mejor hora', 'cuando más te visitan'),
+    t(dy, 'Mejor día', 'de los últimos 14'),
+    t(top && top.clicks ? top.label : '—', 'Enlace estrella', top && top.clicks ? top.clicks + ' clics' : 'aún sin clics'));
+}
+
+function areaChart(days) {
+  const v = days.map(d => d.count), n = v.length;
+  if (!n || !Math.max(...v)) return h('p', { class: 'ch-empty', text: 'Todavía no hay visitas en este periodo.' });
+  const W = 560, H = 150, P = 8, m = Math.max(...v), x = i => P + (n === 1 ? 0 : i * (W - 2 * P) / (n - 1)), y = c => H - P - (c / m) * (H - 2 * P - 8);
+  const pts = v.map((c, i) => [x(i), y(c)]), line = pts.map((p, i) => (i ? 'L' : 'M') + p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' ');
+  const total = v.reduce((a, b) => a + b, 0), last7 = v.slice(-7).reduce((a, b) => a + b, 0), prev7 = v.slice(-14, -7).reduce((a, b) => a + b, 0);
+  const dl = prev7 ? Math.round((last7 - prev7) / prev7 * 100) : null;
+  const w = h('div', { class: 'ac' },
+    h('div', { class: 'ac-top' }, h('b', { text: total.toLocaleString('es') }), h('span', { text: 'visitas en el periodo' }),
+      dl !== null ? h('em', { class: dl >= 0 ? 'up' : 'dn', text: (dl >= 0 ? '+' : '') + dl + '% vs. semana anterior' }) : null),
+    h('div', { class: 'ac-plot', html: `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="Visitas por día"><defs><linearGradient id="acg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F2F2F2" stop-opacity=".34"/><stop offset="1" stop-color="#F2F2F2" stop-opacity="0"/></linearGradient><linearGradient id="acl" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#CFCFCF"/><stop offset="1" stop-color="#FFFFFF"/></linearGradient></defs>${[0.25, 0.5, 0.75].map(k => `<line class="gl" x1="0" x2="${W}" y1="${(H * k).toFixed(1)}" y2="${(H * k).toFixed(1)}"/>`).join('')}<path d="${line} L${pts[n - 1][0]} ${H} L${pts[0][0]} ${H}Z" fill="url(#acg)"/><path d="${line}" fill="none" stroke="url(#acl)" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>${pts.map((p, i) => `<circle cx="${p[0]}" cy="${p[1]}" r="${i === n - 1 ? 4.6 : 3}" fill="${i === n - 1 ? '#FFFFFF' : '#050505'}" stroke="#F2F2F2" stroke-width="1.6" vector-effect="non-scaling-stroke"${i === n - 1 ? ' style="filter:drop-shadow(0 0 6px #F2F2F2)"' : ''}><title>${days[i].day}: ${v[i]}</title></circle>`).join('')}</svg>` }),
+    h('div', { class: 'bl' }, h('span', { text: days[0].day }), h('span', { text: days[n - 1].day })));
+  return w;
+}
+function rankLinks(links) {
+  if (!links.length) return h('p', { class: 'ch-empty', text: 'Aún no hay enlaces. Añade el primero en la sección Enlaces.' });
+  const L = [...links].sort((a, b) => b.clicks - a.clicks), m = Math.max(1, L[0].clicks);
+  return h('div', { class: 'rk' }, L.map((l, i) => h('div', { class: 'rk-r' },
+    h('span', { class: 'rk-i', text: i + 1 }),
+    h('div', { class: 'rk-b' }, h('div', { class: 'rk-t' }, h('b', { text: l.label }), h('span', { text: l.clicks + (l.clicks === 1 ? ' clic' : ' clics') })),
+      h('div', { class: 'pr' }, h('i', { style: `width:${l.clicks / m * 100}%` }))))));
+}
+
+const specCards = sec => SPEC.filter(s => s.sec === sec).map(s => card(s.title, s.sub, ...s.items.map(ctl)));
+
+function pfRange(k, l, min, max, lo, hi) {
+  const o = h('span', { text: PF[k] });
+  const r = h('input', { type: 'range', min, max, value: PF[k], 'aria-label': l });
+  const syncP = () => {
+    const pct = Math.max(0, Math.min(100, Math.round(((+r.value - min) / (max - min)) * 100)));
+    r.style.setProperty('--p', pct + '%');
+  };
+  syncP();
+  r.oninput = () => { PF[k] = +r.value; o.textContent = r.value; syncP(); touch(); };
+  return h('div', {},
+    h('div', { class: 'fl' }, h('span', { text: l }), o),
+    r,
+    h('div', { class: 'rg' }, h('span', { text: lo }), h('span', { text: hi }))
+  );
+}
+
+function uploader(kind, label, hint, url, thumbText, discordKey) {
+  const vid = url && /\.(mp4|webm)$/.test(url);
+  const th = h('div', { class: 'th', text: url ? (vid ? 'video' : '') : thumbText });
+  if (url && !vid) th.style.backgroundImage = `url('${url}')`;
+  const err = h('p', { class: 'err' });
+  const fi = h('input', {
+    type: 'file',
+    hidden: true,
+    accept: kind === 'background' ? 'image/*,video/mp4,video/webm' : 'image/png,image/jpeg,image/gif,image/webp'
+  });
+  const LIM = { avatar: 2, banner: 4 }[kind];
+  const send = async (f) => {
+    if (!f) return;
+    err.textContent = '';
+    if (LIM && f.size > LIM * 1048576) { err.textContent = `El archivo pesa ${(f.size / 1048576).toFixed(1)} MB y el máximo es ${LIM} MB.`; return; }
+    if (kind !== 'background' && !/^image\/(png|jpeg|gif|webp)$/.test(f.type)) { err.textContent = 'Usa PNG, JPG, GIF o WEBP.'; return; }
+    upEl.classList.add('busy');
+    try {
+      const r = await fetch('/api/upload/' + kind, {
+        method: 'POST',
+        headers: { 'x-pip': '1', 'Content-Type': 'application/octet-stream' },
+        body: f
+      });
+      const d = await r.json();
+      if (!r.ok) throw new Error(d.error);
+      applyMe(d);
+      refresh();
+    } catch (x) {
+      err.textContent = x.message;
+    }
+    fi.value = '';
+    upEl.classList.remove('busy');
+  };
+  fi.onchange = () => send(fi.files[0]);
+  const rm = h('button', {
+    class: 'btn btn-ghost',
+    text: 'Quitar',
+    disabled: !url,
+    onclick: async () => {
+      try { applyMe(await api('/api/upload/' + kind, 'DELETE')); refresh(); }
+      catch (x) { err.textContent = x.message; }
+    }
+  });
+  const ds = discordKey && ME.user.discord && ME.user.discord[discordKey] ? h('button', {
+    class: 'btn btn-ghost',
+    text: 'Usar avatar de Discord',
+    onclick: async () => {
+      try { applyMe(await api('/api/discord/use/' + kind, 'POST', {})); refresh(); }
+      catch (x) { err.textContent = x.message; }
+    }
+  }) : null;
+
+  const upEl = h('div', { class: 'up', 'data-kind': kind },
+    th,
+    h('div', { class: 'tx' }, h('b', { text: label }), h('small', { text: hint + ' · o arrástralo aquí' })),
+    h('button', { class: 'btn p', text: 'Subir archivo', onclick: () => fi.click() }),
+    fi,
+    rm
+  );
+  ['dragenter', 'dragover'].forEach(ev => upEl.addEventListener(ev, e => { e.preventDefault(); upEl.classList.add('drag'); }));
+  ['dragleave', 'drop'].forEach(ev => upEl.addEventListener(ev, e => { e.preventDefault(); upEl.classList.remove('drag'); }));
+  upEl.addEventListener('drop', e => send(e.dataTransfer?.files?.[0]));
+  return h('div', {},
+    upEl,
+    ds ? h('div', { style: 'margin-top:8px' }, ds) : null,
+    err
+  );
+}
+
+const brandFill = h => {
+  const r = parseInt(h.slice(0, 2), 16), g = parseInt(h.slice(2, 4), 16), b = parseInt(h.slice(4, 6), 16);
+  return (0.299 * r + 0.587 * g + 0.114 * b) < 70 ? '#F2F2F2' : '#' + h;
+};
+
+/* ==========================================================================
+   VIEWS ARCHITECTURE
+   ========================================================================== */
+const VIEWS = {
+  resumen() {
+    const p = ME.profile, L = ME.links;
+    const done = [
+      [!!p.avatar, 'Sube tu foto de perfil o avatar', 'perfil'],
+      [!!p.bio.trim(), 'Completa tu biografía personal', 'perfil'],
+      [!!p.bg_media, 'Personaliza tu fondo multimedia', 'fondo'],
+      [L.length > 0, 'Vincula tus redes y enlaces de contacto', 'enlaces'],
+      [!!ME.user.discord, 'Conecta tu cuenta de Discord', 'discord']
+    ];
+    const n = done.filter(x => x[0]).length, pct = n * 20, url = location.origin + '/' + ME.user.username;
+
+    // ── Hero card: editorial activation tracker ──
+    const heroCard = h('div', { class: 'cd hero-cd' },
+      h('div', { class: 'hero-split' },
+        h('div', { class: 'hero-left' },
+          h('span', { class: 'hero-label', text: n === 5 ? 'Perfil activado' : 'Activación del perfil' }),
+          h('h3', { class: 'hero-title', text: `${greet()}, ${(p.display_name || ME.user.username).split(' ')[0]}` }),
+          h('p', { class: 'hero-sub', text: n === 5 ? 'Tu perfil está completo y listo para compartir.' : `Te ${5 - n === 1 ? 'falta' : 'faltan'} ${5 - n} paso${5 - n === 1 ? '' : 's'} para completar tu perfil y llegar más lejos.` })
+        ),
+        h('div', { class: 'hero-ring-wrap',
+          html: `<svg class="hero-ring" viewBox="0 0 88 88" aria-hidden="true"><defs><linearGradient id="ring-grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FFFFFF"/><stop offset="55%" stop-color="#CFCFCF"/><stop offset="100%" stop-color="#8B8CFF"/></linearGradient></defs><circle class="ring-track" cx="44" cy="44" r="37" fill="none" stroke-width="6"/><circle class="ring-fill" cx="44" cy="44" r="37" fill="none" stroke-width="6" stroke-dasharray="${2 * Math.PI * 37}" stroke-dashoffset="${2 * Math.PI * 37 * (1 - pct / 100)}" stroke-linecap="round" style="transform-origin:center;transform:rotate(-90deg)"/></svg><span class="hero-pct">${pct}<small>%</small></span>`
+        })
+      ),
+      n === 5 ? null : h('div', { class: 'ck' }, done.map(([ok, t, go]) =>
+        h('button', { class: ok ? 'dn' : '', onclick: () => go_(go) },
+          h('span', { class: 'o' }),
+          t
+        )
+      ))
+    );
+
+    const linkCard = h('div', { class: 'addr' },
+      h('span', { class: 'addr-ic', html: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>' }),
+      h('div', { class: 'addr-t' },
+        h('small', { text: 'Tu dirección única' }),
+        h('input', { type: 'text', readonly: true, value: url, 'aria-label': 'Tu enlace público', onfocus: e => e.target.select() })
+      ),
+      h('button', { class: 'btn p addr-copy', text: 'Copiar', onclick: copyLink }),
+      h('a', { class: 'ib', href: '/' + ME.user.username, target: '_blank', rel: 'noopener', title: 'Abrir perfil', 'aria-label': 'Abrir tu perfil en otra pestaña',
+        html: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>' })
+    );
+
+    const B = ME.badges, E = B.filter(b => b.earned), next = B.filter(b => !b.earned && b.goal).sort((a, b) => (b.progress / b.goal) - (a.progress / a.goal))[0];
+    const badgeCard = card('Insignias de colección', `${E.length} de ${B.length} insignias desbloqueadas`,
+      E.length ? h('div', { style: 'display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px' },
+        E.map(b => h('i', { class: 'em', 'data-r': b.style || b.tier, title: b.name, style: '--s:46px', html: `<svg viewBox="0 0 24 24" aria-hidden="true">${b.icon}</svg>` }))
+      ) : h('p', { style: 'color:var(--txt-muted);font-size:13px;margin:0 0 14px', text: 'Aún no tienes insignias desbloqueadas.' }),
+      next ? h('div', { class: 'nx' },
+        h('div', { class: 'nx-h' },
+          h('span', {}, h('span', { text: 'Próxima:' }), next.name),
+          h('span', { text: `${next.progress} / ${next.goal}` })
+        ),
+        h('div', { class: 'pr' }, h('i', { style: `width:${(next.progress / next.goal) * 100}%` }))
+      ) : null,
+      h('button', { class: 'btn btn-ghost', style: 'font-size:13px', text: 'Ver todas las insignias →', onclick: () => go_('insignias') })
+    );
+
+    const m = M(), cd = chartDays(m.D);
+    const hrsCard = panel(4, 'Hora pico', m.peakH != null ? `Más visitas hacia las ${hh(m.peakH)} (tu hora)` : 'Aún sin datos horarios',
+      m.peakH != null ? [barChart(m.hrs, m.hrs.map((_, i) => String(i).padStart(2, '0')), { every: 6, dense: true, tip: hh })] : [h('p', { class: 'ch-empty', text: 'Cuando recibas visitas verás a qué horas llegan.' })],
+      ['Estadísticas', () => go_('estadisticas')]);
+    const wkCard = panel(4, 'Mejor día de la semana', m.peakW != null ? `Los ${ES_DAYS[m.peakW].toLowerCase()} es cuando más te visitan` : 'Aún sin datos',
+      m.peakW != null ? [barChart([1, 2, 3, 4, 5, 6, 0].map(i => m.wk[i]), [1, 2, 3, 4, 5, 6, 0].map(i => ES_DAYS[i][0]), { tip: i => ES_DAYS[[1, 2, 3, 4, 5, 6, 0][i]] })] : [h('p', { class: 'ch-empty', text: 'Se calcula con tus últimos 14 días.' })]);
+    wkCard.querySelector('.ph p').textContent = m.peakW != null ? `Los ${['domingos', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábados'][m.peakW]} te visitan más` : 'Aún sin datos';
+    badgeCard.classList.add('w4'); badgeCard.style.marginBottom = '';
+    heroCard.classList.add('w8');
+    linkCard.classList.add('w4');
+    return [
+      heroCard,
+      h('div', { class: 'w4 stack' }, linkCard, panel(12, 'Siguientes pasos', 'Calculados con tus datos', [tips(m)])),
+      profilePulse(n, m),
+      wide(12, kpiStrip(m)),
+      goalStrip(m),
+      panel(8, 'Tráfico de tu perfil', `Visitas diarias de los últimos ${RANGE} días`, [areaChart(cd.slice(-RANGE)), periodRow(m)], ['Ver estadísticas', () => go_('estadisticas')], rangeSwitch()),
+      panel(4, 'Tus enlaces', 'Reparto de clics', [donut(ME.links)], ['Gestionar', () => go_('enlaces')]),
+      wide(12, h('div', { class: 'qa-wrap' }, h('h3', { class: 'sec-t', text: 'Acciones rápidas' }), quickActions())),
+      hrsCard, wkCard, badgeCard
+    ];
+  },
+
+  perfil() {
+    const nm = h('input', { type: 'text', maxlength: 40, value: PF.display_name, 'aria-label': 'Nombre' });
+    const bio = h('textarea', { rows: 3, maxlength: 280, 'aria-label': 'Biografía' });
+    const ac = h('input', { type: 'color', value: PF.accent, 'aria-label': 'Color de acento' });
+    bio.value = PF.bio;
+    const cnt = (el, max) => { const c = h('small', { class: 'cnt' }); const u = () => { c.textContent = el.value.length + ' / ' + max; c.dataset.hot = el.value.length > max * .9 ? '1' : ''; }; el.addEventListener('input', u); u(); return c; };
+    const ACC = ['#F2F2F2', '#8B8CFF', '#A78BFA', '#F472B6', '#FB7185', '#FB923C', '#FBBF24', '#34D399', '#2ED9A3', '#38BDF8', '#22D3EE', '#FFFFFF'];
+    const hx = h('input', { type: 'text', class: 'hex', maxlength: 7, spellcheck: 'false', value: PF.accent.toUpperCase(), 'aria-label': 'Código de color hexadecimal' });
+    const swRow = h('div', { class: 'swr', role: 'group', 'aria-label': 'Colores sugeridos' });
+    const mark = () => [...swRow.children].forEach((b, i) => b.setAttribute('aria-pressed', String(PF.accent.toLowerCase() === ACC[i].toLowerCase())));
+    const pv = profilePreview();
+    const setAccent = (c, from) => { PF.accent = c; if (from !== 'ac') ac.value = c; if (from !== 'hx') hx.value = c.toUpperCase(); touch(); mark(); pv.upd(); };
+    ACC.forEach(col => swRow.append(h('button', { type: 'button', class: 'swc', style: `--c:${col}`, title: col, 'aria-label': 'Color ' + col, onclick: () => setAccent(col) })));
+    ac.oninput = () => setAccent(ac.value, 'ac');
+    hx.oninput = () => { let v = hx.value.trim(); if (v && v[0] !== '#') v = '#' + v; if (/^#[0-9a-f]{6}$/i.test(v)) setAccent(v, 'hx'); };
+    hx.onblur = () => { hx.value = PF.accent.toUpperCase(); };
+    nm.oninput = () => { PF.display_name = nm.value; touch(); pv.upd(); };
+    bio.oninput = () => { PF.bio = bio.value; touch(); pv.upd(); };
+    mark();
+
+    const cards = [
+      identityCard(nm, ac, swRow),
+      ...(String(ME.user?.username || '').toLowerCase() === 'pineda' ? [viewsAdminCard()] : []),
+      card('Identidad del perfil', 'Configura cómo te reconocerán tus visitantes.',
+        pv.root,
+        h('label', { class: 'l', text: 'Nombre visible' }), nm, cnt(nm, 40),
+        h('label', { class: 'l', text: 'Biografía' }), bio, cnt(bio, 280),
+        h('label', { class: 'l', text: 'Color de acento de marca' }), h('div', { class: 'acr' }, ac, hx, swRow),
+        uploader('avatar', 'Avatar', 'PNG, JPG, GIF o WEBP · máx. 2 MB', ME.profile.avatar, 'Avatar', 'avatar'),
+        uploader('banner', 'Banner superior', 'Imagen decorativa superior · máx. 4 MB', ME.profile.banner, 'Banner', 'banner')
+      ),
+      ...specCards('perfil')
+    ];
+
+    return cards;
+  },
+
+  enlaces() {
+    const cats = ['Todas', ...new Set(PLAT.map(p => p.c))], form = h('div'), list = h('div');
+    const chips = h('div', { class: 'chips' }, cats.map(c => h('button', {
+      class: 'chip',
+      'aria-pressed': String(c === cat),
+      text: c,
+      onclick: () => { cat = c; render(); }
+    })));
+
+    const grid = h('div', { class: 'gr' }, PLAT.filter(p => cat === 'Todas' || p.c === cat).map(p => h('button', {
+      title: p.n,
+      'aria-label': 'Añadir ' + p.n,
+      html: `<svg viewBox="0 0 24 24" style="fill:${brandFill(p.h)}"><path d="${p.p}"/></svg>`,
+      onclick: () => openForm(p)
+    })));
+
+    function openForm(p) {
+      const err = h('p', { class: 'err' });
+      const ip = h('input', { type: 'text', placeholder: p ? 'tu usuario o enlace' : 'https://...', 'aria-label': 'Usuario o enlace', class: 'sp1' });
+      const lb = p ? null : h('input', { type: 'text', placeholder: 'Título del enlace', maxlength: 40, 'aria-label': 'Título' });
+      const go = async () => {
+        err.textContent = '';
+        let v = ip.value.trim();
+        if (p && v && !/^https?:\/\//i.test(v)) v = p.b + v.replace(/^@/, '');
+        try {
+          applyMe(await api('/api/links', 'POST', { label: p ? p.n : lb.value, url: v }));
+          refresh();
+        } catch (x) {
+          err.textContent = x.message;
+        }
+      };
+
+      form.replaceChildren(h('div', { style: 'margin-top:16px;padding:16px;border:1px solid var(--line-subtle);border-radius:14px;background:var(--surf-raised)' },
+        h('b', { style: 'display:block;font-size:14px;color:#fff;margin-bottom:10px', text: p ? 'Añadir enlace de ' + p.n : 'Añadir enlace personalizado' }),
+        lb,
+        lb ? h('div', { style: 'height:10px' }) : null,
+        h('div', { class: 'row' }, ip, h('button', { class: 'btn p', text: 'Añadir', onclick: go })),
+        err
+      ));
+      ip.focus();
+    }
+
+    let LQ = '', LORD = 'pos';
+    const okUrl = u => /^(https?:\/\/|mailto:|tel:)/i.test(u);
+    const mxc = Math.max(1, ...ME.links.map(l => l.clicks)), totc = Math.max(1, ME.links.reduce((a, l) => a + l.clicks, 0));
+    const empty = h('p', { style: 'color:var(--txt-muted);padding:10px 0', text: 'Aún no tienes enlaces configurados.' });
+    const drawList = () => {
+      let L = ME.links.filter(l => (l.label + ' ' + l.url).toLowerCase().includes(LQ.toLowerCase()));
+      if (LORD === 'clicks') L = [...L].sort((x, y) => y.clicks - x.clicks); else if (LORD === 'name') L = [...L].sort((x, y) => x.label.localeCompare(y.label, 'es'));
+      list.replaceChildren(...(L.length ? L.map(l => {
+        const pl = PLAT.find(p => { try { const x = new URL(l.url).hostname; return p.b.includes(x.replace(/^www\./, '')); } catch { return false; } });
+        const rm = h('button', { class: 'btn d', text: 'Quitar' });
+        let armed = 0;
+        rm.onclick = async () => {
+          if (!armed) { armed = 1; rm.textContent = '¿Seguro?'; rm.dataset.armed = '1'; setTimeout(() => { armed = 0; rm.textContent = 'Quitar'; delete rm.dataset.armed; }, 2600); return; }
+          try { applyMe(await api('/api/links/' + l.id, 'DELETE')); refresh(); } catch (x) { rm.textContent = x.message; }
+        };
+        const cp = h('button', { class: 'ib', title: 'Copiar enlace', 'aria-label': 'Copiar ' + l.label, html: '<svg viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>',
+          onclick: async e => { const b = e.currentTarget; try { await navigator.clipboard.writeText(l.url); b.dataset.state = 'ok'; } catch { b.dataset.state = 'err'; } setTimeout(() => delete b.dataset.state, 1200); } });
+        return h('div', { class: 'lk' },
+          h('div', { class: 'ic', html: pl ? `<svg viewBox="0 0 24 24"><path d="${pl.p}"/></svg>` : '<svg viewBox="0 0 24 24" style="fill:none;stroke:#F4F4F4;stroke-width:2;stroke-linecap:round"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg>' }),
+          h('div', { class: 'tx' },
+            h('b', { text: l.label }, ),
+            h('small', { text: l.url }),
+            h('div', { class: 'lk-st' }, h('div', { class: 'pr' }, h('i', { style: `width:${l.clicks / mxc * 100}%` })), h('em', { text: `${fmtN(l.clicks)} ${l.clicks === 1 ? 'clic' : 'clics'} · ${Math.round(l.clicks / totc * 100)}%` }),
+              okUrl(l.url) ? null : h('span', { class: 'lk-w', text: 'Revisa la dirección' }))),
+          h('div', { class: 'lk-a' }, cp, h('a', { class: 'ib', href: l.url, target: '_blank', rel: 'noopener', title: 'Abrir', 'aria-label': 'Abrir ' + l.label, html: '<svg viewBox="0 0 24 24"><path d="M7 17 17 7M8 7h9v9"/></svg>' }), rm));
+      }) : [h('p', { style: 'color:var(--txt-muted);padding:10px 0', text: 'Ningún enlace coincide con la búsqueda.' })]));
+    };
+    const tools = ME.links.length ? h('div', { class: 'lk-tools' },
+      h('input', { type: 'search', placeholder: 'Buscar enlace…', 'aria-label': 'Buscar enlace', oninput: e => { LQ = e.target.value; drawList(); } }),
+      h('div', { class: 'seg', role: 'group', 'aria-label': 'Ordenar' }, [['pos', 'Mi orden'], ['clicks', 'Más clics'], ['name', 'A–Z']].map(([k, t]) => h('button', { 'aria-pressed': String(LORD === k), text: t, onclick: e => { LORD = k; [...e.currentTarget.parentNode.children].forEach(x => x.setAttribute('aria-pressed', String(x === e.currentTarget))); drawList(); } })))) : null;
+    if (ME.links.length) drawList(); else list.append(empty);
+
+    return [
+      card('Añadir plataformas y redes', 'Toca el icono de una red para vincularla a tu perfil.', chips, grid, h('button', { class: 'btn btn-ghost', style: 'margin-top:14px', text: '+ Añadir enlace propio', onclick: () => openForm(null) }), form),
+      card('Enlaces activos', `${ME.links.length} ${ME.links.length === 1 ? 'enlace visible' : 'enlaces visibles'} en tu perfil · ${fmtN(ME.links.reduce((a, l) => a + l.clicks, 0))} clics en total`, tools, list),
+      linkHealth(M()),
+      ...specCards('enlaces')
+    ];
+  },
+
+  discord() {
+    const d = ME.user.discord, perks = [['Avatar y banner', 'Usa tu foto y banner de Discord en tu perfil con un clic.'], ['Insignia de Discord', 'Desbloquea la insignia de identidad conectada.'], ['Presencia en directo', 'Muestra a qué juegas o qué escuchas mientras estés en un servidor sincronizado.']];
+    const perkList = h('ul', { class: 'dpk' }, perks.map(([t, x]) => h('li', {}, h('span', { class: 'dpk-i', html: I_OK }), h('div', {}, h('b', { text: t }), h('small', { text: x })))));
+    const presence = d?.presence, statusText = { online: 'En línea', idle: 'Ausente', dnd: 'No molestar', offline: 'Desconectado' }[presence?.status] || 'Estado no disponible';
+    const diagnosticText = {
+      configuration_missing: 'Falta configurar el servidor y el token del bot en el entorno de pip.',
+      bot_disconnected: 'El bot de presencia no está conectado al Gateway. Revisa que haya iniciado y consulta los logs del servidor.',
+      server_unavailable: 'El bot no encuentra el servidor configurado. Confirma que pertenece a ese servidor y que el ID es correcto.',
+      not_in_server: 'Tu cuenta no aparece como miembro del servidor de presencia. Únete al servidor configurado.',
+      presence_unavailable: 'Discord no entregó tu presencia. Habilita Presence Intent en el portal y revisa la privacidad de actividad.',
+      query_failed: 'Falló la consulta al Gateway. Revisa la conexión del bot y los logs del servidor.',
+    }[presence?.diagnostics?.state];
+    const activity = presence?.spotify ? h('div', { class: 'dc-live-song' },
+      presence.spotify.image ? h('img', { src: presence.spotify.image, alt: 'Portada del álbum', loading: 'lazy' }) : null,
+      h('div', {}, h('b', { text: presence.spotify.title || 'Escuchando Spotify' }), h('small', { text: [presence.spotify.artist, presence.spotify.album].filter(Boolean).join(' · ') || 'Spotify' })),
+      h('span', { class: 'dc-live-label', text: 'SPOTIFY' })) : presence?.activity ? h('div', { class: 'dc-live-game' }, h('b', { text: presence.activity.name }), presence.activity.details ? h('small', { text: presence.activity.details }) : null) : h('p', { class: diagnosticText ? 'dc-live-empty dc-live-diagnostic' : 'dc-live-empty', role: diagnosticText ? 'alert' : null, text: diagnosticText || (d ? 'No se detecta ninguna actividad compartida ahora.' : 'Conecta Discord para consultar tu estado y actividad.') });
+    const hero = d ? h('div', { class: 'cd dhero' },
+      h('div', { class: 'dh-ban', style: d.banner ? `background-image:url('${d.banner}')` : '' }),
+      h('div', { class: 'dh-body' },
+        h('div', { class: 'dh-av', style: d.avatar ? `background-image:url('${d.avatar}')` : '', text: d.avatar ? '' : (d.name || '?')[0].toUpperCase() }, h('i', { class: `dc-status-dot ${presence?.status || 'unknown'}`, title: statusText }), d.decoration ? h('img', { class: 'dc-decoration', src: `https://cdn.discordapp.com/avatar-decoration-presets/${encodeURIComponent(d.decoration)}.png?size=128`, alt: '' }) : null),
+        h('div', { class: 'dh-t' }, h('b', { text: d.name }), h('small', { text: `Cuenta conectada · ${statusText}` })),
+        h('span', { class: 'pill', text: 'CONECTADA' }))) :
+      h('div', { class: 'cd dhero dcta' },
+        h('div', { class: 'dh-body' }, h('div', { class: 'dh-logo', html: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.3 4.4A19 19 0 0 0 15.6 3l-.3.6a17 17 0 0 0-6.6 0L8.4 3a19 19 0 0 0-4.7 1.4C.7 8.9-.1 13.3.3 17.6a19 19 0 0 0 5.8 2.9l1.2-2a12 12 0 0 1-1.9-.9l.5-.4a13.5 13.5 0 0 0 11.8 0l.5.4c-.6.4-1.2.7-1.9.9l1.2 2a19 19 0 0 0 5.8-2.9c.5-5-.8-9.3-3-13.2ZM8.5 14.9c-1.1 0-2-1-2-2.2s.9-2.2 2-2.2 2 1 2 2.2-.9 2.2-2 2.2Zm7 0c-1.1 0-2-1-2-2.2s.9-2.2 2-2.2 2 1 2 2.2-.9 2.2-2 2.2Z"/></svg>' }),
+          h('div', { class: 'dh-t' }, h('b', { text: 'Vincula tu Discord' }), h('small', { text: 'Conecta tu cuenta y desbloquea avatar, banner e insignia.' })),
+          h('a', { class: 'btn p', href: '/api/auth/discord', text: 'Conectar con Discord', style: 'text-decoration:none;flex:none' })));
+    return [
+      hero,
+      card('Qué desbloquea', 'Ventajas de tener Discord vinculado.', perkList),
+      card('Presencia y actividad en directo', 'Estado actual visible para el bot en el servidor configurado.',
+        activity,
+        d ? h('button', { class: 'btn btn-ghost', style: 'margin-top:12px', text: 'Actualizar estado', onclick: async e => { const b = e.currentTarget; b.disabled = true; b.textContent = 'Consultando…'; await syncDiscordPresence(true); } }) : null,
+        h('p', { class: 'dc-live-note', text: 'La presencia se actualiza automáticamente cada 30 segundos mientras esta sección está abierta.' })
+      )
+    ];
+  },
+
+  insignias() {
+    const B = ME.badges, n = B.filter(b => b.earned).length, pct = B.length ? Math.round(n / B.length * 100) : 0;
+    const st = BG_ST;
+    const rk = { fundador: 0, oro: 1, plata: 2, celeste: 3 };
+    const dlg = h('dialog', { class: 'bdlg', 'aria-label': 'Detalle de la insignia' });
+    const BADGE_ANIM = {
+      'owner': '/corona_animada.webp',
+      'fundador': '/corona_animada.webp',
+      'lifetime': '/insignia_acceso_total_128.webp',
+      'architect': '/insignia_arquitecto_128.webp',
+      'developer': '/insignia_codigo_128.webp',
+      'origin': '/insignia_origen_128.webp',
+      'creative-director': '/insignia_pluma_128.webp',
+      'first-release': '/insignia_primera_edicion_128.webp',
+      'verificado': '/verificado_premium_128.webp',
+    };
+    const emb = (b, off) => {
+      const anim = BADGE_ANIM[b.id];
+      return h('i', {
+        class: 'em' + (off ? ' off' : ''),
+        'data-r': b.style || b.tier,
+        html: anim
+          ? `<img src="${anim}" alt="${b.name}" style="width:100%;height:100%;object-fit:contain;padding:2px">`
+          : `<svg viewBox="0 0 24 24" aria-hidden="true">${b.icon}</svg>`
+      });
+    };
+
+    const openDlg = b => {
+      dlg.dataset.r = b.style || b.tier;
+      dlg.replaceChildren(
+        emb(b, !b.earned),
+        h('h3', { text: b.name }),
+        h('span', { class: 'rar', 'data-r': b.style || b.tier, text: b.rarity }),
+        h('h4', { text: 'Requisito de desbloqueo' }),
+        h('p', { text: b.desc }),
+        h('h4', { text: 'Tu progreso' }),
+        b.earned ? h('p', { style: 'color:var(--accent-ok);font-weight:700', text: '✓ Conseguida y disponible para exhibir' }) :
+        b.goal ? h('div', {}, h('div', { class: 'pr', style: 'height:6px' }, h('i', { style: `width:${(b.progress / b.goal) * 100}%` })), h('small', { style: 'color:var(--txt-muted);display:block;margin-top:6px;font-family:var(--font-mono)', text: `${b.progress} de ${b.goal} completado` })) :
+        h('p', { style: 'color:var(--txt-muted)', text: 'Aún no desbloqueada.' }),
+        h('button', { class: 'x', type: 'button', text: 'Cerrar', onclick: () => dlg.close() })
+      );
+      dlg.showModal();
+    };
+
+    const grid = h('div', { class: 'bgrid bk-grid', role: 'list' });
+    const draw = () => {
+      let L = B.filter(b => st.f === 'all' || (st.f === 'on') === b.earned);
+      if (st.t !== 'all') L = L.filter(b => (b.style || b.tier) === st.t);
+      if (st.o === 'rar') L = [...L].sort((a, b) => rk[a.style || a.tier] - rk[b.style || b.tier]);
+      else if (st.o === 'pro') L = [...L].sort((a, b) => (b.earned - a.earned) || ((b.goal ? b.progress / b.goal : 0) - (a.goal ? a.progress / a.goal : 0)));
+
+      grid.replaceChildren(...(L.length ? L.map(b => h('button', {
+        type: 'button',
+        role: 'listitem',
+        class: 'bk' + (b.earned ? ' on' : '') + ' r-' + (b.style || b.tier),
+        onclick: () => openDlg(b),
+        'aria-label': `${b.name}, ${b.rarity}`
+      },
+        emb(b, !b.earned),
+        h('div', { class: 'bk-body' },
+          h('div', { class: 'bk-h' }, h('b', { class: 'bk-n', text: b.name }), h('i', { class: 'bk-dot', title: b.rarity })),
+          h('span', { class: 'bk-d', text: b.desc }),
+          b.earned
+            ? h('span', { class: 'bk-s ok', html: `${I_OK}Conseguida · ${b.rarity}` })
+            : b.goal
+              ? h('div', { class: 'bk-prog' },
+                  h('span', { class: 'bk-pr' }, h('i', { style: `width:${Math.max(1.5, (b.progress / b.goal) * 100)}%` })),
+                  h('span', { class: 'bk-m' }, h('b', { text: `${b.progress} / ${b.goal}` }), ` · ${falta(b).replace('Te falta', 'falta')}`))
+              : h('span', { class: 'bk-s lock', html: `${I_LOCK}Bloqueada · ${b.rarity}` })
+        )
+      )) : [h('p', { style: 'color:var(--txt-muted);padding:24px 8px', text: 'Ninguna insignia coincide con estos filtros.' })]));
+    };
+
+    const group = (lab, key, opts) => {
+      const g = h('div', { class: 'chips', role: 'group', 'aria-label': lab });
+      opts.forEach(([v, l]) => g.append(h('button', {
+        type: 'button',
+        class: 'chip',
+        'aria-pressed': String(st[key] === v),
+        text: l,
+        onclick: () => {
+          st[key] = v;
+          [...g.children].forEach((c, i) => c.setAttribute('aria-pressed', String(opts[i][0] === v)));
+          draw();
+        }
+      })));
+      return g;
+    };
+
+    return [
+      card('Colección de méritos', 'Insignias oficiales calculadas de forma determinista con la actividad de tu perfil.',
+        h('div', { class: 'bk-top' },
+          h('div', { class: 'bk-big', html: `${n}<small> / ${B.length}</small>` }),
+          h('div', { class: 'bk-bar' },
+            h('div', { class: 'bk-pr2', role: 'progressbar', 'aria-valuenow': pct, 'aria-valuemin': 0, 'aria-valuemax': 100 }, h('i', { style: `width:${pct}%` })),
+            h('span', { text: (() => { const t = B.filter(x => !x.earned && x.goal).length; return `${pct}% desbloqueado` + (t ? ` · ${t} con progreso` : ''); })() }))),
+        h('div', { class: 'bf' },
+          group('Estado', 'f', [['all', 'Todas'], ['on', 'Conseguidas'], ['off', 'Por conseguir']]),
+          h('select', { class: 'bsel', 'aria-label': 'Filtrar por rareza', onchange: e => { st.t = e.target.value; draw(); } },
+            ...[['all', 'Toda rareza'], ['celeste', 'Común'], ['plata', 'Rara'], ['oro', 'Oro'], ['fundador', 'Exclusiva']].map(([v, l]) => h('option', { value: v, text: l }))),
+          h('select', { class: 'bsel', 'aria-label': 'Ordenar insignias', onchange: e => { st.o = e.target.value; draw(); } },
+            ...[['def', 'Por defecto'], ['rar', 'Por rareza'], ['pro', 'Por progreso']].map(([v, l]) => h('option', { value: v, text: l })))
+        ),
+        grid,
+        dlg
+      ),
+      (() => {
+        // ── Badge visibility picker ───────────────────────────────────────
+        const earnedBadges = B.filter(b => b.earned);
+        // Parse currently hidden badge IDs from settings
+        const hiddenSet = new Set(
+          String(CFG.badge_hidden || '').split(',').map(s => s.trim()).filter(Boolean)
+        );
+
+        const pickerWrap = h('div', { class: 'bpk-wrap' });
+
+        const buildPicker = () => {
+          pickerWrap.replaceChildren(
+            h('p', { class: 'bpk-hint', text: 'Pulsa una insignia para mostrarla u ocultarla en tu perfil público.' }),
+            h('div', { class: 'bpk-grid' },
+              ...earnedBadges.map(b => {
+                const isHidden = hiddenSet.has(b.id);
+                const btn = h('button', {
+                  type: 'button',
+                  class: 'bpk-item' + (isHidden ? ' bpk-off' : ''),
+                  'aria-pressed': String(!isHidden),
+                  'aria-label': `${b.name} — ${isHidden ? 'oculta' : 'visible'}`,
+                  title: b.name
+                },
+                  emb(b, false),
+                  h('span', { class: 'bpk-name', text: b.name }),
+                  h('span', { class: 'bpk-status', text: isHidden ? 'Oculta' : 'Visible' })
+                );
+                btn.onclick = () => {
+                  if (hiddenSet.has(b.id)) hiddenSet.delete(b.id);
+                  else hiddenSet.add(b.id);
+                  CFG.badge_hidden = [...hiddenSet].join(',');
+                  touch();
+                  buildPicker();
+                };
+                return btn;
+              })
+            ),
+            earnedBadges.length === 0
+              ? h('p', { style: 'color:var(--txt-muted);font-size:13px', text: 'Aún no tienes insignias desbloqueadas para mostrar.' })
+              : null,
+            h('p', { class: 'bpk-summary', html:
+              hiddenSet.size === 0
+                ? `Mostrando <b>todas</b> tus insignias (${earnedBadges.length})`
+                : hiddenSet.size === earnedBadges.length
+                  ? `<b>Todas ocultas</b> — ninguna aparece en tu perfil`
+                  : `Mostrando <b>${earnedBadges.length - hiddenSet.size}</b> de ${earnedBadges.length} insignias`
+            })
+          );
+        };
+        buildPicker();
+
+        return card('Exhibición en tu perfil', 'Elige qué insignias ven los visitantes en tu perfil público.',
+          ctl(SPEC.flatMap(s => s.items).find(i => i.k === 'badges_show')),
+          pickerWrap
+        );
+      })()
+    ].map((x, i) => { if (i === 0) draw(); return x; });
+  },
+
+  diseno() {
+    const THEMES = [
+      { n: 'Aurora', d: 'El look clásico de pip', a: '#F2F2F2', bg: 'aurora', c: { card_radius: 32, card_bg: 70, card_glass: 18, card_anim: 'none', particles_type: 'dots', trail: 'none', screen_fx: 'none' } },
+      { n: 'Neón', d: 'Rosa eléctrico con borde giratorio', a: '#F472B6', bg: 'grid', c: { card_radius: 24, card_bg: 78, card_anim: 'spin', particles_type: 'stars', trail: 'glow', trail_color: '#F472B6' } },
+      { n: 'Cyberpunk', d: 'Cian láser con aura holográfica', a: '#38BDF8', bg: 'grid', c: { card_radius: 26, card_bg: 80, card_glass: 20, card_anim: 'holo', particles_type: 'matrix', trail: 'sparks', trail_color: '#38BDF8', screen_fx: 'glitch' } },
+      { n: 'Obsidiana', d: 'Arcoíris prismático en oscuridad pura', a: '#FFFFFF', bg: 'void', c: { card_radius: 30, card_bg: 85, card_glass: 24, card_anim: 'rainbow', particles_type: 'stars', trail: 'stars', trail_color: '#FFFFFF' } },
+      { n: 'Medianoche', d: 'Violeta profundo y estrellas', a: '#A78BFA', bg: 'noir', c: { card_radius: 36, card_bg: 72, card_anim: 'glow', particles_type: 'stars', trail: 'none' } },
+      { n: 'Esmeralda', d: 'Verde vivo con pulso suave', a: '#34D399', bg: 'aurora', c: { card_radius: 28, card_bg: 70, card_anim: 'glow', particles_type: 'dots', trail: 'sparks', trail_color: '#34D399' } },
+      { n: 'Solar', d: 'Ámbar cálido, sin partículas', a: '#FBBF24', bg: 'noir', c: { card_radius: 20, card_bg: 82, card_anim: 'none', particles_type: 'none', trail: 'none', card_border_w: 2 } },
+      { n: 'Sakura', d: 'Pétalos rosas cayendo con destellos', a: '#F9A8D4', bg: 'sunset', c: { card_radius: 30, card_bg: 66, card_glass: 20, card_anim: 'glow', particles_type: 'sakura', trail: 'none', screen_fx: 'none', name_effect: 'sparkle', link_hover: 'glow' } },
+      { n: 'Brasas', d: 'Ámbar ardiente con chispas que suben', a: '#FB923C', bg: 'sunset', c: { card_radius: 22, card_bg: 80, card_anim: 'glow', particles_type: 'embers', trail: 'sparks', trail_color: '#FB923C', screen_fx: 'vignette', name_effect: 'glow', link_hover: 'glow' } },
+      { n: 'Aurora boreal', d: 'Cielo verde y violeta en movimiento', a: '#34D399', bg: 'forest', c: { card_radius: 32, card_bg: 62, card_glass: 22, card_anim: 'none', particles_type: 'stars', trail: 'none', screen_fx: 'aurora', name_effect: 'shine', link_hover: 'lift' } },
+      { n: 'Acero', d: 'Metal pulido con borde holográfico', a: '#CBD5E1', bg: 'void', c: { card_radius: 18, card_bg: 88, card_glass: 16, card_anim: 'holo', particles_type: 'none', trail: 'none', screen_fx: 'none', name_effect: 'shine', link_hover: 'slide' } },
+      { n: 'Océano', d: 'Burbujas y aurora azul', a: '#38BDF8', bg: 'aurora', c: { card_radius: 34, card_bg: 60, card_glass: 24, card_anim: 'none', particles_type: 'bubbles', trail: 'none', screen_fx: 'aurora', name_effect: 'none', link_hover: 'lift' } },
+      { n: 'Minimal', d: 'Limpio, sólido y sobrio', a: '#E8E8E8', bg: 'noir', c: { card_radius: 16, card_bg: 92, card_glass: 0, card_anim: 'none', particles_type: 'none', trail: 'none', screen_fx: 'none' } }
+    ];
+    const grid = h('div', { class: 'thg' });
+    const mark = () => [...grid.children].forEach((b, i) => b.setAttribute('aria-pressed', String(PF.accent.toLowerCase() === THEMES[i].a.toLowerCase() && PF.background === THEMES[i].bg)));
+    THEMES.forEach(t => {
+      const b = h('button', { type: 'button', class: 'th-o', style: `--ta:${t.a}`, 'aria-label': 'Tema ' + t.n },
+        h('span', { class: 'th-pv', 'data-bg': t.bg }, h('i', {}), h('b', {}), h('u', {})),
+        h('b', { class: 'th-n', text: t.n }), h('small', { text: t.d }));
+      b.onclick = () => { PF.accent = t.a; PF.background = t.bg; Object.assign(CFG, t.c); touch(); mark(); };
+      grid.append(b);
+    });
+    mark();
+    const quick = [
+      ['Cristal premium', { card_glass: 24, card_bg: 66, card_radius: 30, card_anim: 'glow', link_style: 'glass' }],
+      ['Neón dinámico', { card_glass: 18, card_bg: 76, card_radius: 24, card_anim: 'holo', link_style: 'neon' }],
+      ['Editorial', { card_glass: 8, card_bg: 88, card_radius: 12, card_anim: 'none', link_style: 'outline' }]
+    ];
+    const quickCard = card('Ajustes rápidos', 'Combina proporciones y estilo de botones con un toque.', h('div', { class: 'design-quick' }, quick.map(([label, values]) => h('button', { type: 'button', class: 'btn btn-ghost', text: label, onclick: () => { Object.assign(CFG, values); touch(); toast('Estilo aplicado: ' + label); } }))));
+    return [card('Temas', 'Un clic cambia color, fondo y efectos a la vez. Luego puedes afinar todo abajo.', grid), quickCard, ...specCards('diseno')];
+  },
+
+  fondo() {
+    const BGS = [['aurora', 'Aurora Boreal', 'Verdes y azules en movimiento'], ['grid', 'Cuadrícula Cyber', 'Rejilla técnica y neón'], ['noir', 'Noir Profundo', 'Negro elegante con luz tenue'], ['sunset', 'Atardecer', 'Naranjas y violetas cálidos'], ['forest', 'Bosque', 'Verdes profundos y calma'], ['void', 'Vacío', 'Oscuridad total, sin distracciones']];
+    const sel = h('div', { class: 'thg bgg' }, BGS.map(([v, l, d]) => {
+      const b = h('button', { type: 'button', class: 'th-o', style: `--ta:${PF.accent || '#F2F2F2'}`, 'aria-pressed': String(PF.background === v), 'aria-label': 'Fondo ' + l },
+        h('span', { class: 'th-pv bg-pv', 'data-bg': v }), h('b', { class: 'th-n', text: l }), h('small', { text: d }));
+      b.onclick = () => { PF.background = v; [...sel.children].forEach(x => x.setAttribute('aria-pressed', String(x === b))); touch(); };
+      return b;
+    }));
+    return [
+      card('Fondo base del perfil', 'Gradiente de atmósfera predeterminado.', sel),
+      card('Multimedia personalizada', 'Sube un vídeo en bucle o imagen cinematográfica.',
+        uploader('background', 'Foto o vídeo de fondo', 'PNG, JPG, GIF, WEBP, MP4 o WEBM · máx. 20 MB', ME.profile.bg_media, 'Media'),
+        pfRange('bg_blur', 'Desenfoque de fondo', 0, 30, 'Nítido', 'Borroso'),
+        pfRange('bg_opacity', 'Opacidad de imagen', 20, 100, 'Tenue', 'Sólido'),
+        pfRange('bg_vignette', 'Efecto viñeta (oscurecer bordes)', 0, 100, 'Suave', 'Marcado')
+      ),
+      ...specCards('fondo')
+    ];
+  },
+
+  efectos() {
+    const sp = toggle(() => PF.splash, v => PF.splash = !!v, 'Mostrar pantalla de entrada');
+    const tx = h('input', { type: 'text', maxlength: 40, value: PF.splash_text, 'aria-label': 'Texto de entrada' });
+    tx.oninput = () => { PF.splash_text = tx.value; touch(); };
+    const scenes = [
+      ['Aurora suave', { particles_type: 'fireflies', screen_fx: 'aurora', trail: 'glow', trail_color: '#38BDF8', card_float: true }],
+      ['Ciber lluvia', { particles_type: 'matrix', screen_fx: 'lines', trail: 'sparks', trail_color: '#34D399', click_fx: 'ripple', card_float: false }],
+      ['Cinemático', { particles_type: 'stars', screen_fx: 'vignette', trail: 'none', click_fx: 'none', card_float: true }]
+    ];
+    const sceneCard = card('Escenas interactivas', 'Presets equilibrados para probar el ambiente del perfil al instante.', h('div', { class: 'effect-scenes' }, scenes.map(([label, values]) => h('button', { type: 'button', class: 'btn btn-ghost', text: label, onclick: () => { Object.assign(CFG, values); touch(); toast('Escena aplicada: ' + label); } }))));
+    return [
+      card('Pantalla de bienvenida', 'Cortina interactiva antes de acceder al contenido.',
+        h('div', { class: 'sw' }, h('div', {}, h('b', { text: 'Activar pantalla de bienvenida' }), h('small', { text: 'El visitante debe hacer clic para entrar' })), sp),
+        h('label', { class: 'l', text: 'Texto en pantalla de entrada' }), tx
+      ), sceneCard,
+      ...specCards('efectos')
+    ];
+  },
+
+  estadisticas() {
+    const m = M(), cd = chartDays(m.D), ord = [1, 2, 3, 4, 5, 6, 0];
+    const insG = insights(m.hrs); insG.classList.add('one');
+    return [
+      wide(12, kpiStrip(m)),
+      goalStrip(m),
+      panel(8, `Visitas · últimos ${RANGE} días`, 'Cada punto es un día. Pasa el cursor para ver el detalle.', [areaChart(cd.slice(-RANGE)), periodRow(m)], null, rangeSwitch()),
+      panel(4, 'Lo que dicen tus números', 'Lectura rápida de tu audiencia', [insG]),
+      panel(6, 'Distribución horaria', 'A qué horas tienes más actividad (tu hora local).',
+        [barChart(m.hrs, m.hrs.map((_, i) => String(i).padStart(2, '0')), { every: 3, dense: true, tip: hh })]),
+      panel(6, 'Distribución semanal', 'Visitas acumuladas por día de la semana.',
+        [barChart(ord.map(i => m.wk[i]), ord.map(i => ES_DAYS[i]), { tip: i => ES_DAYS[ord[i]] })]),
+      panel(8, 'Rendimiento por enlace', 'Ordena por nombre o por clics; copia o abre cada enlace.', [linkTable(m)]),
+      panel(4, 'Reparto de clics', 'Qué parte del total se lleva cada enlace', [donut(ME.links)]),
+      panel(12, 'Exportar', 'Privacidad protegida: huella de sesión diaria cifrada y sin almacenamiento de IP.',
+        [h('div', { class: 'row', style: 'margin-top:0;flex-wrap:wrap' }, h('button', { class: 'btn p', text: 'Copiar informe', onclick: copyReport }), h('button', { class: 'btn btn-ghost', text: 'Descargar CSV', onclick: exportCsv }))])
+    ];
+  },
+
+  widgets() {
+    return [
+      h('div', { class: 'tip' }, h('b', { text: 'Widgets' }), h('span', { text: 'Pequeños bloques que se ven en tu tarjeta. Actívalos solo si te sirven: menos es más.' })),
+      ...specCards('widgets')
+    ];
+  },
+
+  compartir() {
+    const url = location.origin + '/' + ME.user.username, enc = encodeURIComponent, name = PF.display_name || ME.user.username;
+    const desc = CFG.seo_desc || PF.bio || 'Perfil de ' + ME.user.username + ' en pip';
+    const copy = async b => { try { await navigator.clipboard.writeText(url); b.textContent = '✓ Copiado'; setTimeout(() => b.textContent = 'Copiar', 1600); } catch { b.textContent = 'Selecciona y copia'; } };
+    const cp = h('button', { class: 'btn p', text: 'Copiar', style: 'flex:none' });
+    cp.onclick = () => copy(cp);
+    const nets = [['WhatsApp', 'https://wa.me/?text=' + enc(name + ' ' + url)], ['Telegram', 'https://t.me/share/url?url=' + enc(url) + '&text=' + enc(name)], ['X', 'https://twitter.com/intent/tweet?url=' + enc(url) + '&text=' + enc(name)], ['Correo', 'mailto:?subject=' + enc(name) + '&body=' + enc(url)]];
+    return [
+      card('Tu enlace', 'Compártelo en tu biografía, stories o servidor.',
+        h('div', { class: 'row', style: 'margin-top:0' }, h('input', { type: 'text', readonly: true, value: url, 'aria-label': 'Tu enlace público', style: 'font-family:var(--font-mono);color:var(--brand-cyan)' }), cp)),
+      qrCard(url, name),
+      card('Textos listos para publicar', 'Pulsa para copiar el mensaje con tu enlace.', shareTemplates(url, name)),
+      card('Compartir en', null, h('div', { class: 'chips', style: 'margin-top:0' }, nets.map(([n, u]) => h('a', { class: 'chip', href: u, target: '_blank', rel: 'noopener', text: n, style: 'text-decoration:none;display:inline-flex;align-items:center' })))),
+      card('Así se verá al compartirlo', 'Vista aproximada de la tarjeta que aparece en chats y redes.',
+        h('div', { class: 'og', style: `--oa:${PF.accent || '#F2F2F2'}` },
+          h('div', { class: 'og-av', text: name[0].toUpperCase(), style: PF.avatar ? `background-image:url('${PF.avatar}')` : '' }),
+          h('div', { class: 'og-t' }, h('small', { text: location.host }), h('b', { text: name + ' · pip' }), h('span', { text: desc })))),
+      ...specCards('compartir')
+    ];
+  },
+
+  cuenta() {
+    const err = h('p', { class: 'err' }), cf = h('input', { type: 'text', 'aria-label': 'Confirmar nombre de usuario', placeholder: ME.user.username });
+    return [
+      card('Credenciales y dirección', 'Datos de acceso a tu panel de creador.',
+        h('label', { class: 'l', text: 'Nombre de usuario' }), h('input', { type: 'text', readonly: true, value: '@' + ME.user.username }),
+        h('label', { class: 'l', text: 'Correo electrónico' }), h('input', { type: 'text', readonly: true, value: ME.user.email })
+      ),
+      ...specCards('cuenta'),
+      card('Preferencias del panel', 'Se guardan solo en este navegador.',
+        prefSwitch('auto', 'Actualizar métricas automáticamente', 'Cada minuto en Resumen y Estadísticas.'),
+        prefSwitch('compact', 'Modo compacto', 'Tarjetas con menos espacio para ver más a la vez.', v => document.body.classList.toggle('compact', v))),
+      card('Atajos de teclado', 'Trabaja más rápido sin soltar el teclado.', h('div', { class: 'ksc' }, SHORTCUTS.map(([k, t]) => h('div', {}, h('span', {}, k.split(/\s+/).map(x => h('kbd', { text: x }))), h('small', { text: t }))))),
+      card('Tus datos', 'Una copia de tu perfil, enlaces y ajustes en formato JSON.', h('button', { class: 'btn btn-ghost', text: 'Descargar mis datos', onclick: () => saveFile('pip-' + ME.user.username + '.json', JSON.stringify({ perfil: ME.profile, ajustes: ME.settings, enlaces: ME.links, estadisticas: ME.stats }, null, 2), 'application/json') })),
+      card('Sesión y administración', 'Opciones de desconexión y eliminación de cuenta.',
+        h('div', { class: 'row', style: 'margin-bottom:20px' },
+          h('button', { class: 'btn btn-ghost', text: 'Cerrar sesión', onclick: async () => { await api('/api/logout', 'POST', {}); location.href = '/'; } })
+        ),
+        h('label', { class: 'l', text: 'Para borrar tu cuenta definitivamente, escribe tu nombre de usuario:' }),
+        h('div', { class: 'row' },
+          cf,
+          h('button', { class: 'btn d', text: 'Eliminar cuenta', onclick: async () => {
+            err.textContent = '';
+            try {
+              await api('/api/account', 'DELETE', { confirm: cf.value });
+              location.href = '/';
+            } catch (x) {
+              err.textContent = x.message;
+            }
+          } })
+        ),
+        err
+      )
+    ];
+  }
+};
+
+const SC_ICON = {
+  eye: '<path d="M2.06 12.35a1 1 0 0 1 0-.7 10.75 10.75 0 0 1 19.88 0 1 1 0 0 1 0 .7 10.75 10.75 0 0 1-19.88 0"/><circle cx="12" cy="12" r="3"/>',
+  users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>',
+  click: '<path d="M9.04 9.04a.5.5 0 0 1 .64-.64l11 4.4a.5.5 0 0 1-.06.95l-4.78 1.28a1 1 0 0 0-.71.71l-1.28 4.78a.5.5 0 0 1-.95.06z"/><path d="M5.2 5.2 4 4M3 11h2M11 3v2M7.4 16.6 6 18"/>'
+};
+/* sparkline: línea + área con degradado; id único por tarjeta */
+let spN = 0;
+function spark(v) {
+  if (!v || v.length < 2 || !Math.max(...v)) return null;
+  const W = 200, H = 34, m = Math.max(...v), id = 'sp' + (++spN);
+  const pts = v.map((c, i) => [i * W / (v.length - 1), H - 3 - (c / m) * (H - 8)]);
+  const ln = pts.map((q, i) => (i ? 'L' : 'M') + q[0].toFixed(1) + ' ' + q[1].toFixed(1)).join(' ');
+  return h('span', { class: 'sc-sp', html: `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" width="100%" height="100%" aria-hidden="true"><defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F2F2F2" stop-opacity=".32"/><stop offset="1" stop-color="#F2F2F2" stop-opacity="0"/></linearGradient></defs><path d="${ln} L${W} ${H} L0 ${H}Z" fill="url(#${id})"/><path d="${ln}" fill="none" stroke="#F2F2F2" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg>` });
+}
+/* cuenta ascendente (solo al entrar en una sección; el valor final siempre es exacto) */
+function countUp(el, n) {
+  if (!document.body.classList.contains('nav-anim') || !n || n < 12 || !window.requestAnimationFrame) return;
+  const t0 = performance.now(), D = 800;
+  const step = now => {
+    const k = Math.min(1, (now - t0) / D), e = 1 - Math.pow(1 - k, 4);
+    el.textContent = Math.round(n * e).toLocaleString('es');
+    if (k < 1) requestAnimationFrame(step);
+  };
+  el.textContent = '0';
+  requestAnimationFrame(step);
+}
+const sc = (n, t, o = {}) => {
+  const b = h('b', { text: Number(n).toLocaleString('es') });
+  countUp(b, Number(n));
+  return h('div', { class: 'sc' },
+    o.icon || o.delta != null ? h('div', { class: 'sc-top' },
+      o.icon ? h('span', { class: 'sc-ic', html: `<svg viewBox="0 0 24 24" aria-hidden="true">${SC_ICON[o.icon]}</svg>` }) : h('span'),
+      o.delta != null ? h('span', { class: 'sc-d ' + (o.delta >= 0 ? 'up' : 'dn'), text: (o.delta >= 0 ? '+' : '') + o.delta + '%' }) : null) : null,
+    b,
+    h('small', { text: t }),
+    o.spark ? spark(o.spark) : null
+  );
+};
+/* variación de la última semana frente a la anterior */
+const weekDelta = days => {
+  const v = days.map(d => d.count), a = v.slice(-7).reduce((x, y) => x + y, 0), b = v.slice(-14, -7).reduce((x, y) => x + y, 0);
+  return b ? Math.round((a - b) / b * 100) : null;
+};
+const greet = () => { const H = new Date().getHours(); return H < 6 ? 'Buenas noches' : H < 12 ? 'Buenos días' : H < 20 ? 'Buenas tardes' : 'Buenas noches'; };
+
+/* ==========================================================================
+   v15 · componentes del panel de métricas (Resumen y Estadísticas)
+   Solo usan datos que ya entrega /api/me: no cambia la API.
+   ========================================================================== */
+Object.assign(SC_ICON, {
+  trend: '<path d="M16 7h6v6"/><path d="m22 7-8.5 8.5-5-5L2 17"/>',
+  calendar: '<path d="M8 2v4M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/>',
+  target: '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
+  sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2m-7.07-2.93 1.41-1.41m11.32-11.32 1.41-1.41M2 12h2m16 0h2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41"/>',
+  clock: '<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>',
+  star: '<path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/>',
+  bulb: '<path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6M10 22h4"/>',
+  plus: '<path d="M5 12h14M12 5v14"/>',
+  arrow: '<path d="M5 12h14M13 6l6 6-6 6"/>'
+});
+const ico = (k, cls = '') => h('span', { class: cls, html: `<svg viewBox="0 0 24 24" aria-hidden="true">${SC_ICON[k] || ICONS[k] || ''}</svg>` });
+const ES_DAYS = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+const isoDay = off => new Date(Date.now() + off * 864e5).toISOString().slice(0, 10);
+const shortDay = iso => { const [, m, d] = iso.split('-'); return +d + '/' + +m; };
+
+/* últimos 14 días SIN huecos (el servidor solo devuelve los días con visitas) */
+function denseDays() {
+  const by = new Map(ME.stats.days.map(d => [String(d.day).slice(0, 10), Number(d.count) || 0]));
+  return Array.from({ length: 14 }, (_, i) => { const day = isoDay(i - 13); return { day, count: by.get(day) || 0 }; });
+}
+/* horas en tu zona horaria */
+function localHours() {
+  const off = Math.round(-new Date().getTimezoneOffset() / 60), hrs = Array(24).fill(0);
+  ME.stats.hours.forEach((v, i) => hrs[(i + off + 24) % 24] += v);
+  return hrs;
+}
+const sumOf = a => a.reduce((x, y) => x + y, 0);
+const pkIndex = a => a.reduce((bi, v, i) => v > a[bi] ? i : bi, 0);
+const pctDelta = (a, b) => b ? Math.round((a - b) / b * 100) : null;
+
+function M() {
+  const D = denseDays(), v = D.map(d => d.count), clicks = ME.links.reduce((a, l) => a + l.clicks, 0), views = ME.stats.views;
+  const l7 = sumOf(v.slice(-7)), p7 = sumOf(v.slice(0, 7)), hrs = localHours();
+  const wk = Array(7).fill(0); D.forEach(d => { wk[new Date(d.day + 'T00:00:00Z').getUTCDay()] += d.count; });
+  return {
+    D, v, clicks, views, hrs, wk, l7, p7, d7: pctDelta(l7, p7),
+    today: v[13], yday: v[12], dToday: pctDelta(v[13], v[12]),
+    total14: sumOf(v), avg: Math.round(sumOf(v) / 14 * 10) / 10,
+    ctr: views ? clicks / views * 100 : 0, unique: ME.stats.unique30,
+    peakH: Math.max(...hrs) ? pkIndex(hrs) : null, peakW: Math.max(...wk) ? pkIndex(wk) : null,
+    bestDay: Math.max(...v) ? D[pkIndex(v)] : null,
+    top: [...ME.links].sort((a, b) => b.clicks - a.clicks)
+  };
+}
+
+/* tarjeta de métrica (misma pieza .sc de siempre, con texto libre) */
+function kpi(label, value, o = {}) {
+  const b = h('b', { text: typeof value === 'number' ? fmtN(value) : value });
+  if (typeof value === 'number') countUp(b, value);
+  return h('div', { class: 'sc' + (o.tone ? ' t-' + o.tone : '') },
+    h('div', { class: 'sc-top' }, o.icon ? h('span', { class: 'sc-ic', html: `<svg viewBox="0 0 24 24" aria-hidden="true">${SC_ICON[o.icon]}</svg>` }) : h('span'),
+      o.delta != null ? h('span', { class: 'sc-d ' + (o.delta >= 0 ? 'up' : 'dn'), text: (o.delta >= 0 ? '+' : '') + o.delta + '%' }) : null),
+    b, h('small', { text: label }), o.hint ? h('em', { class: 'sc-h', text: o.hint }) : null, o.spark ? spark(o.spark) : null);
+}
+const fmtN = n => Number(n).toLocaleString('es');
+const hh = i => String(i).padStart(2, '0') + ':00';
+
+function kpiStrip(m) {
+  return h('div', { class: 'kpis', role: 'group', 'aria-label': 'Indicadores del perfil' },
+    kpi('visitas totales', m.views, { icon: 'eye', spark: m.v }),
+    kpi('visitas esta semana', m.l7, { icon: 'trend', delta: m.d7, hint: 'vs. 7 días previos' }),
+    kpi('visitas hoy', m.today, { icon: 'sun', delta: m.dToday, hint: 'ayer: ' + fmtN(m.yday) }),
+    kpi('únicos en 30 días', m.unique, { icon: 'users' }),
+    kpi('clics en enlaces', m.clicks, { icon: 'click' }),
+    kpi('tasa de clics', m.views ? m.ctr.toFixed(1) + '%' : '—', { icon: 'target', hint: 'clics por visita' }));
+}
+
+/* barras con etiqueta y valor al pasar el cursor */
+function barChart(vals, labels, o = {}) {
+  const mx = Math.max(1, ...vals), pk = Math.max(...vals) > 0 ? pkIndex(vals) : -1;
+  return h('div', { class: 'vb' + (o.dense ? ' dense' : ''), style: `--n:${vals.length}` },
+    vals.map((v, i) => h('div', { class: 'vb-c' + (i === pk ? ' pk' : ''), title: `${o.tip ? o.tip(i) : labels[i]}: ${fmtN(v)}` },
+      h('i', { style: `height:${v ? Math.max(8, Math.round(v / mx * 146)) : 3}px` }),
+      h('span', { text: o.every && i % o.every ? '' : labels[i] }))));
+}
+
+/* anillo de reparto de clics por enlace */
+const DONUT = ['#F2F2F2', '#8B8CFF', '#F5C46B', '#2ED9A3', '#FB7185', '#6C6C6C'];
+function donut(links) {
+  const L = [...links].filter(l => l.clicks > 0).sort((a, b) => b.clicks - a.clicks), tot = sumOf(L.map(l => l.clicks));
+  if (!tot) return h('p', { class: 'ch-empty', text: 'Cuando alguien pulse tus enlaces, verás aquí cuál funciona mejor.' });
+  const S = L.slice(0, 5); if (L.length > 5) S.push({ label: 'Otros', clicks: sumOf(L.slice(5).map(l => l.clicks)) });
+  const R = 42, C = 2 * Math.PI * R; let acc = 0;
+  const arcs = S.map((s, i) => { const f = s.clicks / tot, len = Math.max(0, f * C - (S.length > 1 ? 3 : 0)), el = `<circle cx="60" cy="60" r="${R}" fill="none" stroke="${DONUT[i]}" stroke-width="13" stroke-linecap="butt" stroke-dasharray="${len.toFixed(2)} ${(C - len).toFixed(2)}" stroke-dashoffset="${(-acc * C).toFixed(2)}" transform="rotate(-90 60 60)"><title>${s.label}: ${s.clicks}</title></circle>`; acc += f; return el; }).join('');
+  return h('div', { class: 'dn-w' },
+    h('div', { class: 'dn-ring', html: `<svg viewBox="0 0 120 120" role="img" aria-label="Reparto de clics por enlace"><circle cx="60" cy="60" r="${R}" fill="none" stroke="rgba(195,195,195,.08)" stroke-width="13"/>${arcs}</svg><div><b>${fmtN(tot)}</b><small>clics</small></div>` }),
+    h('ul', { class: 'dn-lg' }, S.map((s, i) => h('li', {}, h('i', { style: `background:${DONUT[i]}` }), h('span', { text: s.label }), h('b', { text: Math.round(s.clicks / tot * 100) + '%' })))));
+}
+
+/* resumen por periodos (Hoy · Ayer · 7 días · 14 días) */
+function periodRow(m) {
+  const p = (l, n, s) => h('div', { class: 'pd' }, h('small', { text: l }), h('b', { text: fmtN(n) }), h('span', { text: s }));
+  return h('div', { class: 'pds' },
+    p('Hoy', m.today, m.dToday == null ? 'sin referencia' : (m.dToday >= 0 ? '+' : '') + m.dToday + '% vs. ayer'),
+    p('Ayer', m.yday, 'día anterior'),
+    p('7 días', m.l7, m.d7 == null ? 'sin referencia' : (m.d7 >= 0 ? '+' : '') + m.d7 + '% vs. previos'),
+    p('14 días', m.total14, '≈ ' + fmtN(m.avg) + ' al día'));
+}
+
+/* acciones rápidas del Resumen */
+function quickActions() {
+  const a = [['perfil', 'User', 'Editar perfil', 'Nombre, bio y avatar'], ['enlaces', 'plus', 'Añadir enlace', 'Redes y contacto'], ['fondo', 'Image', 'Cambiar fondo', 'Foto o vídeo'],
+    ['efectos', 'Zap', 'Efectos', 'Partículas y estelas'], ['widgets', 'Box', 'Widgets', 'Reloj y cuenta atrás'], ['compartir', 'Share2', 'Compartir', 'Redes y vista previa']];
+  return h('div', { class: 'qa' }, a.map(([k, i, t, s]) => h('button', { class: 'qa-b', onclick: () => go_(k) },
+    ico(i, 'qa-i'), h('span', { class: 'qa-t' }, h('b', { text: t }), h('small', { text: s })))));
+}
+
+/* consejos calculados con tus datos */
+function tips(m) {
+  const p = ME.profile, t = [];
+  if (!ME.links.length) t.push(['enlaces', 'Añade tu primer enlace', 'Sin enlaces, tus visitas no tienen a dónde ir.']);
+  if (!p.avatar) t.push(['perfil', 'Sube una foto de perfil', 'Los perfiles con foto transmiten más confianza.']);
+  if (m.views > 20 && m.ctr < 5 && ME.links.length) t.push(['enlaces', `Tu tasa de clics es ${m.ctr.toFixed(1)}%`, 'Pon tu enlace principal el primero de la lista.']);
+  if (m.peakH != null) t.push(['compartir', `Comparte cerca de las ${hh(m.peakH)}`, 'Es la hora en la que más gente te visita.']);
+  if (m.d7 != null && m.d7 < 0) t.push(['compartir', 'Tus visitas bajaron esta semana', 'Vuelve a compartir tu enlace en stories o en tu servidor.']);
+  if (!ME.user.discord) t.push(['discord', 'Conecta tu Discord', 'Muestra tu identidad y desbloquea insignias.']);
+  if (!p.bg_media) t.push(['fondo', 'Personaliza tu fondo', 'Una foto o vídeo propios hacen tu tarjeta única.']);
+  if (!t.length) t.push(['compartir', 'Todo en orden', 'Tu perfil está completo. Sigue compartiéndolo.']);
+  return h('div', { class: 'tp' }, t.slice(0, 4).map(([go, ti, d]) => h('button', { class: 'tp-i', onclick: () => go_(go) },
+    ico('bulb', 'tp-ic'), h('span', {}, h('b', { text: ti }), h('small', { text: d })), ico('arrow', 'tp-go'))));
+}
+
+/* tarjeta con cabecera y acción opcional + clase de ancho en rejilla */
+function profilePulse(done, m) {
+  const p = ME.profile;
+  const signals = [
+    { ok: !!p.avatar, label: 'Identidad', detail: p.avatar ? 'Avatar listo' : 'Añade un avatar', go: 'perfil' },
+    { ok: ME.links.length > 0, label: 'Conversión', detail: ME.links.length ? `${ME.links.length} enlace${ME.links.length === 1 ? '' : 's'} activo${ME.links.length === 1 ? '' : 's'}` : 'Añade tu primer enlace', go: 'enlaces' },
+    { ok: !!p.bg_media, label: 'Escena', detail: p.bg_media ? 'Fondo personalizado' : 'Personaliza el fondo', go: 'fondo' },
+    { ok: !!ME.user.discord, label: 'Presencia', detail: ME.user.discord ? 'Discord conectado' : 'Conecta Discord', go: 'discord' }
+  ];
+  const next = signals.find(s => !s.ok) || { label: 'Listo para crecer', detail: m.views ? 'Revisa tus analíticas' : 'Comparte tu perfil', go: m.views ? 'estadisticas' : 'compartir' };
+  const score = Math.round(done / 5 * 100);
+  const root = h('section', { class: 'pulse', 'aria-label': 'Pulso de tu perfil' },
+    h('div', { class: 'pulse-head' },
+      h('div', { class: 'pulse-score', style: `--score:${score}%` }, h('b', { text: score }), h('small', { text: 'salud' })),
+      h('div', { class: 'pulse-copy' }, h('span', { class: 'eyebrow', text: 'Pulso del perfil' }), h('h3', { text: next.label }), h('p', { text: next.detail })),
+      h('button', { class: 'pulse-action', type: 'button', onclick: () => go_(next.go) }, h('span', { text: 'Mejorar ahora' }), ico('arrow'))
+    ),
+    h('div', { class: 'pulse-signals', role: 'list' }, signals.map(s =>
+      h('button', { class: 'pulse-signal' + (s.ok ? ' is-ready' : ''), type: 'button', role: 'listitem', onclick: () => go_(s.go) },
+        h('i', { 'aria-hidden': 'true' }),
+        h('span', {}, h('b', { text: s.label }), h('small', { text: s.detail }))
+      )
+    ))
+  );
+  root.classList.add('w12');
+  return root;
+}
+
+function panel(w, title, sub, body, action, extra) {
+  const c = card(null, null, ...[].concat(body));
+  c.classList.add('w' + w);
+  const head = h('div', { class: 'ph' }, h('div', {}, h('h2', { text: title }), sub ? h('p', { text: sub }) : null),
+    extra || action ? h('div', { class: 'ph-r' }, extra || null, action ? h('button', { class: 'ph-a', onclick: action[1] }, action[0], ico('arrow')) : null) : null);
+  c.prepend(head);
+  return c;
+}
+const wide = (w, el) => { el.classList.add('w' + w); return el; };
+const chartDays = D => D.map(d => ({ day: ES_DAYS[new Date(d.day + 'T00:00:00Z').getUTCDay()] + ' ' + shortDay(d.day), count: d.count }));
+
+
+/* ---------- v15 · funciones interactivas ---------- */
+let RANGE = 14, LSORT = 'clicks', lastSync = Date.now();
+const lsGet = (k, d) => { try { return localStorage.getItem(k) ?? d; } catch { return d; } };
+const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch {} };
+function offerDraft() {
+  let draft;
+  try { draft = JSON.parse(localStorage.getItem(DRAFT_KEY) || ''); } catch { draft = null; }
+  if (!draft?.profile || !draft?.settings || !draft.savedAt) return;
+  const host = $('view');
+  if (!host || host.querySelector('.draft-recovery')) return;
+  const bar = h('aside', { class: 'draft-recovery', role: 'status' },
+    h('div', { class: 'draft-copy' }, h('b', { text: 'Tienes un borrador sin guardar' }), h('span', { text: 'Puedes recuperarlo y continuar exactamente donde lo dejaste.' })),
+    h('div', { class: 'draft-actions' },
+      h('button', { class: 'btn p', type: 'button', text: 'Recuperar', onclick: () => { PF = { ...PF, ...draft.profile }; CFG = { ...CFG, ...draft.settings }; dirty = true; changeVersion++; bar.remove(); render(); refresh(true); toast('Borrador recuperado. Revisa y guarda los cambios.'); } }),
+      h('button', { class: 'btn ghost', type: 'button', text: 'Descartar', onclick: () => { localStorage.removeItem(DRAFT_KEY); bar.remove(); } })
+    )
+  );
+  host.prepend(bar);
+}
+const niceGoal = n => [100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000, 250000, 500000, 1000000].find(g => g > n) || Math.ceil((n + 1) / 1e6) * 1e6;
+const getGoal = () => { const g = +lsGet('pip_goal_' + ME.user.username, 0); return g > ME.stats.views ? g : niceGoal(ME.stats.views); };
+
+/* selector segmentado 7 / 14 días */
+function rangeSwitch() {
+  return h('div', { class: 'seg', role: 'group', 'aria-label': 'Periodo' }, [7, 14].map(n => h('button', {
+    'aria-pressed': String(RANGE === n), text: n + ' días', onclick: () => { RANGE = n; render(); } })));
+}
+
+/* meta de visitas: editable, con proyección según tu ritmo de la última semana */
+function goalStrip(m) {
+  const goal = getGoal(), pct = Math.min(100, m.views / goal * 100), left = Math.max(0, goal - m.views), rate = m.l7 / 7;
+  let proj = 'Aún no hay ritmo para estimar una fecha.';
+  if (rate > 0.05 && left > 0) { const d = Math.ceil(left / rate), dt = new Date(Date.now() + d * 864e5); proj = `A tu ritmo (${(Math.round(rate * 10) / 10).toLocaleString('es')}/día) llegas el ${dt.toLocaleDateString('es', { day: 'numeric', month: 'long' })}${d > 365 ? ' de ' + dt.getFullYear() : ''}.`; }
+  if (!left) proj = '¡Meta alcanzada! Fija una nueva.';
+  const inp = h('input', { type: 'number', min: m.views + 1, step: 1, value: goal, 'aria-label': 'Meta de visitas' });
+  const edit = h('div', { class: 'gl-edit' }, h('label', { text: 'Meta' }), inp,
+    h('button', { class: 'btn p', text: 'Fijar', onclick: () => { const v = Math.round(+inp.value); if (v > m.views) { lsSet('pip_goal_' + ME.user.username, v); render(); } else inp.focus(); } }));
+  inp.onkeydown = e => { if (e.key === 'Enter') edit.querySelector('button').click(); };
+  const c = h('div', { class: 'cd goal' },
+    h('div', { class: 'gl-l' }, ico('target', 'gl-ic'), h('div', {}, h('small', { text: 'Meta de visitas' }), h('b', { text: `${fmtN(m.views)} / ${fmtN(goal)}` }))),
+    h('div', { class: 'gl-m' }, h('div', { class: 'pr' }, h('i', { style: `width:${pct}%` })), h('p', {}, h('b', { text: pct.toFixed(pct < 10 ? 1 : 0) + '%' }), ' · ' + proj)),
+    edit);
+  c.classList.add('w12');
+  return c;
+}
+
+/* tabla de enlaces con orden y acciones */
+function linkTable(m) {
+  if (!ME.links.length) return h('p', { class: 'ch-empty', text: 'Aún no hay enlaces. Añade el primero en la sección Enlaces.' });
+  const tot = Math.max(1, m.clicks), mx = Math.max(1, ...ME.links.map(l => l.clicks));
+  const L = [...ME.links].sort(LSORT === 'name' ? (a, b) => a.label.localeCompare(b.label, 'es') : (a, b) => b.clicks - a.clicks);
+  const th = (k, t) => h('button', { class: 'lt-h', 'aria-pressed': String(LSORT === k), text: t, onclick: () => { LSORT = k; render(); } });
+  return h('div', { class: 'lt' },
+    h('div', { class: 'lt-r lt-hd' }, h('span'), th('name', 'Enlace'), th('clicks', 'Clics'), h('span', { class: 'lt-sh', text: 'Cuota' }), h('span')),
+    L.map((l, i) => h('div', { class: 'lt-r' },
+      h('span', { class: 'rk-i', text: i + 1 }),
+      h('div', { class: 'lt-n' }, h('b', { text: l.label }), h('small', { text: l.url.replace(/^https?:\/\//, '') })),
+      h('b', { class: 'lt-c', text: fmtN(l.clicks) }),
+      h('div', { class: 'lt-sh' }, h('div', { class: 'pr' }, h('i', { style: `width:${l.clicks / mx * 100}%` })), h('small', { text: Math.round(l.clicks / tot * 100) + '%' })),
+      h('div', { class: 'lt-a' },
+        h('button', { class: 'ib', title: 'Copiar enlace', 'aria-label': 'Copiar ' + l.label, html: '<svg viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>',
+          onclick: async e => { const b = e.currentTarget; try { await navigator.clipboard.writeText(l.url); b.dataset.state = 'ok'; } catch { b.dataset.state = 'err'; } setTimeout(() => delete b.dataset.state, 1200); } }),
+        h('a', { class: 'ib', href: l.url, target: '_blank', rel: 'noopener', title: 'Abrir', 'aria-label': 'Abrir ' + l.label, html: '<svg viewBox="0 0 24 24"><path d="M7 17 17 7M8 7h9v9"/></svg>' })))));
+}
+
+/* informe en texto plano para pegar donde quieras */
+function reportText() {
+  const m = M(), L = (m.d7 == null ? '' : ` (${m.d7 >= 0 ? '+' : ''}${m.d7}% vs. semana previa)`);
+  return [`Informe pip · @${ME.user.username} · ${new Date().toLocaleDateString('es', { day: 'numeric', month: 'long', year: 'numeric' })}`, '',
+    `Visitas totales: ${fmtN(m.views)}`, `Últimos 7 días: ${fmtN(m.l7)}${L}`, `Hoy: ${fmtN(m.today)} · Ayer: ${fmtN(m.yday)}`, `Únicos (30 d): ${fmtN(m.unique)}`,
+    `Clics en enlaces: ${fmtN(m.clicks)} · Tasa de clics: ${m.views ? m.ctr.toFixed(1) + '%' : '—'}`,
+    m.peakH != null ? `Mejor hora: ${hh(m.peakH)} · Mejor día: ${['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'][m.peakW]}` : '',
+    '', 'Enlaces:', ...m.top.map((l, i) => `${i + 1}. ${l.label} — ${fmtN(l.clicks)} clics`)].filter((x, i, a) => x !== '' || a[i - 1] !== '').join('\n');
+}
+async function copyReport(e) {
+  const b = e.currentTarget, t = b.textContent;
+  try { await navigator.clipboard.writeText(reportText()); b.textContent = '✓ Informe copiado'; toast('Informe copiado al portapapeles'); } catch { b.textContent = 'No se pudo copiar'; }
+  setTimeout(() => b.textContent = t, 1600);
+}
+
+/* actualización de métricas: manual y automática cada 60 s */
+let discordPresenceBusy = false;
+async function syncDiscordPresence(manual = false) {
+  if (discordPresenceBusy || !ME?.user?.discord) return;
+  discordPresenceBusy = true;
+  try {
+    const result = await api('/api/discord/presence');
+    if (!ME.user.discord) return;
+    ME.user.discord.presence = result.presence;
+    if (cur === 'discord') render();
+  } catch (error) {
+    if (manual) {
+      toast(error.message || 'No se pudo consultar Discord', 'err');
+      if (cur === 'discord') render();
+    }
+  } finally {
+    discordPresenceBusy = false;
+  }
+}
+
+async function syncStats(manual) {
+  const b = $('sync'); if (!b || b.dataset.busy) return;
+  b.dataset.busy = '1';
+  try {
+    const d = await api('/api/me');
+    ME.user = d.user; ME.stats = d.stats; ME.links = d.links; ME.badges = d.badges; ME.profile = { ...ME.profile, avatar: d.profile.avatar };
+    lastSync = Date.now();
+    if (cur === 'resumen' || cur === 'estadisticas') render();
+    delete b.dataset.syncError;
+  } catch (x) {
+    if (manual) { b.dataset.syncError = '1'; $('sync_t').textContent = 'Error al actualizar'; toast(x.message || 'No se pudieron actualizar las métricas', 'err'); }
+  }
+  delete b.dataset.busy;
+  if (!b.dataset.syncError) tickSync();
+}
+function tickSync() {
+  const b = document.getElementById('sync'), t = $('sync_t'); if (!t || !b || b.dataset.busy || b.dataset.syncError) return;
+  const s = Math.round((Date.now() - lastSync) / 1000);
+  t.textContent = s < 10 ? 'Actualizado ahora' : s < 60 ? `Hace ${s} s` : `Hace ${Math.round(s / 60)} min`;
+}
+
+
+/* ---------- v15 · Compartir: código QR y textos ---------- */
+function qrCard(url, name) {
+  const body = h('div', { class: 'qr' });
+  if (typeof qrcode !== 'function') { body.append(h('p', { class: 'ch-empty', text: 'El generador de QR no se pudo cargar. Recarga la página.' })); return card('Código QR', 'Para pósters, tarjetas y streams.', body); }
+  let fg = '#111111', bg = '#FFFFFF', size = 1024;
+  const box = h('div', { class: 'qr-box' });
+  const build = () => { const q = qrcode(0, 'M'); q.addData(url); q.make(); return q; };
+  const svg = () => { const q = build(), n = q.getModuleCount(), m = 4; let d = ''; for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) if (q.isDark(r, c)) d += `M${c + m} ${r + m}h1v1h-1z`; const T = n + m * 2;
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${T} ${T}" shape-rendering="crispEdges"><rect width="${T}" height="${T}" fill="${bg}"/><path d="${d}" fill="${fg}"/></svg>`; };
+  const draw = () => { box.innerHTML = svg(); box.style.background = bg; };
+  const PAL = [['Clásico', '#111111', '#FFFFFF'], ['Acento', PF.accent || '#6A6A6A', '#111111'], ['Invertido', '#FFFFFF', '#111111'], ['Hielo', '#2A2A2A', '#EEEEEE']];
+  const sw = h('div', { class: 'seg', role: 'group', 'aria-label': 'Estilo del QR' }, PAL.map(([t, f, b], i) => h('button', { 'aria-pressed': String(i === 0), text: t, onclick: e => { fg = f; bg = b; [...e.currentTarget.parentNode.children].forEach(x => x.setAttribute('aria-pressed', String(x === e.currentTarget))); draw(); } })));
+  const dl = (name, blob) => { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 2000); };
+  const png = h('button', { class: 'btn p', text: 'Descargar PNG', onclick: () => {
+    const im = new Image(), cv = document.createElement('canvas'); cv.width = cv.height = size;
+    im.onload = () => { const x = cv.getContext('2d'); x.imageSmoothingEnabled = false; x.drawImage(im, 0, 0, size, size); cv.toBlob(b => dl('pip-qr-' + ME.user.username + '.png', b)); };
+    im.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg());
+  } });
+  const sv = h('button', { class: 'btn btn-ghost', text: 'Descargar SVG', onclick: () => dl('pip-qr-' + ME.user.username + '.svg', new Blob([svg()], { type: 'image/svg+xml' })) });
+  draw();
+  body.append(box, h('div', { class: 'qr-s' }, h('b', { text: 'Escanéalo y llegas a tu perfil' }), h('small', { text: location.host + '/' + ME.user.username }), sw, h('div', { class: 'row', style: 'margin-top:4px;flex-wrap:wrap' }, png, sv)));
+  return card('Código QR', 'Para pósters, tarjetas, stickers o tu stream. Vectorial y listo para imprimir.', body);
+}
+function shareTemplates(url, name) {
+  const T = [['Biografía de Instagram', `${name} · todo mis enlaces aquí 👇\n${url}`], ['Historia o publicación', `¿Quieres ver todo lo que hago? Entra a mi perfil y encuentra mis redes en un solo lugar ✨\n${url}`], ['Discord / servidor', `Mis enlaces y redes están aquí: ${url}`], ['Corto (X / TikTok)', `Mi perfil → ${url}`]];
+  return h('div', { class: 'tpl' }, T.map(([t, x]) => { const b = h('button', { class: 'tpl-i', type: 'button' }, h('span', {}, h('small', { text: t }), h('b', { text: x })), h('em', { text: 'Copiar' }));
+    b.onclick = async () => { const e = b.querySelector('em'); try { await navigator.clipboard.writeText(x); e.textContent = '✓ Copiado'; } catch { e.textContent = 'Error'; } setTimeout(() => e.textContent = 'Copiar', 1400); }; return b; }));
+}
+
+/* ---------- v15 · preferencias del panel (se guardan en este navegador) ---------- */
+const PREF = { auto: lsGet('pip_auto', '1') === '1', compact: lsGet('pip_compact', '0') === '1' };
+document.body.classList.toggle('compact', PREF.compact);
+function prefSwitch(key, label, desc, on) {
+  const b = h('button', { class: 'tg', role: 'switch', 'aria-checked': String(PREF[key]), 'aria-label': label });
+  b.onclick = () => { PREF[key] = !PREF[key]; b.setAttribute('aria-checked', String(PREF[key])); lsSet('pip_' + key, PREF[key] ? '1' : '0'); on && on(PREF[key]); };
+  return h('div', { class: 'sw' }, h('div', {}, h('b', { text: label }), h('small', { text: desc })), b);
+}
+const SHORTCUTS = [['Ctrl K', 'Abrir el buscador de comandos'], ['Ctrl S', 'Guardar los cambios pendientes'], ['G  R', 'Ir a Resumen'], ['G  E', 'Ir a Estadísticas'], ['G  P', 'Ir a Perfil'], ['G  L', 'Ir a Enlaces'], ['G  C', 'Ir a Compartir']];
+
+/* avisos breves (toast) */
+function toast(msg, kind) {
+  let box = document.getElementById('toasts');
+  if (!box) { box = h('div', { id: 'toasts', 'aria-live': 'polite' }); document.body.append(box); }
+  const t = h('div', { class: 'toast' + (kind ? ' ' + kind : ''), html: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${kind === 'err' ? 'M12 8v5M12 16.5v.01' : 'M5 12.5l4.5 4.5L19 7.5'}"/></svg>` }, h('span', { text: msg }));
+  box.append(t); setTimeout(() => t.classList.add('out'), 2400); setTimeout(() => t.remove(), 2800);
+}
+
+/* tarjeta de identidad (Perfil): se actualiza mientras escribes */
+function profilePreview() {
+  const P = ME.profile, ini = () => ([...(PF.display_name || ME.user.username)][0] || '?').toUpperCase();
+  const bn = h('div', { class: 'idp-bn', style: P.banner ? `background-image:url('${P.banner}')` : '' });
+  const av = h('div', { class: 'idp-av', text: P.avatar ? '' : ini(), style: P.avatar ? `background-image:url('${P.avatar}')` : '' });
+  const name = h('b'), bio = h('p');
+  const root = h('div', { class: 'idp', 'aria-label': 'Vista previa de tu identidad' }, bn, av, h('div', { class: 'idp-t' }, name, bio));
+  const upd = () => {
+    name.textContent = PF.display_name || ME.user.username;
+    bio.textContent = PF.bio || 'Tu biografía aparecerá aquí.';
+    if (!P.avatar) av.textContent = ini();
+    root.style.setProperty('--ac', PF.accent);
+  };
+  upd();
+  return { root, upd };
+}
+
+function viewsAdminCard() {
+  const MAX = 10_000_000, fmt = n => Number(n).toLocaleString('es');
+  let cur = ME.stats?.views ?? 0, val = 1000, mode = 'add', step = 500, busy = false, armed = null;
+  const hist = [];
+  const delta = () => Math.max(0, Math.min(MAX - cur, mode === 'add' ? val : val - cur));
+  const curVal = h('span', { class: 'vc-live' }), addVal = h('span', { class: 'vc-add-live' }), finalVal = h('span', { class: 'vc-goal' });
+  const barCur = h('i', { class: 'vc-bar-c' }), barAdd = h('i', { class: 'vc-bar-a' });
+  const bar = h('div', { class: 'vc-bar', 'aria-hidden': 'true' }, barCur, barAdd);
+  const numInput = h('input', { type: 'text', inputmode: 'numeric', class: 'inp vc-number-inp', placeholder: '1.000', 'aria-label': 'Cantidad' });
+  const lbl = h('label', { class: 'l' });
+  const errMsg = h('p', { class: 'err', role: 'alert' });
+  const histBox = h('ul', { class: 'vc-hist' });
+  const applyBtn = h('button', { type: 'button', class: 'btn p vc-apply' });
+  const tw = {};
+  const tween = (el, to, pre = '') => {
+    cancelAnimationFrame(tw[el.className]); const from = parseInt(String(el.dataset.v || '0'), 10) || 0; el.dataset.v = to;
+    if (from === to || matchMedia('(prefers-reduced-motion:reduce)').matches) { el.textContent = pre + fmt(to); return; }
+    const t0 = performance.now(), dur = 420;
+    const f = now => { const k = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - k, 3); el.textContent = pre + fmt(Math.round(from + (to - from) * e)); if (k < 1) tw[el.className] = requestAnimationFrame(f); };
+    tw[el.className] = requestAnimationFrame(f);
+  };
+  const paint = () => {
+    const d = delta();
+    tween(curVal, cur); tween(addVal, d, '+'); tween(finalVal, cur + d);
+    barCur.style.width = (cur / MAX * 100) + '%'; barAdd.style.width = (d / MAX * 100) + '%';
+    lbl.textContent = mode === 'add' ? 'Cantidad a sumar' : 'Total que quieres alcanzar';
+    numInput.value = val ? fmt(val) : '';
+    armed = null; applyBtn.dataset.armed = '';
+    applyBtn.disabled = busy || d <= 0;
+    applyBtn.textContent = busy ? 'Sumando vistas…' : d > 0 ? `Añadir +${fmt(d)} vistas` : (cur >= MAX ? 'Alcanzaste el máximo' : mode === 'add' ? 'Ingresa una cantidad a sumar' : 'El total debe superar al actual');
+  };
+  const setVal = n => { val = Math.max(0, Math.min(MAX, parseInt(String(n).replace(/\D/g, ''), 10) || 0)); paint(); };
+  numInput.oninput = () => setVal(numInput.value);
+  numInput.onkeydown = e => { if (e.key === 'Enter') { e.preventDefault(); apply(); } else if (e.key === 'ArrowUp') { e.preventDefault(); setVal(val + step); } else if (e.key === 'ArrowDown') { e.preventDefault(); setVal(Math.max(0, val - step)); } };
+  const apply = async () => {
+    const d = delta(); if (busy || d <= 0) return;
+    if (d >= 100000 && armed !== d) { armed = d; applyBtn.dataset.armed = '1'; applyBtn.textContent = `Pulsa otra vez para confirmar +${fmt(d)}`; setTimeout(() => { if (armed === d) paint(); }, 3500); return; }
+    errMsg.textContent = ''; busy = true; paint();
+    try {
+      const r = await api('/api/admin/set-views', 'POST', { add: d, target: cur + d });
+      cur = r.views; ME.stats.views = r.views; busy = false;
+      hist.unshift({ d, total: r.views, t: new Date().toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit' }) }); hist.length = Math.min(hist.length, 5);
+      renderHist(); val = 0; paint(); applyBtn.textContent = '✓ Vistas añadidas';
+      if (typeof toast === 'function') toast(`+${fmt(d)} vistas añadidas`);
+      setTimeout(() => { if (!busy && val === 0) { val = mode === 'add' ? 1000 : cur + 1000; paint(); } }, 1600);
+    } catch (e) { busy = false; errMsg.textContent = e.message || 'Error al actualizar vistas'; paint(); applyBtn.textContent = 'Reintentar'; }
+  };
+  applyBtn.onclick = apply;
+  const renderHist = () => { histBox.replaceChildren(...hist.map(x => h('li', {}, h('b', { text: '+' + fmt(x.d) }), h('span', { text: `→ ${fmt(x.total)} total` }), h('small', { text: x.t })))); histBox.hidden = !hist.length; };
+  renderHist();
+  const modeBtn = (m, t) => { const b = h('button', { type: 'button', class: 'vc-mode-b', text: t, onclick: () => { mode = m; val = m === 'add' ? 1000 : cur + 1000; modes.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', String(x === b))); paint(); } }); b.setAttribute('aria-pressed', String(m === mode)); return b; };
+  const modes = h('div', { class: 'vc-mode', role: 'group', 'aria-label': 'Modo' }, modeBtn('add', 'Sumar cantidad'), modeBtn('total', 'Fijar total'));
+  const stepper = (t, sign, title) => h('button', { type: 'button', class: 'vc-step-btn', text: t, title, 'aria-label': title, onclick: () => setVal(Math.max(0, val + sign * step)) });
+  const stepRow = h('div', { class: 'vc-steps', role: 'group', 'aria-label': 'Paso del botón + y −' }, h('small', { text: 'Paso' }), [100, 500, 1000, 5000].map(n => { const b = h('button', { type: 'button', text: n >= 1000 ? (n / 1000) + 'K' : String(n), onclick: () => { step = n; stepRow.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', String(x === b))); } }); b.setAttribute('aria-pressed', String(n === step)); return b; }));
+  const PRESETS = [['+500', 500], ['+1,000', 1000], ['+5,000', 5000], ['+10,000', 10000], ['+50,000', 50000], ['+100K', 100000], ['+500K', 500000], ['+1M', 1000000]];
+  const presetRow = h('div', { class: 'vc-presets' }, PRESETS.map(([label, n]) => h('button', { type: 'button', class: 'vc-pre', text: label, onclick: () => setVal(val + n) })));
+  const c = h('div', { class: 'cd vc' },
+    h('div', { class: 'ch' }, h('div', { class: 'vc-head' },
+      h('div', { class: 'vc-ic', html: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>' }),
+      h('div', { class: 'vc-header-info' },
+        h('div', { class: 'vc-title-row' }, h('h2', { class: 'vc-t', text: 'Añadir vistas al perfil' }), h('span', { class: 'vc-badge', text: 'ADMIN' })),
+        h('p', { class: 'vc-s', text: 'Suma visitas a tu perfil de forma instantánea. Solo se pueden sumar, no restar.' })))),
+    h('div', { class: 'cb' },
+      h('div', { class: 'vc-equation' },
+        h('div', { class: 'vc-eq-col' }, h('span', { class: 'vc-l', text: 'Vistas actuales' }), curVal),
+        h('div', { class: 'vc-eq-sign', text: '+' }),
+        h('div', { class: 'vc-eq-col' }, h('span', { class: 'vc-l', text: 'A sumar' }), addVal),
+        h('div', { class: 'vc-eq-sign', text: '=' }),
+        h('div', { class: 'vc-eq-col res' }, h('span', { class: 'vc-l', text: 'Total final' }), finalVal)),
+      h('div', { class: 'vc-barwrap' }, bar, h('small', { text: `Tope: ${fmt(MAX)} vistas` })),
+      modes,
+      h('div', { class: 'vc-block' },
+        h('div', { class: 'vc-block-head' }, lbl, h('button', { type: 'button', class: 'vc-btn-reset', text: 'Borrar', onclick: () => setVal(0) })),
+        h('div', { class: 'vc-input-stepper wide' }, stepper('−', -1, 'Restar al valor'), numInput, stepper('+', 1, 'Sumar al valor')),
+        stepRow),
+      h('div', { class: 'vc-block' }, h('div', { class: 'vc-block-head' }, h('label', { class: 'l', text: 'Sumar rápido' }), h('span', { class: 'vc-hint', text: 'Suma al tocar' })), presetRow),
+      applyBtn, errMsg, histBox));
+  paint();
+  return c;
+}
+
+function viewsControl() {
+  const getCurrent = () => Number(ME?.stats?.views ?? 0);
+  let mode = 'add';
+  let review = false;
+  const result = h('div', { class: 'vm-result' }, h('span', { text: 'Resultado' }), h('strong', { text: String(getCurrent()) }));
+  const input = h('input', { type: 'text', inputmode: 'numeric', class: 'inp vm-input', value: '', placeholder: '1000', 'aria-label': 'Ajustar contador' });
+  const error = h('p', { class: 'vm-error', role: 'alert', text: '' });
+  const reviewBox = h('div', { class: 'vm-review', hidden: true }, h('div', { class: 'vm-review-inner' },
+    h('strong', { text: 'Revisa el ajuste antes de guardar' }),
+    h('div', { class: 'vm-actions' },
+      h('button', { type: 'button', class: 'btn btn-ghost', text: 'Cancelar' }),
+      h('button', { type: 'button', class: 'btn btn-primary', text: 'Confirmar' }))))
+  const submit = h('button', { type: 'button', class: 'vm-submit', disabled: true, text: 'Revisar ajuste' });
+
+  const syncDisplay = () => {
+    const current = getCurrent();
+    const raw = String(input.value || '').trim();
+    const parsed = Number.parseInt(raw.replace(/\D/g, ''), 10) || 0;
+    const valid = raw !== '' && /^\d+$/.test(raw) && Number.isInteger(parsed) && parsed > 0 && parsed <= 10000000;
+    if (!valid) {
+      submit.disabled = true;
+      result.querySelector('strong').textContent = String(current);
+      return null;
+    }
+    const target = mode === 'total' ? parsed : current + parsed;
+    const isValid = mode === 'total' ? parsed > current : true;
+    submit.disabled = !isValid;
+    result.querySelector('strong').textContent = String(target);
+    error.textContent = '';
+    return isValid ? target : null;
+  };
+
+  const setMode = (next) => {
+    mode = next;
+    const current = getCurrent();
+    const raw = Number.parseInt(String(input.value || '').replace(/\D/g, ''), 10) || 0;
+    if (next === 'total' && raw > 0) input.value = String(current + raw);
+    if (next === 'add' && raw > current) input.value = String(raw - current);
+    document.querySelectorAll('[data-mode]').forEach((el) => el.setAttribute('aria-pressed', String(el.dataset.mode === next)));
+    syncDisplay();
+  };
+
+  const computeTarget = () => {
+    const current = getCurrent();
+    const raw = String(input.value || '').trim();
+    const parsed = Number.parseInt(raw.replace(/\D/g, ''), 10) || 0;
+    if (!/^\d+$/.test(raw) || raw === '') return null;
+    if (!Number.isInteger(parsed) || parsed <= 0 || parsed > 10000000) return null;
+    if (mode === 'total') return parsed > current ? parsed : null;
+    return current + parsed;
+  };
+
+  input.addEventListener('input', () => {
+    syncDisplay();
+  });
+
+  submit.addEventListener('click', async () => {
+    if (submit.disabled) return;
+    if (!review) {
+      review = true;
+      reviewBox.hidden = false;
+      return;
+    }
+    const expected = Number(ME?.stats?.views ?? 0);
+    const target = computeTarget();
+    if (target === null) return;
+    submit.disabled = true;
+    submit.textContent = 'Guardando…';
+    try {
+      const body = { expected, target };
+      const r = await api('/api/admin/set-views', 'POST', body);
+      if (r?.views != null) ME.stats.views = Number(r.views);
+      review = false;
+      reviewBox.hidden = true;
+      submit.textContent = 'Revisar ajuste';
+      submit.disabled = true;
+      input.value = '';
+      result.querySelector('strong').textContent = String(getCurrent());
+      if (typeof refresh === 'function') refresh();
+    } catch (err) {
+      review = false;
+      reviewBox.hidden = true;
+      submit.textContent = 'Revisar ajuste';
+      submit.disabled = false;
+      input.disabled = false;
+      error.textContent = err?.message || 'Error al guardar';
+      result.querySelector('strong').textContent = String(getCurrent());
+    }
+  });
+
+  const cancel = reviewBox.querySelector('.btn-ghost');
+  cancel.addEventListener('click', () => {
+    review = false;
+    reviewBox.hidden = true;
+    input.value = '';
+    error.textContent = '';
+    submit.disabled = true;
+    result.querySelector('strong').textContent = String(getCurrent());
+  });
+
+  const modes = h('div', { class: 'vm-modes' },
+    h('button', { type: 'button', class: 'vm-mode', 'data-mode': 'add', 'aria-pressed': 'true', text: 'Sumar' }),
+    h('button', { type: 'button', class: 'vm-mode', 'data-mode': 'total', text: 'Total' }));
+  modes.querySelector('[data-mode="add"]').addEventListener('click', () => setMode('add'));
+  modes.querySelector('[data-mode="total"]').addEventListener('click', () => setMode('total'));
+  const root = h('div', { class: 'vm-control' }, h('div', { class: 'vm-row' }, modes, result), h('div', { class: 'vm-row' }, input, submit), reviewBox, error);
+  return root;
+}
+// End viewsControl
+
+function identityCard(nm, ac, swRow) {
+  const ini = () => (PF.display_name || ME.user.username)[0].toUpperCase();
+  const av = h('div', { class: 'id-av', text: ME.profile.avatar ? '' : ini(), style: ME.profile.avatar ? `background-image:url('${ME.profile.avatar}')` : '' });
+  const name = h('b', { text: PF.display_name || ME.user.username });
+  const chip = (i, t) => h('span', { class: 'id-c' }, ico(i), t);
+  const card_ = h('div', { class: 'cd idc', style: `--ac:${PF.accent}` }, av,
+    h('div', { class: 'id-t' }, name, h('small', { text: '@' + ME.user.username + ' · ' + location.host + '/' + ME.user.username }),
+      h('div', { class: 'id-cs' }, chip('click', fmtN(ME.stats.views) + ' visitas'), chip('plus', ME.links.length + ' enlaces'), chip('star', ME.badges.filter(b => b.earned).length + ' insignias'), ME.user.discord ? chip('users', 'Discord vinculado') : null)));
+  nm.addEventListener('input', () => { name.textContent = nm.value || ME.user.username; if (!ME.profile.avatar) av.textContent = ini(); });
+  const upd = () => card_.style.setProperty('--ac', PF.accent);
+  ac.addEventListener('input', upd);
+  swRow?.addEventListener('click', e => { if (e.target.closest?.('.swc')) upd(); });
+  return card_;
+}
+
+async function copyLink(e) {
+  const b = e && e.currentTarget, icon = b && b.classList.contains('ib'), t = b && b.textContent;
+  const say = (msg, ok, ms) => {
+    if (!b) return;
+    if (icon) { b.dataset.state = ok ? 'ok' : 'err'; b.title = msg; setTimeout(() => { delete b.dataset.state; b.title = 'Copiar enlace'; }, ms); }
+    else { b.textContent = msg; setTimeout(() => b.textContent = t, ms); }
+  };
+  try { await navigator.clipboard.writeText(location.origin + '/' + ME.user.username); say('¡Copiado!', true, 1400); toast('Enlace de tu perfil copiado'); }
+  catch { say('No se pudo copiar', false, 1800); }
+}
+
+async function logout(e) {
+  if (e) e.preventDefault();
+  await api('/api/logout', 'POST', {});
+  location.href = '/';
+}
+
+let navT;
+function go_(s) {
+  cur = s;
+  document.body.classList.remove('nav-anim');
+  void document.body.offsetWidth; // Force reflow to re-trigger entrance animation
+  document.body.classList.add('nav-anim');
+  clearTimeout(navT); navT = setTimeout(() => document.body.classList.remove('nav-anim'), 240);
+  render();
+  // On mobile, automatically show the editor when navigating
+  if (window.innerWidth <= 1024) switchMobileView('editor');
+  $('view').parentElement.scrollTop = 0;
+  window.scrollTo(0, 0);
+}
+
+function buildNav() {
+  $('sb_name').textContent = ME.profile.display_name || ME.user.username;
+  $('sb_handle').textContent = '@' + ME.user.username;
+  $('sb_preview_link').href = '/' + ME.user.username;
+  { // El avatar solo se repinta si cambió: así no parpadea la letra al cambiar de categoría.
+    const el = $('sb_av'), src = ME.profile.avatar || '', ini = (ME.profile.display_name || ME.user.username)[0].toUpperCase();
+    if (el.dataset.src !== src || (!src && el.textContent !== ini)) {
+      el.dataset.src = src;
+      if (src) {
+        if (!el.style.backgroundImage || el.style.backgroundImage === 'none') el.textContent = '';
+        const im = new Image();
+        im.onload = () => { if (el.dataset.src === src) { el.style.backgroundImage = `url('${src}')`; el.textContent = ''; } };
+        im.src = src;
+      } else { el.style.backgroundImage = 'none'; el.textContent = ini; }
+    }
+  }
+
+  const container = $('sb_links');
+  container.replaceChildren();
+
+  const mkIcon = key => {
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('viewBox', '0 0 24 24');
+    svg.setAttribute('aria-hidden', 'true');
+    svg.className.baseVal = 'nv-icon';
+    svg.innerHTML = ICONS[key] || '';
+    return svg;
+  };
+
+  let curSection = null;
+  NAV.forEach(n => {
+    if (n.length === 1) {
+      curSection = h('div', { class: 'sb-group' }, h('span', { class: 'sb-group-title', text: n[0] }));
+      container.append(curSection);
+    } else {
+      const meta = NAV_METAS[n[0]] || { label: n[1], icon: null };
+      const btn = h('button', {
+        class: 'nv',
+        'aria-current': n[0] === cur ? 'page' : null,
+        onclick: () => go_(n[0])
+      });
+      if (meta.icon && ICONS[meta.icon]) btn.append(mkIcon(meta.icon));
+      btn.append(h('span', { class: 'nv-label', text: meta.label }));
+      const cnt = { enlaces: ME.links.length || null, insignias: ME.badges.length ? `${ME.badges.filter(b => b.earned).length}/${ME.badges.length}` : null }[n[0]];
+      if (cnt) btn.append(h('span', { class: 'nv-n', text: String(cnt) }));
+      if (curSection) curSection.append(btn);
+      else { curSection = h('div', { class: 'sb-group' }); container.append(curSection); curSection.append(btn); }
+    }
+  });
+}
+
+let _lastNavCur = null, _lastNavDiscord = null, _lastNavAvatar = null;
+function render(skipNav) {
+  /* Only rebuild the sidebar nav when something actually changed */
+  const discordStatus = ME.user?.discord?.presence?.status || 'unknown';
+  const avatarSrc = ME.profile?.avatar || '';
+  if (!skipNav || _lastNavCur !== cur || _lastNavDiscord !== discordStatus || _lastNavAvatar !== avatarSrc) {
+    buildNav();
+    _lastNavCur = cur; _lastNavDiscord = discordStatus; _lastNavAvatar = avatarSrc;
+  }
+  const dot = document.querySelector('.sb-user-dot');
+  if (dot) {
+    const status = discordStatus;
+    dot.className = `sb-user-dot ${status}`;
+    dot.title = status === 'online' ? 'Discord: en línea' : status === 'idle' ? 'Discord: ausente' : status === 'dnd' ? 'Discord: no molestar' : status === 'offline' ? 'Discord: desconectado' : 'Estado de Discord no disponible';
+  }
+  { const a = document.querySelector('.nv[aria-current=page]'); if (a && a.scrollIntoView) a.scrollIntoView({ inline: 'center', block: 'nearest' }); }
+  const meta = NAV_METAS[cur] || { label: cur, icon: 'LayoutDashboard', desc: '' };
+  $('app').dataset.wide = (cur === 'resumen' || cur === 'estadisticas') ? '1' : '';
+  $('bc').replaceChildren(h('span', { class: 'bc-root', text: 'pip Studio' }), h('span', { class: 'ch-ic', html: '<svg viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg>' }), h('b', { text: meta.label }));
+  
+  $('view').replaceChildren(
+    h('div', { class: 'pg-header' },
+      h('span', { class: 'pg-ico', html: `<svg viewBox="0 0 24 24" aria-hidden="true">${ICONS[meta.icon] || ''}</svg>` }),
+      h('h1', { class: 'pg-title', text: meta.label }),
+      h('p', { class: 'pg-sub', text: meta.desc })
+    ),
+    ...VIEWS[cur]()
+  );
+  $('view').querySelectorAll('.cd').forEach(x => { if (x.querySelector('h2')?.textContent === 'Sesión y administración') x.classList.add('danger'); });
+}
+
+$('save').onclick = async () => {
+  const sv = $('save');
+  if (saving) return;
+  saving = true;
+  const savedVersion = changeVersion;
+  const savedPayload = JSON.parse(JSON.stringify(payload()));
+  sv.disabled = true;
+  const svTxt = sv.querySelector('span.sv-txt');
+  if (svTxt) svTxt.textContent = 'Guardando…';
+  try {
+    const d = await api('/api/profile', 'PUT', savedPayload);
+    ME = d;
+    saving = false;
+    dirty = changeVersion !== savedVersion;
+    sv.disabled = !dirty;
+    if (svTxt) svTxt.textContent = dirty ? 'Guardar cambios pendientes' : 'Guardado';
+    if (!dirty) {
+      try { localStorage.removeItem(DRAFT_KEY); } catch {}
+      sv.classList.add('save-success-glow');
+      setTimeout(() => sv.classList.remove('save-success-glow'), 1200);
+    }
+    toast(dirty ? 'Se guardaron los cambios anteriores; quedan cambios pendientes.' : '✓ Cambios guardados correctamente');
+    render();
+  } catch (x) {
+    saving = false;
+    dirty = true;
+    sv.disabled = false;
+    if (svTxt) svTxt.textContent = 'Reintentar guardado';
+    toast('No se pudo guardar: ' + x.message, 'err');
+  }
+};
+
+$('copy').onclick = copyLink;
+$('sync').onclick = () => syncStats(true);
+setInterval(tickSync, 15000);
+setInterval(() => { if (PREF.auto && !document.hidden && (cur === 'resumen' || cur === 'estadisticas')) syncStats(false); }, 60000);
+setInterval(() => { if (!document.hidden && cur === 'discord') syncDiscordPresence(false); }, 30000);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) syncDiscordPresence(false); });
+
+/* ── Single throttled pointermove handler (merged glow + chart tooltip) ── */
+let _pmRaf = false;
+document.addEventListener('pointermove', e => {
+  if (_pmRaf) return;
+  _pmRaf = true;
+  requestAnimationFrame(() => {
+    _pmRaf = false;
+    /* Card glow spotlight */
+    const c = e.target.closest && e.target.closest('.cd, .sc, .ins');
+    if (c) {
+      const r = c.getBoundingClientRect();
+      c.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+      c.style.setProperty('--my', (e.clientY - r.top) + 'px');
+    }
+    /* Area chart tooltip */
+    const box = e.target.closest && e.target.closest('.ac-plot');
+    document.querySelectorAll('.ac-tip').forEach(t => { if (!box || t.parentNode !== box) t.remove(); });
+    if (!box) return;
+    const svg = box.querySelector('svg'), circles = [...svg.querySelectorAll('circle')], r2 = svg.getBoundingClientRect();
+    if (!circles.length) return;
+    const k = Math.max(0, Math.min(circles.length - 1, Math.round((e.clientX - r2.left) / r2.width * (circles.length - 1))));
+    const cr = circles[k].getBoundingClientRect();
+    let tip = box.querySelector('.ac-tip');
+    if (!tip) { tip = document.createElement('div'); tip.className = 'ac-tip'; box.append(tip); }
+    const [d, v] = circles[k].querySelector('title').textContent.split(': ');
+    tip.innerHTML = `<small>${d}</small><b>${v}</b>`;
+    const br = box.getBoundingClientRect();
+    tip.style.left = (cr.left + cr.width / 2 - br.left) + 'px';
+    tip.style.top = (cr.top - br.top) + 'px';
+  });
+});
+
+document.querySelectorAll('.dv button').forEach(b => b.onclick = () => {
+  document.querySelectorAll('.dv button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+  $('box').style.width = b.dataset.w;
+  $('box').dataset.d = b.dataset.w === '390px' ? 'm' : b.dataset.w === '768px' ? 't' : 'd';
+});
+
+/* Quick Command Palette (Ctrl/⌘+K) */
+(() => {
+  const dlg = h('dialog', { class: 'cmd', 'aria-label': 'Menú de comandos rápidos' });
+  const inp = h('input', { type: 'text', placeholder: 'Buscar sección o acción rápida… (ej. Enlaces, Fondo, Guardar)', 'aria-label': 'Buscar comando', autocomplete: 'off' });
+  const list = h('div', { role: 'listbox' });
+  const hint = h('div', { class: 'cmd-hint', 'aria-hidden': 'true' },
+    h('span', {}, h('kbd', { text: '↑↓' }), 'Navegar'), h('span', {}, h('kbd', { text: '↵' }), 'Abrir'), h('span', {}, h('kbd', { text: 'Esc' }), 'Cerrar'));
+  dlg.append(inp, list, hint);
+  document.body.append(dlg);
+  let items = [], sel = 0;
+
+  const cmds = () => [
+    ...NAV.filter(n => n.length > 1).map(([k, l]) => ({ l: `Ir a ${l}`, i: ICONS[NAV_METAS[k]?.icon], f: () => go_(k) })),
+    { l: 'Copiar enlace de mi perfil público', i: '<rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>', f: () => copyLink() },
+    { l: 'Actualizar métricas ahora', i: SC_ICON.trend, f: () => syncStats(true) },
+    { l: 'Copiar informe de estadísticas', i: SC_ICON.bulb, f: () => navigator.clipboard.writeText(reportText()) },
+    { l: 'Descargar métricas en CSV', i: SC_ICON.arrow, f: () => exportCsv() },
+    { l: 'Mostrar visitas de los últimos 7 días', i: SC_ICON.calendar, f: () => { RANGE = 7; go_('estadisticas'); } },
+    { l: 'Mostrar visitas de los últimos 14 días', i: SC_ICON.calendar, f: () => { RANGE = 14; go_('estadisticas'); } },
+    { l: 'Generar código QR de mi perfil', i: SC_ICON.target, f: () => go_('compartir') },
+    { l: 'Abrir mi perfil en una nueva pestaña', i: '<path d="M7 17 17 7M8 7h9v9"/>', f: () => window.open('/' + ME.user.username, '_blank', 'noopener') },
+    ...($('save').disabled ? [] : [{ l: 'Guardar cambios pendientes', i: '<path d="M5 12.5l4.5 4.5L19 7.5"/>', f: () => $('save').click() }])
+  ];
+
+  const draw = () => {
+    const q = inp.value.trim().toLowerCase();
+    items = cmds().filter(c => c.l.toLowerCase().includes(q));
+    sel = Math.min(sel, Math.max(0, items.length - 1));
+    list.replaceChildren(...(items.length ? items.map((c, i) => h('button', {
+      type: 'button',
+      role: 'option',
+      'aria-selected': String(i === sel),
+      onclick: () => run(i)
+    }, h('span', { class: 'cmd-ic', html: `<svg viewBox="0 0 24 24" aria-hidden="true">${c.i || ''}</svg>` }), h('span', { text: c.l }),
+      i === sel ? h('kbd', { text: '↵' }) : null)) : [h('p', { text: 'Sin resultados para la búsqueda.' })]));
+  };
+
+  const run = i => {
+    const c = items[i];
+    if (!c) return;
+    dlg.close();
+    c.f();
+  };
+
+  inp.oninput = () => { sel = 0; draw(); };
+  inp.onkeydown = e => {
+    if (e.key === 'ArrowDown') { sel = Math.min(items.length - 1, sel + 1); draw(); e.preventDefault(); }
+    else if (e.key === 'ArrowUp') { sel = Math.max(0, sel - 1); draw(); e.preventDefault(); }
+    else if (e.key === 'Enter') run(sel);
+  };
+  dlg.addEventListener('click', e => { if (e.target === dlg) dlg.close(); });
+  addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k' && typeof ME !== 'undefined' && ME) {
+      e.preventDefault();
+      inp.value = '';
+      sel = 0;
+      draw();
+      if (!dlg.open) dlg.showModal();
+      inp.focus();
+    }
+  });
+})();
+
+/* atajos: Ctrl/⌘+S guarda · "G" y una letra navega */
+let gArm = 0;
+addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') { e.preventDefault(); if (!$('save').disabled) $('save').click(); return; }
+  const t = e.target, typing = t && (/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName) || t.isContentEditable);
+  if (typing || e.ctrlKey || e.metaKey || e.altKey || document.querySelector('dialog[open]') || typeof ME === 'undefined' || !ME) return;
+  const k = e.key.toLowerCase();
+  if (gArm && Date.now() - gArm < 1200) { const m = { r: 'resumen', e: 'estadisticas', p: 'perfil', l: 'enlaces', c: 'compartir', d: 'discord', i: 'insignias', f: 'fondo', w: 'widgets' }[k]; gArm = 0; if (m) { e.preventDefault(); go_(m); } }
+  else if (k === 'g') gArm = Date.now();
+});
+
+$('sb_search')?.addEventListener('click', () => dispatchEvent(new KeyboardEvent('keydown', { key: 'k', ctrlKey: true, bubbles: true, cancelable: true })));
+
+addEventListener('beforeunload', e => {
+  if (dirty) { e.preventDefault(); e.returnValue = ''; }
+});
+
+(async () => {
+  try {
+    [ME, SPEC, PLAT] = await Promise.all([api('/api/me'), api('/api/spec'), api('/api/platforms')]);
+    CFG = { ...ME.settings };
+    const p = ME.profile;
+    PF = {
+      display_name: p.display_name,
+      bio: p.bio,
+      accent: p.accent,
+      background: p.background,
+      bg_blur: p.bg_blur,
+      bg_opacity: p.bg_opacity,
+      bg_vignette: p.bg_vignette,
+      splash: !!p.splash,
+      splash_text: p.splash_text
+    };
+    $('view2').href = '/' + ME.user.username;
+    $('bar_txt').textContent = location.host + '/' + ME.user.username;
+    document.body.classList.add('nav-anim');
+    setTimeout(() => document.body.classList.remove('nav-anim'), 240);
+    render();
+    offerDraft();
+    refresh(true);
+  } catch (err) {
+    const fallback = () => {
+      const target = $('view');
+      if (!target) return;
+      target.innerHTML = `
+        <div style="display:grid;place-items:center;min-height:60vh;padding:32px 20px;">
+          <div style="max-width:420px;width:100%;padding:28px 24px;border-radius:20px;border:1px solid rgba(255,255,255,.12);background:rgba(9,10,15,.8);box-shadow:0 20px 50px rgba(0,0,0,.35);text-align:center;">
+            <div style="display:grid;place-items:center;width:68px;height:68px;margin:0 auto 18px;border-radius:18px;background:linear-gradient(135deg, rgba(125,211,252,.22), rgba(59,130,246,.08));color:#E2F3FF;font-size:28px;">🔒</div>
+            <h2 style="margin:0 0 8px;font-size:clamp(1.5rem,2vw,2rem);color:#F5F7FF;">Acceso privado</h2>
+            <p style="margin:0 0 18px;color:var(--txt-muted, #B9C2D1);line-height:1.6;">Tu sesión ha caducado o aún no has entrado con la cuenta del propietario.</p>
+            <a class="btn p" href="/login" style="display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:0 18px;border-radius:12px;background:linear-gradient(135deg,#7dd3fc,#3b82f6);color:#08111d;text-decoration:none;font-weight:700;">Ir al login</a>
+          </div>
+        </div>
+      `;
+      const pvw = $('pvw');
+      if (pvw) pvw.style.display = 'none';
+    };
+
+    if (err.message === '401' || err.status === 401) {
+      fallback();
+      return;
+    }
+    console.error('Error cargando panel:', err);
+    const target = $('view');
+    if (target) target.innerHTML = `<div style="padding:40px 20px;text-align:center"><h2 style="color:#FDA4AF;margin-bottom:10px">No se pudo cargar el panel</h2><p style="color:var(--txt-muted);margin-bottom:20px">${err.message || 'Error de conexión'}</p><button class="btn p" onclick="location.reload()">Reintentar</button></div>`;
+  }
+})();
+</script>
+<script>
+/* relleno del slider (--p) — MutationObserver acotado al área de ajustes */
+(()=>{
+  const setP=r=>{const mn=+r.min||0,mx=+r.max||100;r.style.setProperty('--p',((+r.value-mn)/(mx-mn||1)*100)+'%')};
+  document.addEventListener('input',e=>{if(e.target.type==='range')setP(e.target)});
+  /* Only scan newly-added nodes instead of every node under body */
+  const obs=new MutationObserver(muts=>{
+    muts.forEach(m=>m.addedNodes.forEach(n=>{
+      if(n.nodeType!==1)return;
+      if(n.matches?.('input[type=range]'))setP(n);
+      n.querySelectorAll?.('input[type=range]').forEach(setP);
+    }));
+  });
+  const view=document.getElementById('view');
+  if(view)obs.observe(view,{childList:true,subtree:true});
+  document.querySelectorAll('input[type=range]').forEach(setP);
+})();
+</script>
+</body>
+</html>

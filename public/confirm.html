@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Elige tu nombre · pip</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#040407">
+<link rel="icon" type="image/svg+xml" href="/pip-icono.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/app.css">
+<link rel="stylesheet" href="/shell.css">
+<style>
+body{min-height:100dvh;display:grid;place-items:center;padding:32px 18px;overflow-x:hidden}
+.wrap{position:relative;z-index:1;width:100%;max-width:480px;animation:in .75s var(--ease) both}
+.top{display:flex;justify-content:center;margin-bottom:28px}
+.card{padding:42px 38px 34px;border-radius:32px}
+
+/* ====================================================
+   DISCORD AVATAR REPLICA — pixel-perfect
+   Outer box: 128px (= decoration size from CDN)
+   Inner avatar: 96px, centered → 16px offset each side
+   Decoration: 128x128 overlay, top:0 left:0
+   Status badge: bottom-right of the 96px circle
+   ==================================================== */
+.who{display:flex;flex-direction:column;align-items:center;gap:10px;margin-bottom:26px}
+
+.avatar-box{
+  position:relative;
+  width:128px;height:128px;
+  margin:10px 0;
+  flex:none;
+}
+
+/* 96px avatar ring, centered in 128px box */
+.ring{
+  position:absolute;
+  top:16px;left:16px;   /* (128-96)/2 = 16px */
+  width:96px;height:96px;
+}
+.ring .in{
+  width:96px;height:96px;
+  border-radius:50%;
+  overflow:hidden;
+  /* Discord-dark fallback background if avatar transparent */
+  background:linear-gradient(135deg,#454545,#262626);
+  display:flex;align-items:center;justify-content:center;
+}
+.ring .ini{
+  width:96px;height:96px;
+  border-radius:50%;
+  display:grid;place-items:center;
+  font:800 40px var(--hd);color:#fff;
+  background:transparent;
+  flex:none;
+}
+.ring img{
+  width:96px;height:96px;
+  border-radius:50%;
+  object-fit:cover;
+  display:block;
+  flex:none;
+}
+
+/* Decoration overlay — 128x128 from CDN, fills outer box exactly */
+.avatar-deco{
+  position:absolute;
+  top:0;left:0;
+  width:128px;height:128px;
+  pointer-events:none;
+  z-index:10;
+  display:none;             /* hidden until image loads */
+  image-rendering:auto;
+}
+
+/* Status badge — Discord exact
+   Avatar occupies (16,16)→(112,112) inside 128px box.
+   Badge sits at avatar bottom-right: bottom≈14px, right≈14px from box edge */
+.discord-status{
+  position:absolute;
+  bottom:13px;right:13px;
+  z-index:20;
+  width:16px;height:16px;
+  border-radius:50%;
+  /* background matches card so badge ring cuts cleanly into avatar */
+  background:#121212;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  /* 4px ring that matches the card surface */
+  box-shadow:0 0 0 4px rgba(18,18,18,.95);
+}
+.discord-status.show{display:flex}
+
+/* Status dot — Discord-exact colors & shapes */
+.status-dot{
+  width:10px;height:10px;
+  border-radius:50%;
+  position:relative;
+  display:flex;align-items:center;justify-content:center;
+  flex:none;
+}
+/* Online: solid green */
+.status-dot.online{background:#23A55A}
+/* Idle: amber circle with dark cutout top-right (moon shape) */
+.status-dot.idle{background:#F0B232}
+.status-dot.idle::after{
+  content:"";position:absolute;
+  top:-2px;right:-2px;
+  width:6px;height:6px;
+  background:#121212;border-radius:50%;
+}
+/* DND: red circle with white/dark horizontal bar */
+.status-dot.dnd{background:#F23F43}
+.status-dot.dnd::after{
+  content:"";position:absolute;
+  width:6px;height:2px;
+  background:#121212;border-radius:2px;
+}
+/* Offline/Invisible: hollow grey ring */
+.status-dot.offline{
+  background:transparent;
+  border:2px solid #878787;
+  box-sizing:border-box;
+}
+
+.dcb{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:999px;font:600 12px var(--bd);color:#C7CBFF;background:rgba(88,101,242,.15);box-shadow:inset 0 0 0 1px rgba(88,101,242,.4)}
+.dcb svg{width:14px;height:11px;fill:#8F98FF}
+
+/* Presence text label */
+.status-label{display:none;align-items:center;gap:6px;font:500 12px var(--bd);margin-top:-4px}
+.status-label.show{display:flex}
+.status-label .sl-dot{width:8px;height:8px;border-radius:50%;flex:none}
+.status-label.online .sl-dot{background:#23A55A}.status-label.online{color:#23A55A}
+.status-label.idle .sl-dot{background:#F0B232}.status-label.idle{color:#F0B232}
+.status-label.dnd .sl-dot{background:#F23F43}.status-label.dnd{color:#F23F43}
+.status-label.offline .sl-dot{background:#878787}.status-label.offline{color:#878787}
+
+h1{margin:0 0 8px;text-align:center;font:800 clamp(23px,5vw,30px)/1.12 var(--hd);letter-spacing:-.04em;background:linear-gradient(180deg,#fff 25%,var(--c2) 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{margin:0 0 26px;text-align:center;color:var(--mut);font-size:14.5px;line-height:1.6}
+
+/* url preview bar */
+.pv{display:flex;align-items:baseline;justify-content:center;gap:2px;margin-bottom:22px;padding:15px 18px;border-radius:18px;background:rgba(8,8,8,.8);box-shadow:inset 0 0 0 1px var(--line);font:700 19px var(--hd);letter-spacing:-.02em;overflow:hidden;white-space:nowrap}
+.pv .d{color:var(--dim)}.pv .s{color:var(--c2);overflow:hidden;text-overflow:ellipsis}
+.pv .cur{width:2px;height:21px;align-self:center;margin-left:2px;background:var(--c3);border-radius:2px;animation:bl 1s step-end infinite}
+@keyframes bl{50%{opacity:0}}
+
+label{display:block;font:600 11px var(--bd);color:var(--mut);margin:0 0 8px;text-transform:uppercase;letter-spacing:.08em}
+.iw{display:flex;align-items:center;gap:8px;padding:0 16px;border-radius:16px;background:rgba(8,8,8,.85);box-shadow:inset 0 0 0 1px var(--line2);transition:box-shadow .2s}
+.iw:focus-within{box-shadow:inset 0 0 0 1.5px var(--c3),0 0 0 4px rgba(255,255,255,.13)}
+.iw span{color:var(--dim);font-weight:500;font-size:15px;white-space:nowrap}
+.iw input{flex:1;min-width:0;background:transparent;border:0;outline:none;color:var(--c1);font:600 16px var(--bd);padding:15px 0}
+
+/* status */
+.st{display:flex;align-items:center;gap:7px;min-height:24px;margin:10px 2px 20px;font-size:13px;color:var(--mut)}
+.st svg{width:14px;height:14px;flex:none;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.st.ok{color:var(--ok)}.st.err{color:var(--bad)}.st.chk{color:var(--c2)}
+
+.go{width:100%;padding:17px;font-size:15.5px;border-radius:18px}
+.cancel{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:16px;font-size:13.5px;color:var(--mut);text-decoration:none;transition:color .2s}
+.cancel:hover{color:var(--c1)}
+.cancel svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* tips */
+.tips{list-style:none;margin:26px 0 0;padding:24px 0 0;border-top:1px solid var(--line);display:grid;gap:14px}
+.tips li{display:flex;gap:13px;align-items:flex-start;font-size:13.5px;color:var(--mut);line-height:1.55}
+.tips .ic{width:26px;height:26px;flex:none;border-radius:9px;display:grid;place-items:center;background:rgba(255,255,255,.1);box-shadow:inset 0 0 0 1px rgba(255,255,255,.25)}
+.tips svg{width:13px;height:13px;fill:none;stroke:var(--c3);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.tips b{color:var(--c2);font-weight:600}
+
+/* spinner */
+.spin{animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* toast */
+#toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,90px);opacity:0;z-index:100;max-width:calc(100vw - 32px);padding:13px 22px;border-radius:16px;font:500 14px var(--bd);background:rgba(20,20,20,.95);box-shadow:inset 0 0 0 1px var(--line2),0 18px 48px rgba(0,0,0,.55);backdrop-filter:blur(14px);transition:transform .4s var(--ease),opacity .4s}
+#toast.show{transform:translate(-50%,0);opacity:1}
+#toast.err{box-shadow:inset 0 0 0 1px rgba(251,113,133,.5),0 18px 48px rgba(0,0,0,.55)}
+
+/* success overlay */
+#ok{display:none;position:fixed;inset:0;z-index:200;place-items:center;align-content:center;gap:16px;background:rgba(6,6,6,.95);backdrop-filter:blur(16px);text-align:center;padding:24px}
+#ok.show{display:grid;animation:fadeIn .4s both}
+@keyframes fadeIn{from{opacity:0}}
+#ok .big{width:88px;height:88px;border-radius:50%;display:grid;place-items:center;margin:0 auto 10px;background:rgba(52,211,153,.1);box-shadow:inset 0 0 0 2px rgba(52,211,153,.5),0 0 64px rgba(52,211,153,.28);animation:pop .65s var(--ease) .1s both}
+@keyframes pop{from{transform:scale(.35);opacity:0}}
+#ok .big svg{width:40px;height:40px;fill:none;stroke:var(--ok);stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+#ok h2{margin:0;font:800 30px var(--hd);letter-spacing:-.035em}
+#ok p{margin:0;color:var(--mut)}
+#ok .url{justify-self:center;padding:11px 22px;border-radius:14px;font:700 17px var(--hd);color:var(--c2);background:rgba(255,255,255,.09);box-shadow:inset 0 0 0 1px rgba(255,255,255,.3)}
+
+@media(max-width:440px){.card{padding:32px 20px 26px;border-radius:26px}}
+
+/* ===== rediseño: misma estructura que el login ===== */
+body{display:block;padding:0;place-items:initial;overflow-x:hidden}
+.pane-main{max-width:420px}
+.pane .pv{display:none}
+.pane-foot{max-width:420px}
+.pane .btn-glow{background:var(--c3);color:#111111;box-shadow:none;transition:background .2s,transform .2s}
+.pane .btn-glow:hover{background:#F2F2F2;box-shadow:none;filter:none}
+.pane .btn-glow:disabled{background:rgba(255,255,255,.14);color:var(--dim)}
+.pane .who{align-items:flex-start;margin-bottom:22px;gap:8px}
+.pane .avatar-box{margin:0 0 0 -16px}
+.pane .status-label{margin-top:-10px}
+.pane h1{text-align:left;font-size:clamp(26px,2.4vw,34px)}
+.pane .sub{text-align:left;margin-bottom:22px}
+.pane .pv{justify-content:flex-start;margin-bottom:18px;padding:13px 16px;border-radius:12px;font-size:18px}
+.pane label{font:600 13px var(--bd);text-transform:none;letter-spacing:0;color:var(--c1);margin:0 0 8px}
+.pane .iw{border-radius:12px}
+.pane .iw input{padding:14px 0}
+.pane .st{margin:10px 2px 18px}
+.pane .go{padding:16px;border-radius:12px;font-size:15.5px}
+.pane .cancel{justify-content:flex-start;margin-top:14px}
+.pane .tips{margin-top:26px;padding-top:22px;gap:12px}
+.pane .tips .ic{background:none;box-shadow:none;width:18px;height:18px;border-radius:0}
+.pane .tips svg{width:18px;height:18px}
+.pane .tips b{color:var(--c1)}
+.pane .dcb{padding:5px 12px}
+</style>
+</head>
+<body>
+<div class="atmo" aria-hidden="true"></div>
+<div id="toast" role="status" aria-live="polite"></div>
+<div id="ok" role="status">
+  <div class="big"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></div>
+  <h2>Cuenta creada</h2><p>Tu perfil ya está en</p>
+  <div class="url" id="okUrl">pip.lol/…</div>
+  <p>Entrando al panel…</p>
+</div>
+<div class="shell">
+  <section class="pane">
+    <div class="pane-top">
+      <a class="logo" href="/" aria-label="pip, inicio">pip<i></i></a>
+    </div>
+    <main class="pane-main">
+    <div class="who">
+      <div class="avatar-box" id="avBox">
+        <div class="ring" id="ring"><div class="in"><div class="ini" id="ini">?</div></div></div>
+        <div class="discord-status" id="dStatus"><i class="status-dot" id="dDot"></i></div>
+      </div>
+      <span class="status-label" id="sLabel"><i class="sl-dot"></i><span id="sLabelTxt"></span></span>
+      <span class="dcb"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.317 4.3698a19.7913 19.7913 0 0 0-4.8851-1.5152.0741.0741 0 0 0-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 0 0-.0785-.037 19.7363 19.7363 0 0 0-4.8852 1.515.0699.0699 0 0 0-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 0 0 .0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 0 0 .0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 0 0-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 0 1-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 0 1 .0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 0 1 .0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 0 1-.0066.1276 12.2986 12.2986 0 0 1-1.873.8914.0766.0766 0 0 0-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 0 0 .0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 0 0 .0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 0 0-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z"/></svg>Conectado con Discord</span>
+    </div>
+    <h1>Elige tu nombre de usuario</h1>
+    <p class="sub">Será tu enlace único en pip. Piénsalo bien: es tu identidad.</p>
+    <div class="pv" aria-hidden="true"><span class="d">pip.lol/</span><span class="s" id="slug">cargando</span><i class="cur"></i></div>
+    <label for="u">Tu nombre de usuario</label>
+    <div class="iw"><span>pip.lol/</span><input id="u" type="text" maxlength="20" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" placeholder="tunombre" aria-describedby="st"></div>
+    <div class="st" id="st" aria-live="polite"></div>
+    <button class="btn btn-glow go" id="go" disabled>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+      <span>Crear mi cuenta</span>
+    </button>
+    <a class="cancel" href="/"><svg viewBox="0 0 24 24"><path d="M19 12H5m7-7-7 7 7 7"/></svg>Cancelar y volver</a>
+    <ul class="tips">
+      <li><span class="ic"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></span><span>Tu enlace será <b id="tipUrl">pip.lol/tunombre</b>: corto y fácil de compartir.</span></li>
+      <li><span class="ic"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></span><span>Personaliza colores, efectos e insignias desde el panel.</span></li>
+    </ul>
+  
+    </main>
+    <p class="pane-foot">Tu sesión de Discord se vincula de forma segura.</p>
+  </section>
+  <aside class="stage" id="stage" aria-hidden="true">
+    <div class="orbit a"><i></i></div><div class="orbit b"><i></i></div>
+    <div class="chip-f f1"><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></span><span>1.284 visitas<small>esta semana</small></span></div>
+    <div class="chip-f f2"><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.1 6.3H21l-5.4 4 2.1 6.4L12 15.6 6.3 19.7l2.1-6.4L3 9.3h6.9z"/></svg></span><span>Insignia nueva<small>En llamas</small></span></div>
+    <article class="card-demo">
+      <div class="cd-av"><b id="mAv">?</b></div>
+      <div class="cd-name"><span id="mName">tunombre</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/><path d="m9 12 2 2 4-4" fill="none"/></svg></div>
+      <div class="cd-user" id="mUser">@tunombre</div>
+      <p class="cd-bio">Diseño, música y creación de contenido.</p>
+      <div class="cd-badges"><span class="mdl oro"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3q1 4 4 6.5t3 5.5a1 1 0 0 1-14 0 5 5 0 0 1 1-3 1 1 0 0 0 5 0c0-2-1.5-3-1.5-5q0-2 2.5-4" /></svg></span><span class="mdl celeste"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22v-5" />
+  <path d="M15 8V2" />
+  <path d="M17 8a1 1 0 0 1 1 1v4a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1z" />
+  <path d="M9 8V2" /></svg></span><span class="mdl celeste"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z" />
+  <circle cx="13.5" cy="6.5" r=".5" fill="currentColor" />
+  <circle cx="17.5" cy="10.5" r=".5" fill="currentColor" />
+  <circle cx="6.5" cy="12.5" r=".5" fill="currentColor" />
+  <circle cx="8.5" cy="7.5" r=".5" fill="currentColor" /></svg></span><span class="mdl plata"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0" />
+  <circle cx="12" cy="12" r="3" /></svg></span></div>
+      <div class="cd-links">
+        <div class="cd-link"><i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.0301.084c-1.2768.0602-2.1487.264-2.911.5634-.7888.3075-1.4575.72-2.1228 1.3877-.6652.6677-1.075 1.3368-1.3802 2.127-.2954.7638-.4956 1.6365-.552 2.914-.0564 1.2775-.0689 1.6882-.0626 4.947.0062 3.2586.0206 3.6671.0825 4.9473.061 1.2765.264 2.1482.5635 2.9107.308.7889.72 1.4573 1.388 2.1228.6679.6655 1.3365 1.0743 2.1285 1.38.7632.295 1.6361.4961 2.9134.552 1.2773.056 1.6884.069 4.9462.0627 3.2578-.0062 3.668-.0207 4.9478-.0814 1.28-.0607 2.147-.2652 2.9098-.5633.7889-.3086 1.4578-.72 2.1228-1.3881.665-.6682 1.0745-1.3378 1.3795-2.1284.2957-.7632.4966-1.636.552-2.9124.056-1.2809.0692-1.6898.063-4.948-.0063-3.2583-.021-3.6668-.0817-4.9465-.0607-1.2797-.264-2.1487-.5633-2.9117-.3084-.7889-.72-1.4568-1.3876-2.1228C21.2982 1.33 20.628.9208 19.8378.6165 19.074.321 18.2017.1197 16.9244.0645 15.6471.0093 15.236-.005 11.977.0014 8.718.0076 8.31.0215 7.0301.0839m.1402 21.6932c-1.17-.0509-1.8053-.2453-2.2287-.408-.5606-.216-.96-.4771-1.3819-.895-.422-.4178-.6811-.8186-.9-1.378-.1644-.4234-.3624-1.058-.4171-2.228-.0595-1.2645-.072-1.6442-.079-4.848-.007-3.2037.0053-3.583.0607-4.848.05-1.169.2456-1.805.408-2.2282.216-.5613.4762-.96.895-1.3816.4188-.4217.8184-.6814 1.3783-.9003.423-.1651 1.0575-.3614 2.227-.4171 1.2655-.06 1.6447-.072 4.848-.079 3.2033-.007 3.5835.005 4.8495.0608 1.169.0508 1.8053.2445 2.228.408.5608.216.96.4754 1.3816.895.4217.4194.6816.8176.9005 1.3787.1653.4217.3617 1.056.4169 2.2263.0602 1.2655.0739 1.645.0796 4.848.0058 3.203-.0055 3.5834-.061 4.848-.051 1.17-.245 1.8055-.408 2.2294-.216.5604-.4763.96-.8954 1.3814-.419.4215-.8181.6811-1.3783.9-.4224.1649-1.0577.3617-2.2262.4174-1.2656.0595-1.6448.072-4.8493.079-3.2045.007-3.5825-.006-4.848-.0608M16.953 5.5864A1.44 1.44 0 1 0 18.39 4.144a1.44 1.44 0 0 0-1.437 1.4424M5.8385 12.012c.0067 3.4032 2.7706 6.1557 6.173 6.1493 3.4026-.0065 6.157-2.7701 6.1506-6.1733-.0065-3.4032-2.771-6.1565-6.174-6.1498-3.403.0067-6.156 2.771-6.1496 6.1738M8 12.0077a4 4 0 1 1 4.008 3.9921A3.9996 3.9996 0 0 1 8 12.0077"/></svg></i>Instagram</div>
+        <div class="cd-link"><i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></i>YouTube</div>
+        <div class="cd-link"><i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z"/></svg></i>Twitch</div>
+      </div>
+      <div class="cd-foot"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>1.284 visitas</div>
+    </article>
+    <div class="swatches" id="sw" role="group" aria-label="Probar color de acento" style="pointer-events:auto">Prueba un color
+      <button style="--c:#E5E5E5" aria-pressed="true" aria-label="Celeste" data-c="#E5E5E5"></button>
+      <button style="--c:#A78BFA" aria-pressed="false" aria-label="Violeta" data-c="#A78BFA"></button>
+      <button style="--c:#F472B6" aria-pressed="false" aria-label="Rosa" data-c="#F472B6"></button>
+      <button style="--c:#34D399" aria-pressed="false" aria-label="Esmeralda" data-c="#34D399"></button>
+      <button style="--c:#FBBF24" aria-pressed="false" aria-label="Ámbar" data-c="#FBBF24"></button>
+    </div>
+  </aside>
+</div>
+
+<script>
+const $ = (i) => document.getElementById(i), u = $('u'), go = $('go'), st = $('st'), slug = $('slug');
+const OKI = '<svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>';
+const ERR = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6M9 9l6 6"/></svg>';
+const INF = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4m0-4h.01"/></svg>';
+const LOAD = '<svg class="spin" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.2-8.55"/></svg>';
+const GO = go.innerHTML;
+let tt, tm;
+function toast(m, e) { clearTimeout(tt); const t = $('toast'); t.textContent = m; t.className = 'show' + (e ? ' err' : ''); tt = setTimeout(() => t.className = '', 3400); }
+function status(m, c = 'chk') { st.className = 'st ' + c; st.innerHTML = ({ ok: OKI, err: ERR, chk: INF, load: LOAD }[c] || INF) + '<span></span>'; st.lastChild.textContent = m; }
+function show(v) { slug.textContent = v || 'tunombre'; $('tipUrl').textContent = 'pip.lol/' + (v || 'tunombre'); $('mName').textContent = v || 'tunombre'; $('mUser').textContent = '@' + (v || 'tunombre'); }
+async function loadPending() {
+  try {
+    const r = await fetch('/api/pending-reg');
+    if (!r.ok) { toast('No hay registro pendiente. Redirigiendo…', true); setTimeout(() => location.href = '/login', 2200); return; }
+    const d = await r.json(), name = d.displayName || d.discordName || '?';
+    const iniEl = $('ini');
+    iniEl.textContent = name.charAt(0).toUpperCase(); $('mAv').textContent = name.charAt(0).toUpperCase();
+    if (d.avatarUrl) {
+      const im = new Image();
+      im.alt = name;
+      im.onload = () => {
+        im.style.cssText = 'width:96px;height:96px;object-fit:cover;display:block;flex:none;border-radius:50%';
+        iniEl.replaceWith(im);
+        $('mAv').textContent = ''; $('mAv').style.backgroundImage = `url('${d.avatarUrl}')`;
+      };
+      im.onerror = () => {};
+      im.src = d.avatarUrl;
+    }
+    if (d.decorationUrl) {
+      const deco = document.createElement('img');
+      deco.className = 'avatar-deco';
+      deco.alt = '';
+      deco.onload = () => { deco.style.display = 'block'; };
+      deco.onerror = () => deco.remove();
+      deco.src = d.decorationUrl;
+      $('avBox').appendChild(deco);
+    }
+    if (d.status) {
+      const st = d.status === 'invisible' ? 'offline' : d.status;
+      $('dDot').className = 'status-dot ' + st;
+      const statusNames = { online: 'En línea', idle: 'Ausente', dnd: 'No molestar', offline: 'Invisible' };
+      $('dStatus').title = statusNames[st] || st;
+      $('dStatus').classList.add('show');
+      // Label visible below avatar
+      const sl = $('sLabel'), slt = $('sLabelTxt');
+      sl.className = 'status-label show ' + st;
+      slt.textContent = statusNames[st] || st;
+    } else {
+      $('dStatus').classList.remove('show');
+      $('sLabel').className = 'status-label';
+    }
+    u.value = d.suggestedUsername || ''; show(u.value); check(u.value);
+  } catch { toast('Error cargando tus datos. Inténtalo de nuevo.', true); }
+}
+function check(v) {
+  v = v.trim(); go.disabled = true; clearTimeout(tm);
+  if (!v) return status('3 a 20 caracteres: letras, números o guion bajo');
+  if (!/^[a-zA-Z0-9_]{3,20}$/.test(v)) return status('Solo letras, números y _ · mínimo 3', 'err');
+  status('Comprobando disponibilidad…', 'load');
+  tm = setTimeout(async () => {
+    try {
+      const d = await (await fetch('/api/username-available/' + encodeURIComponent(v))).json();
+      if (v !== u.value.trim().toLowerCase()) return;
+      if (!d.available) { status(d.reason || 'Ese nombre ya está en uso', 'err'); go.disabled = true; }
+      else { status('Disponible. Es tuyo si lo confirmas.', 'ok'); go.disabled = false; }
+    } catch { status('No se pudo verificar; puedes intentar continuar', 'chk'); go.disabled = false; }
+  }, 420);
+}
+u.addEventListener('input', () => { const v = u.value.trim().toLowerCase(); show(v); check(v); });
+u.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !go.disabled) go.click(); });
+go.addEventListener('click', async () => {
+  const username = u.value.trim().toLowerCase(); if (!username || go.disabled) return;
+  go.disabled = true; go.innerHTML = LOAD.replace('<svg', '<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"') + '<span>Creando tu cuenta…</span>';
+  try {
+    const r = await fetch('/api/auth/discord/confirm', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username }) }), d = await r.json();
+    if (!r.ok) { toast(d.error || 'Ocurrió un error', true); go.disabled = false; go.innerHTML = GO; return; }
+    $('okUrl').textContent = 'pip.lol/' + d.username; $('ok').classList.add('show'); setTimeout(() => location.href = '/dashboard', 2200);
+  } catch { toast('Error de conexión. Inténtalo de nuevo.', true); go.disabled = false; go.innerHTML = GO; }
+});
+loadPending();
+
+// Escenario: el color de acento cambia solo; si tocas uno, se queda.
+(() => {
+  const st = document.getElementById('stage'), btns = [...st.querySelectorAll('.swatches button')], cols = btns.map((b) => b.dataset.c);
+  let i = 0, t;
+  const set = (c) => { st.style.setProperty('--a', c); btns.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.c === c))); };
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) t = setInterval(() => set(cols[(i = (i + 1) % cols.length)]), 3800);
+  btns.forEach((b) => b.addEventListener('click', () => { clearInterval(t); i = cols.indexOf(b.dataset.c); set(b.dataset.c); }));
+  st.querySelector('.swatches').style.pointerEvents = 'auto';
+})();
+</script>
+</body>
+</html>

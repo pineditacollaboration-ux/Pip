@@ -1,0 +1,228 @@
+/* ============================================================
+   pip — Tarjeta de perfil pública (guns.lol dark tech style)
+   Deep dark background, clean floating glass card, Plus Jakarta Sans
+   ============================================================ */
+
+body {
+  padding: 64px 22px;
+  line-height: 1.6;
+}
+
+.stage {
+  max-width: 100%;
+  isolation: isolate;
+}
+.stage::before {
+  content: '';
+  position: absolute;
+  width: min(780px, 95vw); height: 720px;
+  border-radius: 50%; z-index: -1; pointer-events: none;
+  background: radial-gradient(ellipse, color-mix(in srgb, var(--a) 12%, transparent), transparent 65%);
+  filter: blur(40px);
+}
+
+/* Tarjeta principal — guns.lol floating glass card */
+.card {
+  max-width: 420px;
+  padding: 38px 30px 28px;
+  border-radius: 28px;
+  background: linear-gradient(180deg, rgba(14,16,22,0.85) 0%, rgba(9,10,14,0.92) 100%);
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow:
+    0 30px 90px -15px rgba(0,0,0,0.95),
+    0 0 60px -12px color-mix(in srgb, var(--a) 18%, transparent),
+    inset 0 1px 0 rgba(255,255,255,0.12);
+  backdrop-filter: blur(36px) saturate(200%);
+  -webkit-backdrop-filter: blur(36px) saturate(200%);
+  overflow: hidden;
+  transition: transform .15s ease;
+}
+
+.card::before {
+  content: '';
+  position: absolute; top: 0; left: 10%; right: 10%; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.25), transparent);
+  pointer-events: none;
+}
+
+.card > * { position: relative; z-index: 1; }
+
+/* Banner */
+.card .bn { margin: -38px -30px 0; height: 140px; }
+.hd .av   { margin-bottom: 20px; box-shadow: 0 0 0 4px #08090d, 0 10px 30px rgba(0,0,0,.6); border-radius: var(--ar); }
+.hd.side .av { margin-bottom: 0; }
+.bn + .hd:not(.side) .av { margin-top: -50px; }
+
+/* Avatar */
+.av .ini {
+  background: #090a0f;
+  color: #fff;
+}
+.av-status { width: 22px; height: 22px; border: 3px solid #08090d; }
+
+/* Nombre — Plus Jakarta Sans */
+.p-name {
+  font-family: var(--hf, 'Plus Jakarta Sans', system-ui, sans-serif);
+  font-weight: 700;
+  font-size: clamp(22px, 4vw, calc(var(--ns) + 2px));
+  letter-spacing: -.03em;
+  margin: 6px 0 4px;
+  color: #F0F0F2;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.verified-badge { width: 20px; height: 20px; filter: drop-shadow(0 0 8px rgba(56,189,248,.6)); }
+
+/* Handle y bio */
+.u {
+  font: 500 13px/1.4 'Inter', system-ui, sans-serif;
+  color: #8b8c97;
+  letter-spacing: -.01em;
+  margin: 0 0 10px;
+}
+.bio {
+  color: #c4c5cf;
+  font-size: 13.5px;
+  line-height: 1.65;
+  margin: 14px auto 8px;
+  overflow-wrap: anywhere;
+  font-weight: 400;
+}
+.hd.left .bio, .hd.side .bio { margin-left: 0; }
+.hd.right .bio { margin-right: 0; }
+
+/* Insignias */
+.badges-bar {
+  margin: 14px auto 6px;
+  padding: 8px 12px;
+  gap: 10px;
+  border-radius: 12px;
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255,255,255,.06);
+}
+.badge-item {
+  width: 32px; height: 32px; border-radius: 9px;
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.08);
+}
+.badge-item svg { width: 16px; height: 16px; }
+.badge-item:hover, .badge-item:focus-visible {
+  transform: translateY(-2px);
+  background: rgba(255,255,255,.1);
+}
+
+/* Spotify — dark floating player */
+.gl-spotify {
+  margin-top: 20px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,.08);
+  background: rgba(12,13,18,0.7);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 10px 30px rgba(0,0,0,.4);
+}
+.gl-spotify-content { padding: 14px 16px; gap: 14px; }
+.gl-spotify-cover-wrap { width: 64px; height: 64px; flex-shrink: 0; }
+.gl-spotify-img { width: 64px; height: 64px; border-radius: 10px; }
+.gl-spotify-disc { width: 60px; height: 60px; left: 10px; top: 2px; }
+.gl-spotify-ambient { opacity: .15; }
+.gl-spotify-now { font-size: 8.5px; letter-spacing: 1px; color: #1DB954; font-weight: 700; }
+.gl-spotify-top { margin-bottom: 6px; }
+.gl-spotify-title { font-size: 13.5px; font-weight: 600; letter-spacing: -.01em; color: #F0F0F2; }
+.gl-spotify-artist { font-size: 11.5px; color: #8b8c97; margin-top: 2px; }
+.gl-spotify-progress-wrap { margin-top: 8px; }
+.gl-spotify-track-bar { height: 3px; background: rgba(255,255,255,.1); border-radius: 2px; }
+.gl-spotify-track-fill { background: #1DB954; border-radius: 2px; }
+.gl-spotify-times { font: 500 9.5px/1.4 'Inter', monospace; margin-top: 4px; color: #6e6f79; }
+
+/* Links */
+.links { gap: 10px; margin-top: 20px; }
+.links:empty { display: none; }
+.l {
+  padding: 13px 16px; min-height: 50px;
+  font: 600 13.5px/1.3 'Plus Jakarta Sans', system-ui, sans-serif;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: var(--lr);
+  letter-spacing: -.01em;
+  color: #F0F0F2;
+  transition: all .18s ease;
+}
+.l:hover, .l:focus-visible {
+  background: rgba(255,255,255,.08);
+  border-color: rgba(255,255,255,.18);
+  transform: translateY(-1.5px);
+  box-shadow: 0 8px 24px rgba(0,0,0,.35);
+}
+.l i { width: 28px; height: 28px; border-radius: 8px; }
+.l em { opacity: .6; }
+.links[data-cols="2"] .l { padding: 11px 12px; gap: 8px; }
+.links[data-cols="2"] .l .lbl { font-size: 12px; }
+
+/* Contador de visitas */
+.stats {
+  display: flex; width: max-content; max-width: 100%;
+  margin: 22px auto 0; padding: 6px 14px;
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 99px;
+  background: rgba(255,255,255,.03);
+  color: #8b8c97;
+  font: 500 11px/1 'Inter', sans-serif;
+}
+.stats svg { color: var(--a); width: 12px; height: 12px; opacity: .8; }
+.stats b { color: #F0F0F2; font-weight: 600; }
+
+/* Footer */
+.f {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  margin-top: 20px; padding-top: 16px;
+  border-top: 1px solid rgba(255,255,255,.06);
+  font: 400 11px/1 'Inter', sans-serif;
+  color: #555660;
+}
+.f a {
+  font: 700 12px/1 'Plus Jakarta Sans', sans-serif;
+  color: #8b8c97;
+  letter-spacing: -.02em;
+  text-decoration: none;
+}
+.f a:hover { color: #F0F0F2; }
+
+/* Share */
+.shr {
+  top: 16px; right: 16px;
+  width: 32px; height: 32px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,.08);
+  color: #8b8c97;
+  background: rgba(255,255,255,.04);
+}
+.shr:hover { color: #fff; background: rgba(255,255,255,.08); }
+
+/* Meta y widgets */
+.meta { gap: 8px; margin-top: 10px; }
+.mt { background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.08); padding: 4px 10px; border-radius: 99px; color: #a1a1aa; font-family: 'Inter', sans-serif; font-size: 11.5px; }
+.note { padding: 12px 16px; border-radius: 12px; margin-top: 16px; font-family: 'Inter', sans-serif; font-size: 13px; background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.07); }
+.wg { margin-top: 16px; gap: 8px; }
+.wgi { padding: 8px 12px; font-family: 'Inter', sans-serif; border-radius: 10px; background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.07); }
+
+/* Splash */
+.sp { background: rgba(4,4,7,.85); font: 600 16px 'Plus Jakarta Sans', sans-serif; letter-spacing: -.01em; }
+
+@media (max-width: 520px) {
+  body { padding: 32px 14px; }
+  .card { padding: 30px 20px 22px; border-radius: 22px; max-width: 390px; }
+  .card .bn { margin: -30px -20px 0; }
+  .hd .av { margin-bottom: 16px; }
+  .gl-spotify-content { padding: 12px 14px; gap: 12px; }
+  .gl-spotify-cover-wrap, .gl-spotify-img { width: 54px; height: 54px; }
+  .gl-spotify-disc { width: 50px; height: 50px; top: 2px; left: 8px; }
+  .p-name { font-size: clamp(22px, 6vw, calc(var(--ns) + 2px)); }
+  .hd.side { gap: 14px; }
+  .hd.side .av { width: min(var(--as), 72px); height: min(var(--as), 72px); }
+  .links[data-cols="2"] .l { gap: 6px; padding: 9px 8px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
