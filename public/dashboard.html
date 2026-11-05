@@ -1821,6 +1821,23 @@ $('save').onclick = async () => {
   try {
     const d = await api('/api/profile', 'PUT', savedPayload);
     ME = d;
+    if (d?.settings) {
+      CFG = { ...d.settings };
+    }
+    if (d?.profile) {
+      const p = d.profile;
+      PF = {
+        display_name: p.display_name,
+        bio: p.bio,
+        accent: p.accent,
+        background: p.background,
+        bg_blur: p.bg_blur,
+        bg_opacity: p.bg_opacity,
+        bg_vignette: p.bg_vignette,
+        splash: !!p.splash,
+        splash_text: p.splash_text
+      };
+    }
     saving = false;
     dirty = changeVersion !== savedVersion;
     sv.disabled = !dirty;
@@ -1832,6 +1849,7 @@ $('save').onclick = async () => {
     }
     toast(dirty ? 'Se guardaron los cambios anteriores; quedan cambios pendientes.' : '✓ Cambios guardados correctamente');
     render();
+    refresh(true);
   } catch (x) {
     saving = false;
     dirty = true;
