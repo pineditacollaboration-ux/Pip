@@ -68,7 +68,7 @@ export function createQueries(sb) {
       if (!data) return {};
       return {
         ...data,
-        settings: typeof data.settings === 'object' ? JSON.stringify(data.settings) : data.settings
+        settings: data.settings
       };
     },
     async updProfile(display_name, bio, accent, background, bg_blur, bg_opacity, bg_vignette, particles, splash, splash_text, user_id) {
