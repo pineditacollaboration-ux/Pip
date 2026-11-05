@@ -282,6 +282,7 @@ export function createApp(db, { uploadDir = process.env.UPLOAD_DIR || 'uploads',
   app.get('/api/me', auth, async (req, res) => {
     const result = await me(req.user);
     console.log('DEBUG: /api/me returning settings:', result.settings);
+    console.log('DEBUG: Raw profile.settings from DB:', (await q.profile(req.user.id)).settings);
     res.json(result);
   });
   app.get('/api/discord/presence', auth, async (req, res) => {
