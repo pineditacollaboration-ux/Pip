@@ -39,12 +39,4 @@
 }
 @media (max-width:560px) { .app .ch { padding:18px 18px 0; }.app .cb { padding:16px 18px 18px; }.app .pg-header { margin:18px 0; } }
 
-/* Public profile */
-body:has(.stage) { background:radial-gradient(70% 55% at 50% -10%,color-mix(in srgb,var(--a) 18%,transparent),transparent 65%),#080b10; }
-body:has(.stage) .stage::before { opacity:.55; }
-body:has(.stage) .card { border-radius:20px; background:rgba(14,18,25,.88); border-color:rgba(185,211,234,.16); box-shadow:0 26px 70px -30px #000,inset 0 1px 0 rgba(255,255,255,.07); }
-body:has(.stage) .card::before { left:20%; right:20%; background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--a) 60%,white),transparent); }
-body:has(.stage) .p-name { color:#f3f7fb; } body:has(.stage) .u,body:has(.stage) .bio { color:#aeb9c7; }
-body:has(.stage) .l { background:rgba(255,255,255,.035); border-color:rgba(185,211,234,.13); } body:has(.stage) .l:hover { background:color-mix(in srgb,var(--a) 10%,rgba(255,255,255,.05)); border-color:color-mix(in srgb,var(--a) 42%,rgba(255,255,255,.2)); box-shadow:none; }
-body:has(.stage) .badges-bar,body:has(.stage) .note,body:has(.stage) .wg,body:has(.stage) .gl-spotify { border-color:rgba(185,211,234,.12); background:rgba(255,255,255,.025); box-shadow:none; }
-body:has(.stage) .stats { border-color:rgba(185,211,234,.13); background:rgba(255,255,255,.035); } body:has(.stage) .shr { background:rgba(255,255,255,.035); border-color:rgba(185,211,234,.13); }
+/* Public profile styles removed from studio-refresh so user customizations take effect */
