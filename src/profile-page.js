@@ -1,6 +1,5 @@
-import { readFileSync } from 'node:fs';
 import { DEFAULTS } from './settings-spec.js';
-const ICONS = JSON.parse(readFileSync(new URL('./icons.json', import.meta.url), 'utf8'));
+import ICONS from './icons.json' with { type: 'json' };
 
 export function iconFor(url) {
   let host = ''; try { host = new URL(url).hostname.replace(/^www\./, ''); } catch { return null; }
