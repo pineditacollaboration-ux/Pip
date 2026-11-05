@@ -41,7 +41,8 @@ try {
 
 export default function handler(req, res) {
   if (!app) {
-    res.status(500).json({
+    res.writeHead(500, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({
       error: 'V3-CODE-DEPLOYED',
       message: initError || 'Unknown error',
       debug: {
@@ -53,7 +54,7 @@ export default function handler(req, res) {
         hasPipSecret: !!process.env.PIP_SECRET,
         uploadDir: process.env.UPLOAD_DIR
       }
-    });
+    }));
     return;
   }
   // Express app needs to be called with the request and response
