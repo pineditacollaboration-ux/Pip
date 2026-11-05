@@ -5,6 +5,8 @@ import { loadProjectEnv } from '../src/env.js';
 import { fileURLToPath } from 'node:url';
 import { mkdirSync } from 'node:fs';
 
+// Force Vercel rebuild - v2
+
 // Cargar .env solo si existe (local development)
 const envPath = fileURLToPath(new URL('../.env', import.meta.url));
 loadProjectEnv(envPath);
