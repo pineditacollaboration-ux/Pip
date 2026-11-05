@@ -269,6 +269,7 @@ export function createApp(db, { uploadDir = process.env.UPLOAD_DIR || 'uploads',
       s = parseSettings(p?.settings);
       s = sanitize(migrateSettings(s), { ...DEFAULTS, ...migrateSettings(s) });
     }
+    console.log('DEBUG: Rendering profile with settings:', s);
     const { settings: _s, ...prof } = p;
     return {
       username: u.username, ...prof, ...over,
@@ -294,8 +295,11 @@ export function createApp(db, { uploadDir = process.env.UPLOAD_DIR || 'uploads',
     if (String(display_name).length > 40 || String(bio).length > 280) return res.status(400).json({ error: 'Nombre máx. 40 y bio máx. 280 caracteres' });
     if (!/^#[0-9a-fA-F]{6}$/.test(accent) || !BACKGROUNDS.includes(background)) return res.status(400).json({ error: 'Color o fondo no válido' });
     if (String(splash_text).length > 40) return res.status(400).json({ error: 'Texto de entrada: máx. 40' });
+    console.log('DEBUG: Saving settings:', b.settings);
+    const sanitizedSettings = b.settings ? sanitize(b.settings, await settingsOf(req.user.id)) : null;
+    console.log('DEBUG: Sanitized settings:', sanitizedSettings);
     await q.updProfile(String(display_name).trim(), String(bio).trim(), accent, background, num(b.bg_blur, 0, 30, 0), num(b.bg_opacity, 20, 100, 100), num(b.bg_vignette, 0, 100, 40), b.particles === false || b.particles === 0 ? 0 : 1, b.splash ? 1 : 0, String(splash_text).trim() || 'Haz clic para entrar', req.user.id);
-    if (b.settings) await q.setSettings(sanitize(b.settings, await settingsOf(req.user.id)), req.user.id);
+    if (sanitizedSettings) await q.setSettings(sanitizedSettings, req.user.id);
     _profileCache.clear(); // invalidate public profile HTML cache
     res.json(await me(req.user)); // me() repopulates _previewCache with fresh data
   });
