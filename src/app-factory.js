@@ -280,7 +280,11 @@ export function createApp(db, { uploadDir = process.env.UPLOAD_DIR || 'uploads',
   };
 
   // /api/me is called at dashboard startup — me() now also warms _previewCache
-  app.get('/api/me', auth, async (req, res) => res.json(await me(req.user)));
+  app.get('/api/me', auth, async (req, res) => {
+    const result = await me(req.user);
+    console.log('DEBUG: /api/me returning settings:', result.settings);
+    res.json(result);
+  });
   app.get('/api/discord/presence', auth, async (req, res) => {
     const user = await q.userById(req.user.id);
     if (!user?.discord_id) return res.status(404).json({ error: 'No hay una cuenta de Discord vinculada.' });
