@@ -28,9 +28,9 @@ const BACKGROUNDS = ['aurora', 'grid', 'noir', 'sunset', 'forest', 'void'];
 const sha = (s) => createHash('sha256').update(s).digest('hex');
 const SESSION_DAYS = 30;
 
-// ── Profile HTML cache (TTL: 30 s) ────────────────────────────────────────────
+// ── Profile HTML cache (TTL: 5 s) ────────────────────────────────────────────
 const _profileCache = new Map(); // username → { html, ts }
-const CACHE_TTL = 30_000;
+const CACHE_TTL = 5_000;
 const profileCacheGet = (u) => { const e = _profileCache.get(u); return e && Date.now() - e.ts < CACHE_TTL ? e.html : null; };
 const profileCacheSet = (u, html) => _profileCache.set(u, { html, ts: Date.now() });
 
