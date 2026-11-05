@@ -1,5 +1,5 @@
 import { DEFAULTS } from './settings-spec.js';
-import ICONS from './icons.json' with { type: 'json' };
+import { ICONS } from './icons-const.js';
 
 export function iconFor(url) {
   let host = ''; try { host = new URL(url).hostname.replace(/^www\./, ''); } catch { return null; }
