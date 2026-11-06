@@ -1838,6 +1838,13 @@ function render(skipNav) {
     buildNav();
     _lastNavCur = cur; _lastNavDiscord = discordStatus; _lastNavAvatar = avatarSrc;
   }
+  // Garantizar que el botón activo en el sidebar siempre coincida con la vista actual
+  document.querySelectorAll('.sb-links .nv').forEach(btn => {
+    const label = btn.querySelector('.nv-label')?.textContent?.trim();
+    const isCurrent = (NAV_METAS[cur] && NAV_METAS[cur].label === label) || btn.getAttribute('data-sec') === cur;
+    if (isCurrent) btn.setAttribute('aria-current', 'page');
+    else btn.removeAttribute('aria-current');
+  });
   const dot = document.querySelector('.sb-user-dot');
   if (dot) {
     const status = discordStatus;
