@@ -746,7 +746,6 @@ const VIEWS = {
     return [
       card('Añadir plataformas y redes', 'Toca el icono de una red para vincularla a tu perfil.', chips, grid, h('button', { class: 'btn btn-ghost', style: 'margin-top:14px', text: '+ Añadir enlace propio', onclick: () => openForm(null) }), form),
       card('Enlaces activos', `${ME.links.length} ${ME.links.length === 1 ? 'enlace visible' : 'enlaces visibles'} en tu perfil · ${fmtN(ME.links.reduce((a, l) => a + l.clicks, 0))} clics en total`, tools, list),
-      linkHealth(M()),
       ...specCards('enlaces')
     ];
   },
