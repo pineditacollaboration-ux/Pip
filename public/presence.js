@@ -1,4 +1,4 @@
-/* Live presence: one request at a time, server-aligned clock, no invented loops. */
+﻿/* Live presence: one request at a time, server-aligned clock, no invented loops. */
 (() => {
   const seed = document.getElementById('pip-presence-data');
   if (!seed) return;
@@ -31,6 +31,8 @@
     lastSnapshot = sampledAt; offset = sampledAt - Date.now(); received = Date.now(); failed = false;
     const status = document.querySelector('.av-status');
     if (status) { status.className = 'av-status ' + (p.status || 'offline'); status.title = ({ online:'En línea',idle:'Ausente',dnd:'No molestar',offline:'Desconectado' })[p.status] || 'Estado no disponible'; }
+    const dcCard = document.getElementById('gl-dc');
+    if (dcCard) dcCard.style.display = p.spotify?.title ? 'none' : 'flex';
     if (!p.spotify?.title) {
       song = null; card.style.display = 'none'; card.dataset.sync = '';
       el('sp-open').removeAttribute('href'); el('sp-img').removeAttribute('src');

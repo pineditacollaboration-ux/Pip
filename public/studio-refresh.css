@@ -40,3 +40,31 @@
 @media (max-width:560px) { .app .ch { padding:18px 18px 0; }.app .cb { padding:16px 18px 18px; }.app .pg-header { margin:18px 0; } }
 
 /* Public profile styles removed from studio-refresh so user customizations take effect */
+
+/* ── v35 · Resumen: chips de variación, tarjeta en vivo, alturas ───────────── */
+/* La regla genérica ".up" (zona de subida) afectaba a los chips .sc-d.up: se restauran aquí. */
+.app .sc-d.up, .app .sc-d.dn {
+  display: inline-flex !important; align-items: center !important; gap: 0 !important;
+  margin: 0 !important; padding: 3px 8px !important; border: 0 !important; border-radius: 99px !important;
+  transition: none !important;
+}
+.app .sc-d.up { background: rgba(46,217,163,.12) !important; box-shadow: inset 0 0 0 1px rgba(46,217,163,.22) !important; }
+.app .sc-d.dn { background: rgba(251,113,133,.12) !important; box-shadow: inset 0 0 0 1px rgba(251,113,133,.22) !important; }
+
+.live-now {
+  display: flex; align-items: center; gap: 14px; padding: 14px 18px; border-radius: 16px;
+  background: linear-gradient(165deg, rgba(24,25,34,.7), rgba(12,13,19,.85));
+  border: 1px solid rgba(255,255,255,.08);
+}
+.live-now[data-spotify="1"] { border-color: rgba(29,185,84,.35); box-shadow: 0 0 30px -14px rgba(29,185,84,.5); }
+.live-dot { width: 10px; height: 10px; flex: none; border-radius: 50%; background: #64748b; box-shadow: 0 0 0 4px rgba(100,116,139,.18); }
+.live-dot.online { background: #2ed9a3; box-shadow: 0 0 0 4px rgba(46,217,163,.18); }
+.live-dot.idle { background: #fbbf24; box-shadow: 0 0 0 4px rgba(251,191,36,.18); }
+.live-dot.dnd { background: #fb7185; box-shadow: 0 0 0 4px rgba(251,113,133,.18); }
+.live-tx { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.live-tx b { font-size: 13px; font-weight: 700; color: #fff; }
+.live-tx span { font-size: 12.5px; color: var(--txt-muted, #94a3b8); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* Hora pico y mejor día con la misma altura */
+.app .w4 > .ph ~ *, .app .w4 { min-width: 0; }
+@media (prefers-reduced-motion: reduce) { .live-dot { transition: none; } }

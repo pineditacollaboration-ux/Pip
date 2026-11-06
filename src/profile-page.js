@@ -53,7 +53,7 @@ export function renderProfile({
   splash_text = 'Haz clic para entrar', preview = false, settings = DEFAULTS,
   views = null, badges = [], discord = null
 }) {
-  const s = { ...DEFAULTS, ...settings }, nm = display_name || username, name = esc(nm), ini = esc([...nm][0].toUpperCase());
+  const s = { ...DEFAULTS, ...settings }, nm = display_name || username, name = esc(nm), ini = esc(([...nm][0] || '?').toUpperCase());
   const ar = { circle: '50%', rounded: '22%', square: '0' }[s.avatar_shape];
   const dur = preview ? 0.001 : { slow: 1.1, normal: 0.7, fast: 0.4 }[s.enter_speed];
   const cfg = JSON.stringify({ pt: s.particles_type, tr: s.trail, tc: s.trail_color, sn: s.click_sound, tilt: s.tilt, ta: s.title_anim, title: nm, cf: s.click_fx, tz: s.w_tz, cd: s.w_cd_on ? s.w_cd_date : '', cl: s.w_cd_label }).replace(/</g, '\\u003c');
@@ -101,34 +101,34 @@ export function renderProfile({
 
   const spotify = presence?.spotify;
   const spotifyArtist = spotify?.artist ? `${spotify.artist}${spotify.album ? ` · ${spotify.album}` : ''}` : 'Spotify';
+  // Solo portadas https; la URL se codifica para no poder salir de url(...) en CSS.
+  const safeImg = (u) => (typeof u === 'string' && u.startsWith('https://') && u.length < 600) ? u : '';
+  const cssUrl = (u) => u.replace(/['"()\\\s<>]/g, (c) => '%' + c.charCodeAt(0).toString(16).toUpperCase().padStart(2, '0'));
+  const spImg = safeImg(spotify?.image);
+  const spSync = /^[A-Za-z0-9]{22}$/.test(spotify?.syncId || '') ? spotify.syncId : '';
+  const jsonJs = (v) => JSON.stringify(v ?? null).replace(/</g, '\\u003c').replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029');
   const spotifyHtml = s.spotify_show ? `
-    <div class="gl-spotify" id="gl-spotify" data-layout="${esc(s.spotify_layout || 'compact')}" style="${spotify?.title ? '' : 'display:none'}" ${spotify?.syncId ? `data-sync="${esc(spotify.syncId)}"` : ''}>
-      <div class="gl-spotify-ambient" id="sp-ambient" style="${spotify?.image ? `background-image:url('${esc(spotify.image)}')` : ''}"></div>
+    <div class="gl-spotify" id="gl-spotify" data-layout="${esc(s.spotify_layout || 'compact')}" data-state="playing" role="link" tabindex="0" aria-label="${esc(spotify?.title ? `Escuchando ${spotify.title}${spotify.artist ? ' de ' + spotify.artist : ''} en Spotify` : 'Spotify')}" style="${spotify?.title ? '' : 'display:none'}" ${spSync ? `data-sync="${spSync}"` : ''}>
+      <div class="gl-spotify-ambient" id="sp-ambient" style="${spImg ? `background-image:url('${cssUrl(spImg)}')` : ''}"></div>
       <div class="gl-spotify-content">
-        <div class="gl-spotify-cover-wrap">
-          <img src="${esc(spotify?.image || '')}" alt="Cover" class="gl-spotify-img" id="sp-img" loading="lazy">
+        <div class="gl-spotify-cover-wrap" id="sp-cover" data-has="${spImg ? '1' : '0'}">
           <div class="gl-spotify-disc" aria-hidden="true"></div>
+          <img src="${esc(spImg)}" alt="" class="gl-spotify-img" id="sp-img" width="72" height="72" decoding="async" referrerpolicy="no-referrer"${spImg ? '' : ' hidden'}>
+          <span class="gl-spotify-nocover" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span>
         </div>
         <div class="gl-spotify-main">
           <div class="gl-spotify-top">
             <span class="gl-spotify-now">
               <svg class="gl-spotify-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="#1DB954" d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424c-.18.295-.563.387-.857.207-2.35-1.435-5.308-1.76-8.793-.963-.335.077-.67-.133-.746-.468-.077-.334.132-.67.467-.746 3.808-.87 7.076-.496 9.722 1.115.294.18.386.562.207.855zm1.224-2.72c-.226.367-.707.483-1.074.257-2.69-1.653-6.79-2.132-9.97-1.166-.413.125-.85-.11-1.026-.522-.126-.413.11-.85.523-1.026 3.633-1.103 8.147-.568 11.233 1.33.367.227.483.708.257 1.075zm.105-2.835C14.692 8.95 9.375 8.775 6.297 9.71c-.494.15-1.02-.13-1.17-.624-.15-.494.13-1.02.624-1.17 3.532-1.073 9.404-.866 13.115 1.338.445.264.59.838.327 1.282-.264.444-.838.59-1.282.327z"/></svg>
-              <span>ESCUCHANDO EN SPOTIFY</span>
+              <span id="sp-state">Escuchando en Spotify</span>
             </span>
-            <div class="gl-spotify-eq" aria-hidden="true">
-              <img class="gl-spotify-eq-img" src="/ecualizador_128.webp" alt="" width="22" height="22">
-            </div>
+            <span class="gl-spotify-eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
           </div>
           <div class="gl-spotify-title" id="sp-title" title="${esc(spotify?.title || '')}">${esc(spotify?.title || '')}</div>
           <div class="gl-spotify-artist" id="sp-artist" title="${esc(spotifyArtist)}">${esc(spotifyArtist)}</div>
           <div class="gl-spotify-progress-wrap" aria-hidden="true">
-            <div class="gl-spotify-track-bar">
-              <div class="gl-spotify-track-fill" id="sp-fill"></div>
-            </div>
-            <div class="gl-spotify-times">
-              <span id="sp-cur">0:00</span>
-              <span id="sp-tot">0:00</span>
-            </div>
+            <div class="gl-spotify-track-bar"><div class="gl-spotify-track-fill" id="sp-fill"></div></div>
+            <div class="gl-spotify-times"><span id="sp-cur">0:00</span><span id="sp-tot">0:00</span></div>
           </div>
         </div>
       </div>
@@ -141,7 +141,7 @@ export function renderProfile({
   const discordCardHtml = (discord && s.discord_activity_show) ? `
     <div class="gl-dc" id="gl-dc" role="region" aria-label="Discord" style="${hasLiveActivity ? 'display:none' : 'flex'}">
       <div class="gl-dc-av">
-        ${/^https?:/.test(discord.avatar || '') ? `<img src="${esc(discord.avatar)}" alt="" loading="eager">` : `<span>${esc([...dcName][0].toUpperCase())}</span>`}
+        ${/^https?:/.test(discord.avatar || '') ? `<img src="${esc(discord.avatar)}" alt="" loading="eager">` : `<span>${esc(([...dcName][0] || '?').toUpperCase())}</span>`}
         <i class="gl-dc-status ${dcStatus}" id="dc-status" title="${esc(statusLabels[dcStatus])}"></i>
       </div>
       <div class="gl-dc-main">
@@ -850,207 +850,65 @@ ${s.card_anim === 'rainbow' ? `.card::after{content:"";position:absolute;inset:-
 
 ${BADGE_CSS}
 
-/* guns.lol Spotify Card with Vinyl Record & Equalizer */
+/* ── Spotify · tarjeta en vivo ───────────────────────────────── */
 .gl-spotify{
-  position:relative;
-  width:100%;
-  margin-top:16px;
-  border-radius:24px;
-  background:rgba(12,14,20,${/\.(mp4|webm)$/.test(bg_media) ? '0.94' : '0.90'});
-  border:1px solid rgba(255,255,255,0.11);
-  ${/\.(mp4|webm)$/.test(bg_media) ? '' : 'backdrop-filter:blur(18px) saturate(190%);-webkit-backdrop-filter:blur(18px) saturate(190%);'}
-  overflow:hidden;
-  box-shadow:0 16px 44px -8px rgba(0,0,0,0.92), 0 0 32px -8px rgba(29,185,84,0.22), inset 0 1px 0 rgba(255,255,255,0.14);
-  transition:all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  cursor:pointer;
-  will-change:transform;
-  transform:translateZ(0);
+  position:relative;width:100%;margin-top:16px;border-radius:22px;
+  background:rgba(12,14,20,${/\.(mp4|webm)$/.test(bg_media) ? '0.94' : '0.88'});
+  border:1px solid rgba(255,255,255,0.1);
+  ${/\.(mp4|webm)$/.test(bg_media) ? '' : 'backdrop-filter:blur(18px) saturate(170%);-webkit-backdrop-filter:blur(18px) saturate(170%);'}
+  overflow:hidden;contain:layout style;
+  box-shadow:0 14px 36px -12px rgba(0,0,0,.9),inset 0 1px 0 rgba(255,255,255,.12);
+  transition:transform .3s cubic-bezier(.16,1,.3,1),border-color .3s,box-shadow .3s;
+  animation:spotify-in .5s cubic-bezier(.16,1,.3,1) both;
+  -webkit-tap-highlight-color:transparent;
 }
-.gl-spotify::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  border-radius:inherit;
-  background:linear-gradient(135deg, rgba(255,255,255,0.12) 0%, transparent 45%);
-  pointer-events:none;
-  z-index:2;
-}
-.gl-spotify:hover{
-  border-color:rgba(29,185,84,0.45);
-  transform:translateY(-4px) scale(1.01);
-  box-shadow:0 24px 60px -8px rgba(0,0,0,0.98), 0 0 45px -4px rgba(29,185,84,0.38), inset 0 1px 0 rgba(255,255,255,0.25);
-}
-.gl-spotify-ambient{
-  position:absolute;
-  inset:0;
-  background-size:cover;
-  background-position:center;
-  filter:blur(38px) saturate(240%);
-  opacity:0.38;
-  pointer-events:none;
-  z-index:0;
-  transition:background-image .4s ease;
-}
-.gl-spotify-content{
-  position:relative;
-  z-index:1;
-  display:flex;
-  align-items:center;
-  gap:18px;
-  padding:16px 20px;
-  text-align:left;
-}
-.gl-spotify-cover-wrap{
-  position:relative;
-  width:72px;
-  height:72px;
-  flex:none;
-}
-.gl-spotify-img{
-  position:relative;
-  z-index:2;
-  width:100%;
-  height:100%;
-  border-radius:14px;
-  object-fit:cover;
-  display:block;
-  box-shadow:0 8px 24px rgba(0,0,0,0.75), inset 0 1px 0 rgba(255,255,255,0.2);
-  transition:transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-.gl-spotify:hover .gl-spotify-img{
-  transform:scale(1.04);
-}
-.gl-spotify-disc{
-  position:absolute;
-  top:4px;
-  left:22px;
-  width:64px;
-  height:64px;
-  border-radius:50%;
-  background:radial-gradient(circle at center, #111 25%, #222 26%, #111 35%, #2a2a2a 45%, #111 60%, #1a1a1a 70%);
-  box-shadow:0 4px 16px rgba(0,0,0,0.85);
-  z-index:1;
-  animation:spindisc 6s linear infinite;
-  opacity:0.95;
-  transition:transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-.gl-spotify:hover .gl-spotify-disc{
-  transform:translateX(16px) rotate(45deg);
-}
-.gl-spotify-disc::after{
-  content:"";
-  position:absolute;
-  top:50%;left:50%;
-  transform:translate(-50%,-50%);
-  width:16px;height:16px;
-  border-radius:50%;
-  background:#090a0f;
-  border:2px solid #1DB954;
-  box-shadow:0 0 8px rgba(29,185,84,0.6);
-}
+.gl-spotify[data-sync]{cursor:pointer}
+.gl-spotify::before{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(135deg,rgba(255,255,255,.1),transparent 42%);pointer-events:none;z-index:2}
+.gl-spotify:hover,.gl-spotify:focus-visible{transform:translateY(-3px);border-color:rgba(29,185,84,.5);box-shadow:0 22px 50px -14px rgba(0,0,0,.95),0 0 36px -10px rgba(29,185,84,.4),inset 0 1px 0 rgba(255,255,255,.2)}
+.gl-spotify:focus-visible{outline:2px solid #1DB954;outline-offset:3px}
+.gl-spotify[data-state="syncing"]{border-color:rgba(255,255,255,.08)}
+.gl-spotify-ambient{position:absolute;inset:-30%;background-size:cover;background-position:center;filter:blur(34px) saturate(220%);opacity:.34;pointer-events:none;z-index:0;transition:background-image .4s ease}
+.gl-spotify-content{position:relative;z-index:1;display:flex;align-items:center;gap:14px;padding:16px 18px;text-align:left}
+.gl-spotify-cover-wrap{position:relative;width:72px;height:72px;flex:none;margin-right:12px}
+.gl-spotify-img,.gl-spotify-nocover{position:relative;z-index:2;display:block;width:100%;height:100%;border-radius:14px;object-fit:cover;box-shadow:0 8px 22px rgba(0,0,0,.7),0 0 0 1px rgba(255,255,255,.1)}
+.gl-spotify-img[hidden]{display:none}
+.gl-spotify-nocover{display:grid;place-items:center;background:linear-gradient(140deg,#1b2a21,#0d1410)}
+.gl-spotify-nocover svg{width:28px;height:28px;fill:none;stroke:var(--a,#1DB954);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.gl-spotify-cover-wrap[data-has="1"] .gl-spotify-nocover{display:none}
+.gl-spotify-disc{position:absolute;top:4px;left:20px;width:64px;height:64px;z-index:1;border-radius:50%;transition:transform .45s cubic-bezier(.34,1.56,.64,1)}
+.gl-spotify-disc::before{content:"";position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg,#101113,#1d1e21 20%,#101113 45%,#202124 70%,#101113);box-shadow:0 4px 14px rgba(0,0,0,.8);animation:spindisc 5s linear infinite;animation-play-state:paused}
+.gl-spotify-disc::after{content:"";position:absolute;top:50%;left:50%;width:15px;height:15px;margin:-7.5px 0 0 -7.5px;border-radius:50%;background:#090a0f;border:2px solid #1DB954}
+.gl-spotify[data-state="playing"] .gl-spotify-disc::before{animation-play-state:running}
+.gl-spotify:hover .gl-spotify-disc{transform:translateX(9px)}
 @keyframes spindisc{to{transform:rotate(360deg)}}
-
-.gl-spotify-main{
-  flex:1;
-  min-width:0;
-  display:flex;
-  flex-direction:column;
-  gap:5px;
-}
-.gl-spotify-top{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:8px;
-}
-.gl-spotify-now{
-  display:inline-flex;
-  align-items:center;
-  gap:6px;
-  color:#1DB954;
-  font-size:10.5px;
-  font-weight:800;
-  letter-spacing:0.08em;
-  text-shadow:0 0 12px rgba(29,185,84,0.4);
-}
-.gl-spotify-icon{
-  width:14px;
-  height:14px;
-  flex:none;
-}
-.gl-spotify-eq{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  flex:none;
-  line-height:0;
-}
-.gl-spotify-eq-img{
-  width:26px;
-  height:26px;
-  display:block;
-  object-fit:contain;
-  pointer-events:none;
-  filter:drop-shadow(0 0 8px rgba(29,185,84,0.6));
-}
 @keyframes spotify-in{from{opacity:0;transform:translateY(10px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
-.gl-spotify{animation:spotify-in .5s cubic-bezier(.16,1,.3,1) both}
+.gl-spotify-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.gl-spotify-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:2px}
+.gl-spotify-now{display:inline-flex;align-items:center;gap:6px;min-width:0;color:#1ED760;font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
+.gl-spotify[data-state="syncing"] .gl-spotify-now{color:#94a3b8}
+.gl-spotify-icon{width:14px;height:14px;flex:none}
+.gl-spotify-eq{display:inline-flex;align-items:flex-end;gap:2px;height:14px;flex:none}
+.gl-spotify-eq i{display:block;width:3px;height:100%;border-radius:2px;background:#1ED760;transform-origin:50% 100%;transform:scaleY(.25);animation:spotify-eq 1s ease-in-out infinite;animation-play-state:paused}
+.gl-spotify-eq i:nth-child(2){animation-duration:.8s;animation-delay:-.4s}
+.gl-spotify-eq i:nth-child(3){animation-duration:1.15s;animation-delay:-.7s}
+.gl-spotify-eq i:nth-child(4){animation-duration:.9s;animation-delay:-.2s}
+.gl-spotify[data-state="playing"] .gl-spotify-eq i{animation-play-state:running}
+@keyframes spotify-eq{0%,100%{transform:scaleY(.25)}50%{transform:scaleY(1)}}
+.gl-spotify-title{color:#fff;font-size:15.5px;font-weight:800;letter-spacing:-.02em;line-height:1.25;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gl-spotify-artist{color:#cbd5e1;font-size:13px;font-weight:500;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gl-spotify-progress-wrap{margin-top:9px;display:flex;flex-direction:column;gap:5px}
+.gl-spotify-track-bar{width:100%;height:4px;border-radius:99px;background:rgba(255,255,255,.13);overflow:hidden;contain:strict}
+.gl-spotify-track-fill{width:0;height:100%;border-radius:inherit;background:linear-gradient(90deg,#1DB954,#4ADE80);transition:width 1s linear}
+.gl-spotify-times{display:flex;align-items:center;justify-content:space-between;font-size:10.5px;color:#a3b0c2;font-variant-numeric:tabular-nums;font-weight:600;line-height:1}
 
-.gl-spotify-title{
-  color:#ffffff;
-  font-size:15.5px;
-  font-weight:800;
-  letter-spacing:-0.02em;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  white-space:nowrap;
-}
-.gl-spotify-artist{
-  color:#cbd5e1;
-  font-size:13px;
-  font-weight:500;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  white-space:nowrap;
-}
-.gl-spotify-progress-wrap{
-  margin-top:8px;
-  display:flex;
-  flex-direction:column;
-  gap:5px;
-}
-.gl-spotify-track-bar{
-  width:100%;
-  height:4.5px;
-  border-radius:99px;
-  background:rgba(255,255,255,0.1);
-  overflow:hidden;
-}
-.gl-spotify-track-fill{
-  width:0%;
-  height:100%;
-  border-radius:99px;
-  background:#1DB954;
-  box-shadow:0 0 12px rgba(29,185,84,0.9);
-  transition:width .3s ease;
-}
-.gl-spotify-times{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  font-size:10.5px;
-  color:#94a3b8;
-  font-variant-numeric:tabular-nums;
-  font-weight:600;
-  line-height:1;
-}
-
-/* Spotify Cover layout (portada grande) */
-.gl-spotify[data-layout="cover"] .gl-spotify-content{flex-direction:column;align-items:stretch;gap:14px;padding:20px}
-.gl-spotify[data-layout="cover"] .gl-spotify-cover-wrap{width:100%;height:220px;border-radius:16px;overflow:hidden}
-.gl-spotify[data-layout="cover"] .gl-spotify-img{width:100%;height:100%;border-radius:16px}
+/* Portada grande */
+.gl-spotify[data-layout="cover"] .gl-spotify-content{flex-direction:column;align-items:stretch;gap:14px;padding:18px}
+.gl-spotify[data-layout="cover"] .gl-spotify-cover-wrap{width:100%;height:220px;margin:0}
+.gl-spotify[data-layout="cover"] .gl-spotify-img,.gl-spotify[data-layout="cover"] .gl-spotify-nocover{border-radius:16px}
 .gl-spotify[data-layout="cover"] .gl-spotify-disc{display:none}
 .gl-spotify[data-layout="cover"] .gl-spotify-main{width:100%}
+@media(max-width:380px){.gl-spotify-content{padding:14px;gap:12px}.gl-spotify-cover-wrap{width:60px;height:60px;margin-right:8px}.gl-spotify-disc{width:54px;height:54px;left:16px}.gl-spotify-title{font-size:14.5px}}
+@media(prefers-reduced-motion:reduce){.gl-spotify,.gl-spotify *,.gl-spotify-disc::before{animation:none!important;transition:none!important}}
 
 /* Discord Live Activity Card (Gaming / Streaming) */
 .gl-activity{
@@ -1384,6 +1242,7 @@ ${s.card_float ? '.stage{animation:fl 6s ease-in-out infinite}@keyframes fl{50%{
   box-shadow:0 12px 28px rgba(0,0,0,0.55), 0 0 20px -6px color-mix(in srgb,var(--a) 35%,transparent), inset 0 1px 0 rgba(255,255,255,0.18);
   outline:none;
 }
+.l:focus-visible{outline:2px solid var(--a,#8B8CFF);outline-offset:3px}
 .l:active{
   transform:translateY(-0.5px) scale(0.99) translateZ(0);
 }
@@ -1781,8 +1640,8 @@ ${(views !== null || s.location) ? `<div class="stats-row">${s.location ? `<div 
 <dialog class="badge-dialog" id="badge-dialog" aria-labelledby="badge-dialog-title"><h3 id="badge-dialog-title"></h3><p id="badge-dialog-desc"></p><button class="badge-close" type="button">Cerrar</button></dialog>
 <script>
 (()=>{const CFG=${cfg},RM=matchMedia('(prefers-reduced-motion:reduce)').matches,col=getComputedStyle(document.documentElement).getPropertyValue('--a').trim()||'#7DD3FC';
-let SP = ${JSON.stringify(spotify || null)};
-let ACT = ${JSON.stringify(activity || null)};
+let SP = ${jsonJs(spotify)};
+let ACT = ${jsonJs(activity)};
 
 // Typewriter bio animation (guns.lol signature effect)
 const bioEl=document.getElementById('bio');
@@ -1846,122 +1705,146 @@ if(ttPortal){
   document.addEventListener('click',()=>{ttPortal.classList.remove('visible');ttPortal.setAttribute('aria-hidden','true');},{passive:true});
 }
 
-// Real-time Spotify second-by-second progress
+// ── Progreso en vivo (Spotify y actividad) ───────────────────────────────
+const spCard=document.getElementById('gl-spotify'), spFill=document.getElementById('sp-fill'), spCur=document.getElementById('sp-cur'), spTot=document.getElementById('sp-tot'), spState=document.getElementById('sp-state'), spCover=document.getElementById('sp-cover'), spImgEl=document.getElementById('sp-img'), spAmb=document.getElementById('sp-ambient');
+const fmtT=(ms)=>{const t=Math.floor(ms/1000),m=Math.floor(t/60),r=t%60;return m+':'+(r<10?'0':'')+r;};
+const okImg=(u)=>typeof u==='string'&&u.indexOf('https://')===0&&u.length<600;
+const cssUrl=(u)=>encodeURI(u).split("'").join('%27').split('(').join('%28').split(')').join('%29');
+const setText=(el,t)=>{if(el&&el.textContent!==t)el.textContent=t;};
+let _lastPct=0;
 function updateSpotifyProgress(){
-  if(!SP||!SP.timestamps||!SP.timestamps.start||!SP.timestamps.end)return;
-  const now=Date.now(), start=SP.timestamps.start, end=SP.timestamps.end;
-  const totalMs=Math.max(1, end - start);
-  const curMs=Math.min(totalMs, Math.max(0, now - start));
-  const pct=Math.min(100, Math.max(0, (curMs/totalMs)*100));
-  const fmt=(ms)=>{ const s=Math.floor(ms/1000), m=Math.floor(s/60), sec=s%60; return m+':'+(sec<10?'0':'')+sec; };
-  const curEl=document.getElementById('sp-cur'), totEl=document.getElementById('sp-tot'), fillEl=document.getElementById('sp-fill');
-  if(curEl)curEl.textContent=fmt(curMs);
-  if(totEl)totEl.textContent=fmt(totalMs);
-  if(fillEl)fillEl.style.width=pct+'%';
+  if(!spCard||!SP||!SP.timestamps||!SP.timestamps.start||!SP.timestamps.end)return;
+  const now=Date.now(), start=+SP.timestamps.start, end=+SP.timestamps.end;
+  const total=Math.max(1,end-start), cur=Math.min(total,Math.max(0,now-start)), pct=cur/total*100;
+  const stale=now>end+10000, st=stale?'syncing':'playing';
+  if(spCard.dataset.state!==st)spCard.dataset.state=st;
+  setText(spState,stale?'Sincronizando…':'Escuchando en Spotify');
+  setText(spCur,fmtT(cur)); setText(spTot,fmtT(total));
+  if(spFill){
+    if(pct<_lastPct-1)spFill.style.transition='none'; else if(spFill.style.transition)spFill.style.transition='';
+    spFill.style.width=pct.toFixed(2)+'%';
+  }
+  _lastPct=pct;
 }
-// Real-time Activity elapsed time (games, streaming)
 function updateActivityProgress(){
   if(!ACT||!ACT.timestamps||!ACT.timestamps.start)return;
   const elEl=document.getElementById('act-elapsed'), tmEl=document.getElementById('act-time');
   if(!elEl)return;
-  const elapsedSec=Math.max(0,Math.floor((Date.now()-ACT.timestamps.start)/1000));
-  const m=Math.floor(elapsedSec/60), s=elapsedSec%60;
-  elEl.textContent=m+':'+(s<10?'0':'')+s;
+  const sec=Math.max(0,Math.floor((Date.now()-ACT.timestamps.start)/1000)), m=Math.floor(sec/60), s=sec%60;
+  setText(elEl,m+':'+(s<10?'0':'')+s);
   if(tmEl)tmEl.style.display='block';
 }
-setInterval(updateSpotifyProgress, 1000);
-setInterval(updateActivityProgress, 1000);
-updateSpotifyProgress();
-updateActivityProgress();
+// Un solo temporizador; se detiene mientras la pestaña está oculta.
+function tickLive(){ if(document.hidden)return; updateSpotifyProgress(); updateActivityProgress(); }
+setInterval(tickLive,1000); tickLive();
 
-// Spotify click to open track
-const spCard=document.getElementById('gl-spotify');
+// Abrir la canción (clic o teclado)
+function openTrack(){
+  const id=spCard&&spCard.dataset.sync;
+  if(id&&/^[A-Za-z0-9]{22}$/.test(id))window.open('https://open.spotify.com/track/'+id,'_blank','noopener');
+}
 if(spCard){
-  spCard.addEventListener('click',()=>{
-    const id=spCard.dataset.sync;
-    if(id)window.open('https://open.spotify.com/track/'+id, '_blank');
-  });
+  spCard.addEventListener('click',openTrack);
+  spCard.addEventListener('keydown',(e)=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openTrack();}});
+}
+if(spImgEl)spImgEl.addEventListener('error',()=>{spImgEl.hidden=true;if(spCover)spCover.dataset.has='0';if(spAmb)spAmb.style.backgroundImage='';});
+
+// Aplica una lectura de presencia (desde el servidor o desde el panel en la vista previa)
+function applyPresence(p){
+  if(!p)return;
+  const live=Boolean((p.spotify&&p.spotify.title)||(p.activity&&p.activity.name));
+  const dcCard=document.getElementById('gl-dc');
+  if(dcCard)dcCard.style.display=live?'none':'flex';
+  const dot=document.querySelector('.dc-dot'); if(dot&&p.status)dot.className='dc-dot '+p.status;
+  const stEl0=document.querySelector('.av-status'); if(stEl0&&p.status)stEl0.className='av-status '+p.status;
+  const dcSt=document.getElementById('dc-status'); if(dcSt&&p.status)dcSt.className='gl-dc-status '+p.status;
+  setText(document.getElementById('dc-sub'),(p.activity&&p.activity.name)?((p.activity.type===1||p.activity.type==='Streaming'?'transmitiendo ':'jugando a ')+p.activity.name):(p.spotify&&p.spotify.title)?('escuchando '+p.spotify.title):'no está haciendo nada');
+
+  if(p.spotify&&p.spotify.title){
+    SP=p.spotify;
+    if(spCard){
+      spCard.style.display='block';
+      const img=okImg(SP.image)?SP.image:'', artist=(SP.artist||'Spotify')+(SP.artist&&SP.album?' · '+SP.album:'');
+      const tEl=document.getElementById('sp-title'), aEl=document.getElementById('sp-artist');
+      if(tEl){setText(tEl,SP.title);tEl.title=SP.title;}
+      if(aEl){setText(aEl,artist);aEl.title=artist;}
+      if(spImgEl){
+        if(img){ if(spImgEl.getAttribute('src')!==img)spImgEl.src=img; spImgEl.hidden=false; if(spCover)spCover.dataset.has='1'; }
+        else { spImgEl.hidden=true; if(spCover)spCover.dataset.has='0'; }
+      }
+      if(spAmb){const bg=img?'url('+cssUrl(img)+')':''; if(spAmb.dataset.bg!==bg){spAmb.dataset.bg=bg;spAmb.style.backgroundImage=bg;}}
+      if(/^[A-Za-z0-9]{22}$/.test(SP.syncId||''))spCard.dataset.sync=SP.syncId; else delete spCard.dataset.sync;
+      spCard.setAttribute('aria-label','Escuchando '+SP.title+(SP.artist?' de '+SP.artist:'')+' en Spotify');
+      updateSpotifyProgress();
+    }
+  } else {
+    SP=null;
+    if(spCard)spCard.style.display='none';
+  }
+
+  const actCard=document.getElementById('gl-activity');
+  if(p.activity&&p.activity.name){
+    ACT=p.activity;
+    if(actCard){
+      const isStr=p.activity.type===1||p.activity.type==='Streaming';
+      actCard.dataset.streaming=isStr?'1':'0';
+      actCard.style.display='block';
+      const tEl=document.getElementById('act-title'), lblEl=document.getElementById('act-type-lbl'), detEl=document.getElementById('act-details'), stEl=document.getElementById('act-state'), imgEl=document.getElementById('act-img'), fbEl=document.getElementById('act-img-fallback'), smImgEl=document.getElementById('act-small-img'), lnkEl=document.getElementById('act-stream-link'), tmEl=document.getElementById('act-time'), elEl=document.getElementById('act-elapsed');
+      if(tEl)tEl.textContent=p.activity.name;
+      if(lblEl)lblEl.textContent=p.activity.typeLabel||(isStr?'Transmitiendo':'Jugando a');
+      if(detEl){
+        if(p.activity.details){detEl.textContent=p.activity.details;detEl.style.display='block';}else detEl.style.display='none';
+      }
+      if(stEl){
+        if(p.activity.state){stEl.textContent=p.activity.state;stEl.style.display='block';}else stEl.style.display='none';
+      }
+      if(imgEl&&okImg(p.activity.largeImage)){
+        if(imgEl.getAttribute('src')!==p.activity.largeImage)imgEl.src=p.activity.largeImage;
+        imgEl.style.display='block';
+        if(fbEl)fbEl.style.display='none';
+      } else if(fbEl){
+        fbEl.style.display='grid';
+        if(imgEl)imgEl.style.display='none';
+      }
+      if(smImgEl){
+        if(okImg(p.activity.smallImage)){smImgEl.src=p.activity.smallImage;smImgEl.style.display='block';}else smImgEl.style.display='none';
+      }
+      if(lnkEl){
+        if(p.activity.url&&p.activity.url.indexOf('https://')===0){lnkEl.href=p.activity.url;lnkEl.style.display='inline-flex';}else lnkEl.style.display='none';
+      }
+      if(tmEl&&elEl&&p.activity.timestamps&&p.activity.timestamps.start){
+        updateActivityProgress();
+        tmEl.style.display='block';
+      } else if(tmEl){
+        tmEl.style.display='none';
+      }
+    }
+  } else {
+    ACT=null;
+    if(actCard)actCard.style.display='none';
+  }
 }
 
-// Background auto-refresh of Discord presence & Spotify
+// Sondeo de presencia: nunca solapado, más lento si no hay nada en vivo, con espera creciente
+// si falla y detenido mientras la pestaña está oculta. En la vista previa el panel envía los datos.
+let _pBusy=false,_pFail=0,_pT=0;
+function _pDelay(){const live=Boolean((SP&&SP.title)||(ACT&&ACT.name));return Math.min(30000,(live?2500:6000)*Math.pow(2,Math.min(_pFail,3)));}
+function schedulePoll(){clearTimeout(_pT);if(document.hidden)return;_pT=setTimeout(pollPresence,_pDelay());}
 async function pollPresence(){
+  if(_pBusy||document.hidden)return;
+  _pBusy=true;
+  const ac=new AbortController(), to=setTimeout(()=>ac.abort(),6000);
   try{
-    const res=await fetch('/api/presence/'+encodeURIComponent('${username}')+'?_t='+Date.now(), { cache: 'no-store' });
-    if(!res.ok)return;
-    const data=await res.json(), p=data.presence;
-    if(!p)return;
-    const dcCard=document.getElementById('gl-dc');
-    const hasLiveActivity=Boolean(p.spotify?.title || p.activity?.name);
-    if(dcCard) dcCard.style.display=hasLiveActivity?'none':'flex';
-    const stEl=document.querySelector('.av-status');
-    if(stEl&&p.status) stEl.className='av-status '+p.status;
-    const dcSt=document.getElementById('dc-status');
-    if(dcSt&&p.status) dcSt.className='gl-dc-status '+p.status;
-    const dcSub=document.getElementById('dc-sub');
-    if(dcSub){
-      dcSub.textContent=(p.activity&&p.activity.name)?((p.activity.type===1||p.activity.type==='Streaming'?'transmitiendo ':'jugando a ')+p.activity.name):(p.spotify&&p.spotify.title)?('escuchando '+p.spotify.title):'no está haciendo nada';
-    }
-    const card=document.getElementById('gl-spotify');
-    if(p.spotify&&p.spotify.title){
-      SP=p.spotify;
-      if(card){
-        card.style.display='block';
-        const tEl=document.getElementById('sp-title'), aEl=document.getElementById('sp-artist'), imgEl=document.getElementById('sp-img'), ambEl=document.getElementById('sp-ambient');
-        if(tEl){tEl.textContent=p.spotify.title;tEl.title=p.spotify.title;}
-        if(aEl){aEl.textContent=p.spotify.artist||'Spotify';aEl.title=p.spotify.artist||'';}
-        if(imgEl&&p.spotify.image&&imgEl.src!==p.spotify.image)imgEl.src=p.spotify.image;
-        if(ambEl&&p.spotify.image)ambEl.style.backgroundImage='url(\"'+p.spotify.image+'\")';
-        if(p.spotify.syncId)card.dataset.sync=p.spotify.syncId;
-        updateSpotifyProgress();
-      }
-    } else if(card){
-      card.style.display='none';
-    }
-
-    const actCard=document.getElementById('gl-activity');
-    if(p.activity&&p.activity.name){
-      ACT=p.activity;
-      if(actCard){
-        const isStr=p.activity.type===1||p.activity.type==='Streaming';
-        actCard.dataset.streaming=isStr?'1':'0';
-        actCard.style.display='block';
-        const tEl=document.getElementById('act-title'), lblEl=document.getElementById('act-type-lbl'), detEl=document.getElementById('act-details'), stEl=document.getElementById('act-state'), imgEl=document.getElementById('act-img'), fbEl=document.getElementById('act-img-fallback'), smImgEl=document.getElementById('act-small-img'), lnkEl=document.getElementById('act-stream-link'), tmEl=document.getElementById('act-time'), elEl=document.getElementById('act-elapsed');
-        if(tEl)tEl.textContent=p.activity.name;
-        if(lblEl)lblEl.textContent=p.activity.typeLabel||(isStr?'Transmitiendo':'Jugando a');
-        if(detEl){
-          if(p.activity.details){detEl.textContent=p.activity.details;detEl.style.display='block';}else detEl.style.display='none';
-        }
-        if(stEl){
-          if(p.activity.state){stEl.textContent=p.activity.state;stEl.style.display='block';}else stEl.style.display='none';
-        }
-        if(imgEl&&p.activity.largeImage){
-          imgEl.src=p.activity.largeImage;imgEl.style.display='block';
-          if(fbEl)fbEl.style.display='none';
-        } else if(fbEl){
-          fbEl.style.display='grid';
-          if(imgEl)imgEl.style.display='none';
-        }
-        if(smImgEl){
-          if(p.activity.smallImage){smImgEl.src=p.activity.smallImage;smImgEl.style.display='block';}else smImgEl.style.display='none';
-        }
-        if(lnkEl){
-          if(p.activity.url){lnkEl.href=p.activity.url;lnkEl.style.display='inline-flex';}else lnkEl.style.display='none';
-        }
-        if(tmEl&&elEl&&p.activity.timestamps?.start){
-          const elapsedSec=Math.max(0,Math.floor((Date.now()-p.activity.timestamps.start)/1000));
-          const m=Math.floor(elapsedSec/60), s=elapsedSec%60;
-          elEl.textContent=m+':'+(s<10?'0':'')+s;
-          tmEl.style.display='block';
-        } else if(tmEl){
-          tmEl.style.display='none';
-        }
-      }
-    } else if(actCard){
-      actCard.style.display='none';
-    }
-  }catch(e){}
+    const res=await fetch('/api/presence/'+encodeURIComponent(${jsonJs(username)}),{cache:'no-store',signal:ac.signal});
+    if(!res.ok)throw new Error('presence');
+    applyPresence((await res.json()).presence);
+    _pFail=0;
+  }catch(e){_pFail++;}
+  finally{clearTimeout(to);_pBusy=false;schedulePoll();}
 }
-${preview ? 'pollPresence(); setInterval(pollPresence, 1200);' : 'pollPresence(); setInterval(pollPresence, 1200); document.addEventListener("visibilitychange", ()=>{ if(!document.hidden) pollPresence(); });'}
+${preview
+  ? "window.addEventListener('message',(e)=>{if(e.source!==window.parent)return;const d=e.data;if(d&&d.type==='pip:presence')applyPresence(d.presence);});"
+  : "pollPresence();document.addEventListener('visibilitychange',()=>{if(!document.hidden){tickLive();pollPresence();}else clearTimeout(_pT);});window.addEventListener('online',pollPresence);"}
 
 // Volume control state & UI (default 50% for balanced volume)
 let _volCur = 0.5;

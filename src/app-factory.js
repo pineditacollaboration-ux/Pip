@@ -1,11 +1,11 @@
-import zlib from 'node:zlib';
+﻿import zlib from 'node:zlib';
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import bcrypt from 'bcryptjs';
 import { createHash, createHmac, randomBytes } from 'node:crypto';
-import { mkdirSync, rmSync, writeFileSync, readFileSync, existsSync, renameSync } from 'node:fs';
+import { mkdirSync, rmSync, writeFileSync, readFileSync, existsSync, renameSync, statSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
-import { join, resolve, sep } from 'node:path';
+import { join, resolve, sep, extname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { renderProfile } from './profile-page.js';
 import { SPEC, DEFAULTS, sanitize, designChanged } from './settings-spec.js';
@@ -33,6 +33,34 @@ const _profileCache = new Map(); // username → { html, ts }
 const CACHE_TTL = 5_000;
 const profileCacheGet = (u) => { const e = _profileCache.get(u); return e && Date.now() - e.ts < CACHE_TTL ? e.html : null; };
 const profileCacheSet = (u, html) => _profileCache.set(u, { html, ts: Date.now() });
+
+// ── Respuestas comprimidas ───────────────────────────────────────────────────
+// Se comprime una sola vez por contenido y se reenvía el mismo búfer con su Content-Length
+// exacto (sin streaming), así no hay conflictos de longitud ni pantallas en negro.
+const _zc = new Map(); // clave → { src, br, gzip }
+const encodingFor = (req) => { const a = String(req.headers['accept-encoding'] || ''); return /\bbr\b/.test(a) ? 'br' : /\bgzip\b/.test(a) ? 'gzip' : null; };
+function sendCompressed(req, res, type, body, key) {
+  res.set('Vary', 'Accept-Encoding');
+  res.type(type);
+  const enc = encodingFor(req), size = Buffer.byteLength(body);
+  if (!enc || size < 1024) return res.send(body);
+  let e = _zc.get(key);
+  if (!e || e.src !== body) { e = { src: body }; _zc.set(key, e); }
+  if (!e[enc]) e[enc] = enc === 'br'
+    ? zlib.brotliCompressSync(body, { params: { [zlib.constants.BROTLI_PARAM_QUALITY]: 5, [zlib.constants.BROTLI_PARAM_SIZE_HINT]: size } })
+    : zlib.gzipSync(body, { level: 6 });
+  res.set({ 'Content-Encoding': enc, 'Content-Length': String(e[enc].length) });
+  res.end(e[enc]);
+}
+// Lectura de archivos del disco con caché por fecha de modificación.
+const _fileCache = new Map(); // ruta → { mtime, size, text }
+function readFresh(file) {
+  const st = statSync(file), c = _fileCache.get(file);
+  if (c && c.mtime === st.mtimeMs && c.size === st.size) return c;
+  const e = { mtime: st.mtimeMs, size: st.size, text: readFileSync(file, 'utf8') };
+  _fileCache.set(file, e);
+  return e;
+}
 
 // ── Preview base cache (user's profile+links+stats, invalidated on any mutation)
 const _previewCache = new Map();
@@ -273,7 +301,6 @@ export function createApp(db, { uploadDir = process.env.UPLOAD_DIR || 'uploads',
       s = parseSettings(p?.settings);
       s = sanitize(migrateSettings(s), { ...DEFAULTS, ...migrateSettings(s) });
     }
-    console.log('DEBUG: Rendering profile with settings:', s);
     const { settings: _s, ...prof } = p;
     return {
       username: u.username, ...prof, ...over,
@@ -286,8 +313,6 @@ export function createApp(db, { uploadDir = process.env.UPLOAD_DIR || 'uploads',
   // /api/me is called at dashboard startup — me() now also warms _previewCache
   app.get('/api/me', auth, async (req, res) => {
     const result = await me(req.user);
-    console.log('DEBUG: /api/me returning settings:', result.settings);
-    console.log('DEBUG: Raw profile.settings from DB:', (await q.profile(req.user.id)).settings);
     res.json(result);
   });
   app.get('/api/discord/presence', auth, async (req, res) => {
@@ -304,10 +329,8 @@ export function createApp(db, { uploadDir = process.env.UPLOAD_DIR || 'uploads',
     if (String(display_name).length > 40 || String(bio).length > 280) return res.status(400).json({ error: 'Nombre máx. 40 y bio máx. 280 caracteres' });
     if (!/^#[0-9a-fA-F]{6}$/.test(accent) || !BACKGROUNDS.includes(background)) return res.status(400).json({ error: 'Color o fondo no válido' });
     if (String(splash_text).length > 40) return res.status(400).json({ error: 'Texto de entrada: máx. 40' });
-    console.log('DEBUG: Saving settings:', b.settings);
     const currentSettings = await settingsOf(req.user.id);
     const sanitizedSettings = sanitize(b.settings || {}, currentSettings);
-    console.log('DEBUG: Sanitized settings:', sanitizedSettings);
     await q.updProfile(String(display_name).trim(), String(bio).trim(), accent, background, num(b.bg_blur, 0, 30, 0), num(b.bg_opacity, 20, 100, 100), num(b.bg_vignette, 0, 100, 40), b.particles === false || b.particles === 0 ? 0 : 1, b.splash ? 1 : 0, String(splash_text).trim() || 'Haz clic para entrar', req.user.id);
     await q.setSettings(sanitizedSettings, req.user.id);
     _profileCache.clear(); // invalidate public profile HTML cache
@@ -328,6 +351,7 @@ export function createApp(db, { uploadDir = process.env.UPLOAD_DIR || 'uploads',
     if (!link || String(link.user_id) !== String(req.user.id)) return res.status(404).json({ error: 'Enlace no encontrado' });
     await q.updLink(id, req.user.id, label, url);
     _profileCache.clear();
+    _zc.delete('profile:' + req.user.username.toLowerCase());
     res.json(await me(req.user));
   });
   app.delete('/api/links/:id', auth, async (req, res) => { await q.delLink(Number(req.params.id), req.user.id); _profileCache.clear(); res.json(await me(req.user)); });
@@ -358,6 +382,7 @@ export function createApp(db, { uploadDir = process.env.UPLOAD_DIR || 'uploads',
     try { await q.setMedia(spec.col, `/uploads/${req.user.id}/${name}`, req.user.id); } catch (error) { rmSync(join(dir,name),{force:true}); throw error; }
     removeMedia(old, req.user.id);
     _profileCache.clear();
+    _zc.delete('profile:' + req.user.username.toLowerCase());
     res.json(await me(req.user)); // me() repopulates _previewCache with fresh data
   });
   app.delete('/api/upload/:kind', auth, async (req, res) => {
@@ -528,7 +553,7 @@ export function createApp(db, { uploadDir = process.env.UPLOAD_DIR || 'uploads',
     res.json({ok:true});
   });
 
-  app.get('/api/presence/:username', async (req, res) => {
+  app.get('/api/presence/:username', limit(60), async (req, res) => {
     const u = await q.userByName(req.params.username);
     if (!isOwner(u)) return res.status(404).json({ error: 'Usuario no encontrado' });
     res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
@@ -548,18 +573,35 @@ export function createApp(db, { uploadDir = process.env.UPLOAD_DIR || 'uploads',
 
   // Middleware de compresión desactivado para evitar conflictos con Content-Length y errores de pantalla negra
   app.use((req, res, next) => next());
-  app.use('/uploads', express.static(uploadDir, { maxAge: '7d', immutable: true, setHeaders: (r) => r.set('X-Content-Type-Options', 'nosniff') }));
+  app.use('/uploads', express.static(uploadDir, { maxAge: '7d', immutable: true, setHeaders: (r) => { r.set('X-Content-Type-Options', 'nosniff'); r.set('Vary', 'Accept-Encoding'); } }));
   const noCache = (req, res, next) => { res.set('Cache-Control','no-store'); next(); };
   app.use((req,res,next) => /\.html$/i.test(req.path) ? res.redirect('/login') : next());
   // Servir archivos estáticos SIN index automático
-  app.use(express.static(PUBLIC, { index: false, dotfiles: 'deny', setHeaders: (r, f) => { if (/\.(webp|svg|png|jpe?g|woff2?)$/i.test(f) || f.includes('/vendor/')) r.set('Cache-Control', 'public, max-age=604800'); } }));
+  // CSS/JS/SVG/JSON comprimidos (br/gzip) y con validación ETag; las imágenes siguen por express.static.
+  const TEXT_TYPES = { '.css': 'css', '.js': 'js', '.svg': 'svg', '.json': 'json' };
+  app.use((req, res, next) => {
+    if (req.method !== 'GET' && req.method !== 'HEAD') return next();
+    const type = TEXT_TYPES[extname(req.path).toLowerCase()];
+    if (!type) return next();
+    let file;
+    try { file = resolve(PUBLIC, '.' + decodeURIComponent(req.path)); } catch { return next(); }
+    if (!file.startsWith(PUBLIC + sep) || /(^|[\\/])\./.test(file.slice(PUBLIC.length)) || !existsSync(file)) return next();
+    let f; try { f = readFresh(file); } catch { return next(); }
+    const etag = `W/"${f.size}-${Math.round(f.mtime)}"`;
+    res.set('ETag', etag);
+    res.set('Cache-Control', type === 'svg' || file.includes(sep + 'vendor' + sep) ? 'public, max-age=604800' : 'public, max-age=0, must-revalidate');
+    if (req.get('if-none-match') === etag) { res.set('Vary', 'Accept-Encoding'); return res.status(304).end(); }
+    if (req.method === 'HEAD') { res.type(type); return res.end(); }
+    sendCompressed(req, res, type, f.text, 'static:' + file);
+  });
+  app.use(express.static(PUBLIC, { index: false, dotfiles: 'deny', setHeaders: (r, f) => { if (/\.(webp|svg|png|jpe?g|woff2?)$/i.test(f) || f.includes('/vendor/')) r.set('Cache-Control', 'public, max-age=604800'); r.set('Vary', 'Accept-Encoding'); } }));
   // Ruta raíz: redirige siempre al login (instancia de uso personal)
   app.get('/', noCache, (req, res) => res.redirect('/login'));
-  app.get('/login', noCache, (req, res) => res.type('html').send(readFileSync(PUBLIC + '/auth.html','utf8')));
+  app.get('/login', noCache, (req, res) => sendCompressed(req, res, 'html', readFresh(PUBLIC + '/auth.html').text, 'page:login'));
   // /register y /confirm desactivados — instancia de un solo perfil
   app.get('/register', noCache, (req, res) => res.redirect('/login'));
   app.get('/confirm', noCache, (req, res) => res.redirect('/login'));
-  app.get('/dashboard', noCache, async (req,res) => { const u=req.cookies.pip_session ? await q.session(sha(req.cookies.pip_session)) : null; if(!isOwner(u)) return res.redirect('/login'); res.type('html').send(readFileSync(PUBLIC+'/dashboard.html','utf8')); });
+  app.get('/dashboard', noCache, async (req,res) => { const u=req.cookies.pip_session ? await q.session(sha(req.cookies.pip_session)) : null; if(!isOwner(u)) return res.redirect('/login'); sendCompressed(req, res, 'html', readFresh(PUBLIC + '/dashboard.html').text, 'page:dashboard'); });
 
   app.get('/:username', noCache, limit(120), async (req, res, next) => {
     const uname = req.params.username;
@@ -572,13 +614,13 @@ export function createApp(db, { uploadDir = process.env.UPLOAD_DIR || 'uploads',
 
     // Serve from cache if available
     const cached = profileCacheGet(uname.toLowerCase());
-    if (cached) return res.type('html').send(cached);
+    if (cached) return sendCompressed(req, res, 'html', cached, 'profile:' + uname.toLowerCase());
 
     // Render fresh and cache it
     const data = await pageData(u);
     const html = renderProfile(data);
     profileCacheSet(uname.toLowerCase(), html);
-    res.type('html').send(html);
+    sendCompressed(req, res, 'html', html, 'profile:' + uname.toLowerCase());
   });
   app.use((req, res) => res.status(404).type('html').send('<meta name="viewport" content="width=device-width"><body style="background:#05070A;color:#DDF4FF;font-family:system-ui;display:grid;place-items:center;height:100vh;margin:0"><div><h1>404</h1><p>Esta página no existe. <a style="color:#7DD3FC" href="/">Volver</a></p></div>'));
   app.use((err,req,res,next) => {

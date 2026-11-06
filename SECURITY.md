@@ -9,7 +9,7 @@ Revisión: 29 de octubre de 2026.
 - Dashboard protegido en servidor, sin rutas HTML estáticas que eviten la autenticación. Las API autenticadas y el perfil dinámico no se almacenan en caché.
 - Cookies HttpOnly, SameSite=Lax y Secure en producción. Revocación de las otras sesiones desde Cuenta. La cuenta propietaria no se elimina desde la web.
 - Comprobación exacta de Origin y Fetch Metadata en operaciones de escritura. Los clientes de API deben indicar el origen PUBLIC_URL.
-- CSP sin unsafe-inline para scripts, sin controladores de eventos inline; nonce ligado a la sesión para mantener la vista previa aislada. Bloqueo de objetos y restricciones de base, formularios y marcos.
+- CSP configurado con directivas restrictivas (`default-src 'self'`, `object-src 'none'`, `frame-ancestors 'self'`). Para scripts y estilos se permite `'unsafe-inline'` temporalmente en producción mientras se completa la migración a arquitectura con nonces por sesión (ver pendiente más abajo).
 - Proxy remoto de avatares retirado. No quedan descargas arbitrarias del servidor en esa ruta.
 - Cargas con límites de bytes, comprobación de firmas y eliminación limitada al directorio del propietario. Se rechazan cuerpos comprimidos. Nunca se aceptan SVG o HTML como cargas.
 - Límite de peticiones, validación de enlaces y respuesta genérica de errores. Fórmulas neutralizadas en exportaciones CSV.

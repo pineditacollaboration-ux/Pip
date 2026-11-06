@@ -283,6 +283,7 @@ p, .pg-sub, .hero-sub { text-wrap: pretty; }
 }
 .tb::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--line-subtle) 20%, var(--line-subtle) 80%, transparent); }
 .bc { display: flex; align-items: center; gap: 8px; min-width: 0; overflow: hidden; white-space: nowrap; font: 500 13px var(--font-display); color: var(--txt-muted); }
+.bc .bc-root { flex-shrink: 0; }
 .bc b { color: #fff; font-weight: 650; letter-spacing: -.01em; }
 .bc .ch-ic { display: inline-grid; place-items: center; color: var(--txt-dim); flex: none; }
 .bc svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
@@ -1167,7 +1168,25 @@ input[type=range]::-moz-range-progress { height: 5px; border-radius: 99px; backg
 /* móvil / tablet: la rejilla se apila */
 @media (max-width: 1024px) {
   .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .qa { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .qa-wrap {
+    position: relative;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 6px;
+    mask-image: linear-gradient(to right, #000 85%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, #000 85%, transparent 100%);
+  }
+  .qa {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 10px;
+    width: max-content;
+    min-width: 100%;
+  }
+  .qa .qa-b {
+    flex: 0 0 160px;
+    min-width: 160px;
+  }
   #view > .cd, #view > .stack, #view > .kpis, #view > .qa-wrap { margin-bottom: 14px; }
   .stack { gap: 14px; }
 }
@@ -1192,7 +1211,8 @@ input[type=range]::-moz-range-progress { height: 5px; border-radius: 99px; backg
   .app[data-wide="1"] .w12 { grid-column: span 12; }
   .app[data-wide="1"] .w8 { grid-column: span 8; }
   .app[data-wide="1"] .w6 { grid-column: span 6; }
-  .app[data-wide="1"] .w4 { grid-column: span 4; }
+  .app[data-wide="1"] .w4 { grid-column: span 4; align-self: stretch; display: flex; flex-direction: column; }
+  .app[data-wide="1"] .w4 > .cb { flex: 1; }
   .app[data-wide="1"] .kpis { grid-template-columns: repeat(6, minmax(0, 1fr)); }
   .app[data-wide="1"] .hero-cd { margin-bottom: 0; height: 100%; }
   .app[data-wide="1"] .hero-cd .hero-split { padding: 30px 32px 0; }

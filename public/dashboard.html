@@ -264,7 +264,8 @@ function touch(immediate) {
   clearTimeout(pvDebTimer);
   /* Enviar la última edición en el siguiente frame: el preview no espera una
      ventana de debounce perceptible, pero sigue agrupando eventos del teclado. */
-  pvDebTimer = setTimeout(pvRun, 0);
+  const since = Date.now() - (window._pvLast || 0);
+  pvDebTimer = setTimeout(pvRun, since > 150 ? 0 : 150 - since);
 }
 
 /* Vista previa instantánea: sin retardo ni texto de estado.
@@ -282,6 +283,7 @@ async function pvRun() {
     return;
   }
   pvBusy = true;
+  window._pvLast = Date.now();
   try {
     do {
       pvAgain = false;
@@ -315,7 +317,7 @@ async function pvRun() {
     } while (pvAgain);
   } finally { pvBusy = false; }
 }
-function refresh(immediate) { if (immediate) pvRun(); else { clearTimeout(pvDebTimer); pvDebTimer = setTimeout(pvRun, 0); } }
+function refresh(immediate) { if (immediate) pvRun(); else { clearTimeout(pvDebTimer); const since = Date.now() - (window._pvLast || 0); pvDebTimer = setTimeout(pvRun, since > 150 ? 0 : 150 - since); } }
 
 function applyMe(d) {
   ME = d;
@@ -604,11 +606,12 @@ const VIEWS = {
     return [
       heroCard,
       h('div', { class: 'w4 stack' }, linkCard, panel(12, 'Siguientes pasos', 'Calculados con tus datos', [tips(m)])),
-      profilePulse(n, m),
       wide(12, kpiStrip(m)),
+      ...(ME.user && ME.user.discord ? [livePanel()] : []),
       goalStrip(m),
       panel(8, 'Tráfico de tu perfil', `Visitas diarias de los últimos ${RANGE} días`, [areaChart(cd.slice(-RANGE)), periodRow(m)], ['Ver estadísticas', () => go_('estadisticas')], rangeSwitch()),
       panel(4, 'Tus enlaces', 'Reparto de clics', [donut(ME.links)], ['Gestionar', () => go_('enlaces')]),
+      profilePulse(n, m),
       wide(12, h('div', { class: 'qa-wrap' }, h('h3', { class: 'sec-t', text: 'Acciones rápidas' }), quickActions())),
       hrsCard, wkCard, badgeCard
     ];
@@ -625,11 +628,26 @@ const VIEWS = {
     const swRow = h('div', { class: 'swr', role: 'group', 'aria-label': 'Colores sugeridos' });
     const mark = () => [...swRow.children].forEach((b, i) => b.setAttribute('aria-pressed', String(PF.accent.toLowerCase() === ACC[i].toLowerCase())));
     const pv = profilePreview();
-    const setAccent = (c, from) => { PF.accent = c; if (from !== 'ac') ac.value = c; if (from !== 'hx') hx.value = c.toUpperCase(); touch(); mark(); pv.upd(); };
+    const warn = h('small', { class: 'accent-warn', style: 'display:none;color:#f87171;font-size:11.5px;margin-top:4px;' });
+    const checkContrast = (hex) => {
+      if (!/^#[0-9a-f]{6}$/i.test(hex)) { warn.style.display = 'none'; return; }
+      const r = parseInt(hex.slice(1, 3), 16) / 255, g = parseInt(hex.slice(3, 5), 16) / 255, b = parseInt(hex.slice(5, 7), 16) / 255;
+      const toL = x => x <= 0.03928 ? x / 12.92 : Math.pow((x + 0.055) / 1.055, 2.4);
+      const L = 0.2126 * toL(r) + 0.7152 * toL(g) + 0.0722 * toL(b);
+      const ratioDark = (L + 0.05) / 0.05;
+      if (ratioDark < 2.5) {
+        warn.textContent = 'Este color tiene bajo contraste contra el fondo oscuro del perfil.';
+        warn.style.display = 'block';
+      } else {
+        warn.style.display = 'none';
+      }
+    };
+    const setAccent = (c, from) => { PF.accent = c; if (from !== 'ac') ac.value = c; if (from !== 'hx') hx.value = c.toUpperCase(); checkContrast(c); touch(); mark(); pv.upd(); };
     ACC.forEach(col => swRow.append(h('button', { type: 'button', class: 'swc', style: `--c:${col}`, title: col, 'aria-label': 'Color ' + col, onclick: () => setAccent(col) })));
     ac.oninput = () => setAccent(ac.value, 'ac');
     hx.oninput = () => { let v = hx.value.trim(); if (v && v[0] !== '#') v = '#' + v; if (/^#[0-9a-f]{6}$/i.test(v)) setAccent(v, 'hx'); };
     hx.onblur = () => { hx.value = PF.accent.toUpperCase(); };
+    checkContrast(PF.accent);
     nm.oninput = () => { PF.display_name = nm.value; touch(); pv.upd(); };
     bio.oninput = () => { PF.bio = bio.value; touch(); pv.upd(); };
     mark();
@@ -641,7 +659,7 @@ const VIEWS = {
         pv.root,
         h('label', { class: 'l', text: 'Nombre visible' }), nm, cnt(nm, 40),
         h('label', { class: 'l', text: 'Biografía' }), bio, cnt(bio, 280),
-        h('label', { class: 'l', text: 'Color de acento de marca' }), h('div', { class: 'acr' }, ac, hx, swRow),
+        h('label', { class: 'l', text: 'Color de acento de marca' }), h('div', { class: 'acr' }, ac, hx, swRow), warn,
         uploader('avatar', 'Avatar', 'PNG, JPG, GIF o WEBP · máx. 2 MB', ME.profile.avatar, 'Avatar', 'avatar'),
         uploader('banner', 'Banner superior', 'Imagen decorativa superior · máx. 4 MB', ME.profile.banner, 'Banner', 'banner')
       ),
@@ -1199,6 +1217,34 @@ function kpi(label, value, o = {}) {
 const fmtN = n => Number(n).toLocaleString('es');
 const hh = i => String(i).padStart(2, '0') + ':00';
 
+const LIVE_NAMES = { online: 'En línea', idle: 'Ausente', dnd: 'No molestar', offline: 'Desconectado' };
+function fillLive(box, p) {
+  if (!box) return;
+  box.textContent = '';
+  const st = (p && p.status) || 'offline', sp = p && p.spotify, ac = p && p.activity;
+  const txt = sp && sp.title ? 'Escuchando ' + sp.title + (sp.artist ? ' · ' + sp.artist : '')
+    : ac && ac.name ? ac.name : (LIVE_NAMES[st] || 'Desconectado') + ' · nada en vivo';
+  box.append(h('span', { class: 'live-dot ' + st }),
+    h('div', { class: 'live-tx' }, h('b', { text: 'Ahora en tu perfil' }), h('span', { text: txt })));
+  box.dataset.spotify = sp && sp.title ? '1' : '0';
+}
+function livePanel() {
+  const box = h('div', { class: 'live-now', id: 'live-now' });
+  fillLive(box, ME.user.discord.presence);
+  return wide(12, box);
+}
+async function pushPresence() {
+  if (document.hidden || !ME || !ME.user || !ME.user.discord) return;
+  try {
+    const r = await fetch('/api/discord/presence', { cache: 'no-store' });
+    if (!r.ok) return;
+    const d = await r.json();
+    ME.user.discord.presence = d.presence;
+    fillLive($('live-now'), d.presence);
+    document.querySelectorAll('iframe[sandbox]').forEach((f) => { try { f.contentWindow.postMessage({ type: 'pip:presence', presence: d.presence }, '*'); } catch (e) {} });
+  } catch (e) {}
+}
+setInterval(pushPresence, 5000);
 function kpiStrip(m) {
   return h('div', { class: 'kpis', role: 'group', 'aria-label': 'Indicadores del perfil' },
     kpi('visitas totales', m.views, { icon: 'eye', spark: m.v }),
@@ -1313,7 +1359,7 @@ function offerDraft() {
   return;
 }
 const niceGoal = n => [100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000, 250000, 500000, 1000000].find(g => g > n) || Math.ceil((n + 1) / 1e6) * 1e6;
-const getGoal = () => { const g = +lsGet('pip_goal_' + ME.user.username, 0); return g > ME.stats.views ? g : niceGoal(ME.stats.views); };
+const getGoal = () => { const v = Number(ME.stats?.views) || 0; const g = +lsGet('pip_goal_' + ME.user.username, 0); if (g > 0) return g > v ? g : niceGoal(v); return v > 0 ? niceGoal(v) : null; };
 
 /* selector segmentado 7 / 14 días */
 function rangeSwitch() {
@@ -1323,17 +1369,22 @@ function rangeSwitch() {
 
 /* meta de visitas: editable, con proyección según tu ritmo de la última semana */
 function goalStrip(m) {
-  const goal = getGoal(), pct = Math.min(100, m.views / goal * 100), left = Math.max(0, goal - m.views), rate = m.l7 / 7;
-  let proj = 'Aún no hay ritmo para estimar una fecha.';
-  if (rate > 0.05 && left > 0) { const d = Math.ceil(left / rate), dt = new Date(Date.now() + d * 864e5); proj = `A tu ritmo (${(Math.round(rate * 10) / 10).toLocaleString('es')}/día) llegas el ${dt.toLocaleDateString('es', { day: 'numeric', month: 'long' })}${d > 365 ? ' de ' + dt.getFullYear() : ''}.`; }
-  if (!left) proj = '¡Meta alcanzada! Fija una nueva.';
-  const inp = h('input', { type: 'number', min: m.views + 1, step: 1, value: goal, 'aria-label': 'Meta de visitas' });
+  const views = Number(m.views) || 0;
+  const rawGoal = getGoal();
+  const hasGoal = rawGoal !== null && rawGoal > 0;
+  const goal = hasGoal ? rawGoal : (views > 0 ? niceGoal(views) : 100);
+  const pct = hasGoal ? Math.min(100, views / goal * 100) : 0;
+  const left = Math.max(0, goal - views), rate = (Number(m.l7) || 0) / 7;
+  let proj = hasGoal ? 'Aún no hay ritmo para estimar una fecha.' : 'Define tu primera meta de visitas para ver el progreso.';
+  if (hasGoal && rate > 0.05 && left > 0) { const d = Math.ceil(left / rate), dt = new Date(Date.now() + d * 864e5); proj = `A tu ritmo (${(Math.round(rate * 10) / 10).toLocaleString('es')}/día) llegas el ${dt.toLocaleDateString('es', { day: 'numeric', month: 'long' })}${d > 365 ? ' de ' + dt.getFullYear() : ''}.`; }
+  if (hasGoal && !left) proj = '¡Meta alcanzada! Fija una nueva.';
+  const inp = h('input', { type: 'number', min: views + 1, step: 1, value: goal, 'aria-label': 'Meta de visitas' });
   const edit = h('div', { class: 'gl-edit' }, h('label', { text: 'Meta' }), inp,
-    h('button', { class: 'btn p', text: 'Fijar', onclick: () => { const v = Math.round(+inp.value); if (v > m.views) { lsSet('pip_goal_' + ME.user.username, v); render(); } else inp.focus(); } }));
+    h('button', { class: 'btn p', text: 'Fijar', onclick: () => { const v = Math.round(+inp.value); if (v > views) { lsSet('pip_goal_' + ME.user.username, v); render(); } else inp.focus(); } }));
   inp.onkeydown = e => { if (e.key === 'Enter') edit.querySelector('button').click(); };
   const c = h('div', { class: 'cd goal' },
-    h('div', { class: 'gl-l' }, ico('target', 'gl-ic'), h('div', {}, h('small', { text: 'Meta de visitas' }), h('b', { text: `${fmtN(m.views)} / ${fmtN(goal)}` }))),
-    h('div', { class: 'gl-m' }, h('div', { class: 'pr' }, h('i', { style: `width:${pct}%` })), h('p', {}, h('b', { text: pct.toFixed(pct < 10 ? 1 : 0) + '%' }), ' · ' + proj)),
+    h('div', { class: 'gl-l' }, ico('target', 'gl-ic'), h('div', {}, h('small', { text: 'Meta de visitas' }), h('b', { text: hasGoal ? `${fmtN(views)} / ${fmtN(goal)}` : `Sin meta fijada (${fmtN(views)} visitas)` }))),
+    h('div', { class: 'gl-m' }, h('div', { class: 'pr' }, h('i', { style: `width:${pct}%` })), h('p', {}, h('b', { text: hasGoal ? pct.toFixed(pct < 10 ? 1 : 0) + '%' : '0%' }), ' · ' + proj)),
     edit);
   c.classList.add('w12');
   return c;
