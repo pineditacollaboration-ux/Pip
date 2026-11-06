@@ -1309,19 +1309,8 @@ let RANGE = 14, LSORT = 'clicks', lastSync = Date.now();
 const lsGet = (k, d) => { try { return localStorage.getItem(k) ?? d; } catch { return d; } };
 const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch {} };
 function offerDraft() {
-  let draft;
-  try { draft = JSON.parse(localStorage.getItem(DRAFT_KEY) || ''); } catch { draft = null; }
-  if (!draft?.profile || !draft?.settings || !draft.savedAt) return;
-  const host = $('view');
-  if (!host || host.querySelector('.draft-recovery')) return;
-  const bar = h('aside', { class: 'draft-recovery', role: 'status' },
-    h('div', { class: 'draft-copy' }, h('b', { text: 'Tienes un borrador sin guardar' }), h('span', { text: 'Puedes recuperarlo y continuar exactamente donde lo dejaste.' })),
-    h('div', { class: 'draft-actions' },
-      h('button', { class: 'btn p', type: 'button', text: 'Recuperar', onclick: () => { PF = { ...PF, ...draft.profile }; CFG = { ...CFG, ...draft.settings }; dirty = true; changeVersion++; bar.remove(); render(); refresh(true); toast('Borrador recuperado. Revisa y guarda los cambios.'); } }),
-      h('button', { class: 'btn ghost', type: 'button', text: 'Descartar', onclick: () => { localStorage.removeItem(DRAFT_KEY); bar.remove(); } })
-    )
-  );
-  host.prepend(bar);
+  // Desactivado para evitar carteles molestos y desfasajes de diseño
+  return;
 }
 const niceGoal = n => [100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000, 250000, 500000, 1000000].find(g => g > n) || Math.ceil((n + 1) / 1e6) * 1e6;
 const getGoal = () => { const g = +lsGet('pip_goal_' + ME.user.username, 0); return g > ME.stats.views ? g : niceGoal(ME.stats.views); };
