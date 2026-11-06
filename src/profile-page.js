@@ -1873,11 +1873,14 @@ if(bgv){
   _updateVolUI(50);
 
   const tryPlay = () => {
-    bgv.muted = false;
-    bgv.volume = _volCur;
     const p = bgv.play();
     if(p && p.catch){
-      p.catch(() => {});
+      p.catch(() => {
+        // Si el navegador bloqueó el autoplay con sonido, reproducir en mute
+        bgv.muted = true;
+        _updateVolUI(0);
+        bgv.play && bgv.play().catch(() => {});
+      });
     }
   };
 
