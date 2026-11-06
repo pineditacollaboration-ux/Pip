@@ -36,8 +36,12 @@ const profileCacheSet = (u, html) => _profileCache.set(u, { html, ts: Date.now()
 
 // ── Preview base cache (user's profile+links+stats, invalidated on any mutation)
 const _previewCache = new Map();
-// ── Discord presence cache (TTL: 30 s, independent of mutations)
+// ── Discord presence cache (TTL: 1 s for instantaneous Spotify/Gaming updates)
 const _presenceCache = new Map();
+globalThis._pipOnPresenceUpdate = (discordId) => {
+  _presenceCache.delete(discordId);
+  _profileCache.clear();
+};
 
 const profileCacheDel = () => { _profileCache.clear(); _previewCache.clear(); }; // invalidate on any mutation
 
@@ -221,9 +225,9 @@ export function createApp(db, { uploadDir = process.env.UPLOAD_DIR || 'uploads',
   const discordPresence = async (u, { skipCache = false } = {}) => {
     if (!u?.discord_id) return null;
     if (!dc?.guildId || !dc.botToken) return { status: null, activity: null, spotify: null, diagnostics: { state: 'configuration_missing' } };
-    // Return cached presence during live-preview to avoid Gateway round-trips
+    // Fast presence check from memory cache (1.5s max stale for instant response)
     const cEntry = _presenceCache.get(u.discord_id);
-    if (!skipCache && cEntry && Date.now() - cEntry.ts < 30_000) return cEntry.data;
+    if (!skipCache && cEntry && Date.now() - cEntry.ts < 1_500) return cEntry.data;
     try {
       const { getUserPresence } = await import('./discord-bot.js');
       const result = await getUserPresence(u.discord_id, dc.guildId);

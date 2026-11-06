@@ -41,6 +41,9 @@ export function initDiscordPresenceBot(token, guildId) {
   botClient.on('presenceUpdate', (oldPresence, newPresence) => {
     if (!newPresence?.guild) return;
     newPresence.guild.presences.cache.set(newPresence.userId, newPresence);
+    if (globalThis._pipOnPresenceUpdate) {
+      try { globalThis._pipOnPresenceUpdate(newPresence.userId); } catch {}
+    }
   });
 
   botClient.on('error', (err) => {

@@ -47,16 +47,26 @@ export function createQueries(sb) {
       check(await sb.from('sessions').upsert({ token_hash, user_id, expires_at }));
     },
     async delSession(token_hash) {
+      if (globalThis._pipSessionCache) globalThis._pipSessionCache.delete(token_hash);
       check(await sb.from('sessions').delete().eq('token_hash', token_hash));
     },
     async session(token_hash) {
+      if (!globalThis._pipSessionCache) globalThis._pipSessionCache = new Map();
+      const cached = globalThis._pipSessionCache.get(token_hash);
+      if (cached && Date.now() - cached.ts < 30_000) {
+        return cached.user;
+      }
       const now = Math.floor(Date.now() / 1000);
       const data = read(await sb.from('sessions')
         .select('users(id, username, email, discord_id), expires_at')
         .eq('token_hash', token_hash)
         .gt('expires_at', now)
         .maybeSingle());
-      return data?.users || null;
+      const user = data?.users || null;
+      if (user) {
+        globalThis._pipSessionCache.set(token_hash, { user, ts: Date.now() });
+      }
+      return user;
     },
 
     // Perfiles

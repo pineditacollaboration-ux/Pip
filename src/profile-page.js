@@ -1960,7 +1960,7 @@ async function pollPresence(){
     }
   }catch(e){}
 }
-${preview ? '' : 'pollPresence(); setInterval(pollPresence, 2500);'}
+${preview ? '' : 'pollPresence(); setInterval(pollPresence, 1200); document.addEventListener("visibilitychange", ()=>{ if(!document.hidden) pollPresence(); });'}
 
 // Volume control state & UI (default 50% for balanced volume)
 let _volCur = 0.5;
