@@ -1651,12 +1651,18 @@ if(bioEl&&bioEl.dataset.tw&&!RM){
   const txt=bioEl.dataset.tw;
   const cur=document.createElement('span');cur.className='tw-cursor';cur.textContent='|';
   let i=0;
+  bioEl.textContent='';
+  bioEl.appendChild(cur);
   const type=()=>{
-    if(i<=txt.length){bioEl.textContent=txt.slice(0,i);bioEl.appendChild(cur);i++;}
-    else{clearInterval(twInt);}
+    if(i<=txt.length){
+      bioEl.childNodes[0]?.nodeType === 3 ? (bioEl.childNodes[0].textContent = txt.slice(0,i)) : bioEl.insertBefore(document.createTextNode(txt.slice(0,i)), cur);
+      i++;
+      setTimeout(type, 45);
+    } else {
+      setTimeout(()=>{ cur.remove(); }, 2500);
+    }
   };
-  bioEl.textContent='';bioEl.appendChild(cur);
-  const twInt=setInterval(type,38);
+  setTimeout(type, 300);
 }
 
 const toast=(m)=>{const t=document.getElementById('toast');if(!t)return;t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),1800)};
