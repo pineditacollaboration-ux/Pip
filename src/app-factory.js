@@ -1,4 +1,4 @@
-﻿import zlib from 'node:zlib';
+import zlib from 'node:zlib';
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import bcrypt from 'bcryptjs';
