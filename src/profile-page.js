@@ -2017,17 +2017,14 @@ let ac;function snd(t){try{ac=ac||new AudioContext();const o=ac.createOscillator
 if(CFG.sn!=='none')addEventListener('pointerdown',()=>snd(CFG.sn));
 const k=document.getElementById('card'),st=k.parentElement;
 let _tx=0,_ty=0,_stx=0,_sty=0,_tiltRaf=false;
-/* La inclinación global hacía que la tarjeta se moviese debajo del puntero y
-   volvía imposible acertar enlaces/insignias. Se mantiene la opción guardada,
-   pero se omite el transform inestable para priorizar interacción fiable. */
-if(false && CFG.tilt&&!RM){
-  /* High-fidelity smooth lerp-based 3D tilt with depth */
+/* Inclinación 3D suave sin saltos ni desalineación del puntero */
+if(CFG.tilt&&!RM){
   const lerp=(a,b,t)=>a+(b-a)*t;
   const tiltLoop=()=>{
-    _stx=lerp(_stx,_tx,0.09); _sty=lerp(_sty,_ty,0.09);
-    k.style.transform='perspective(1200px) rotateY('+(_stx*18).toFixed(3)+'deg) rotateX('+(-_sty*14).toFixed(3)+'deg) scale3d(1.018,1.018,1)';
+    _stx=lerp(_stx,_tx,0.08); _sty=lerp(_sty,_ty,0.08);
+    k.style.transform='perspective(1000px) rotateY('+(_stx*10).toFixed(2)+'deg) rotateX('+(-_sty*8).toFixed(2)+'deg)';
     const d=Math.abs(_stx-_tx)+Math.abs(_sty-_ty);
-    if(d>0.0003) requestAnimationFrame(tiltLoop); else _tiltRaf=false;
+    if(d>0.0005) requestAnimationFrame(tiltLoop); else _tiltRaf=false;
   };
   window.addEventListener('pointermove',e=>{
     _tx=(e.clientX/innerWidth)-.5; _ty=(e.clientY/innerHeight)-.5;
