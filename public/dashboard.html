@@ -1703,8 +1703,11 @@ async function logout(e) {
 }
 
 let navT;
-function go_(s) {
+function go_(s, updateHash = true) {
   cur = s;
+  if (updateHash && window.location.hash !== '#' + s) {
+    history.replaceState(null, '', '#' + s);
+  }
   document.body.classList.remove('nav-anim');
   void document.body.offsetWidth; // Force reflow to re-trigger entrance animation
   document.body.classList.add('nav-anim');
@@ -1715,6 +1718,14 @@ function go_(s) {
   $('view').parentElement.scrollTop = 0;
   window.scrollTo(0, 0);
 }
+
+// Support browser hash navigation (e.g. /dashboard#enlaces, #perfil, etc.)
+window.addEventListener('hashchange', () => {
+  const h = window.location.hash.replace(/^#/, '').toLowerCase().trim();
+  if (h && VIEWS[h] && h !== cur) {
+    go_(h, false);
+  }
+});
 
 function buildNav() {
   $('sb_name').textContent = ME.profile.display_name || ME.user.username;
@@ -1991,6 +2002,11 @@ addEventListener('beforeunload', e => {
     };
     $('view2').href = '/' + ME.user.username;
     $('bar_txt').textContent = location.host + '/' + ME.user.username;
+    // Check initial hash route
+    const initialHash = window.location.hash.replace(/^#/, '').toLowerCase().trim();
+    if (initialHash && VIEWS[initialHash]) {
+      cur = initialHash;
+    }
     document.body.classList.add('nav-anim');
     setTimeout(() => document.body.classList.remove('nav-anim'), 240);
     render();

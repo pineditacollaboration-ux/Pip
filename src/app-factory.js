@@ -41,6 +41,7 @@ const _presenceCache = new Map();
 globalThis._pipOnPresenceUpdate = (discordId) => {
   _presenceCache.delete(discordId);
   _profileCache.clear();
+  _previewCache.clear();
 };
 
 const profileCacheDel = () => { _profileCache.clear(); _previewCache.clear(); }; // invalidate on any mutation

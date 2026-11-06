@@ -137,8 +137,9 @@ export function renderProfile({
   const dcStatus = ['online', 'idle', 'dnd', 'offline'].includes(presence?.status) ? presence.status : 'offline';
   const dcSub = activity?.name ? [activity.name, activity.details].filter(Boolean).join(' · ') : presence?.spotify?.title ? `escuchando ${presence.spotify.title}` : 'no está haciendo nada';
   const dcName = discord?.name || username;
+  const hasLiveActivity = Boolean(spotify?.title || activity?.name);
   const discordCardHtml = (discord && s.discord_activity_show) ? `
-    <div class="gl-dc" id="gl-dc" role="region" aria-label="Discord">
+    <div class="gl-dc" id="gl-dc" role="region" aria-label="Discord" style="${hasLiveActivity ? 'display:none' : 'flex'}">
       <div class="gl-dc-av">
         ${/^https?:/.test(discord.avatar || '') ? `<img src="${esc(discord.avatar)}" alt="" loading="eager">` : `<span>${esc([...dcName][0].toUpperCase())}</span>`}
         <i class="gl-dc-status ${dcStatus}" id="dc-status" title="${esc(statusLabels[dcStatus])}"></i>
@@ -1960,7 +1961,7 @@ async function pollPresence(){
     }
   }catch(e){}
 }
-${preview ? '' : 'pollPresence(); setInterval(pollPresence, 1200); document.addEventListener("visibilitychange", ()=>{ if(!document.hidden) pollPresence(); });'}
+${preview ? 'pollPresence(); setInterval(pollPresence, 1200);' : 'pollPresence(); setInterval(pollPresence, 1200); document.addEventListener("visibilitychange", ()=>{ if(!document.hidden) pollPresence(); });'}
 
 // Volume control state & UI (default 50% for balanced volume)
 let _volCur = 0.5;
