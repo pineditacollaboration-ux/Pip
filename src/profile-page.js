@@ -783,7 +783,7 @@ ${s.card_anim === 'rainbow' ? `.card::after{content:"";position:absolute;inset:-
   text-align:center;
   font-weight:450;
   letter-spacing:-0.01em;
-  text-wrap:pretty;
+  text-wrap:wrap;
 }
 .hd.left .bio{text-align:left;margin-left:0}
 .hd.right .bio{text-align:right;margin-right:0}
@@ -1660,7 +1660,7 @@ const bioRot=document.getElementById('bio');
 if(bioRot&&bioRot.dataset.rot&&!RM){const ph=bioRot.dataset.rot.split('|');let ri=0;setInterval(()=>{bioRot.classList.add('rot-out');setTimeout(()=>{ri=(ri+1)%ph.length;bioRot.textContent=ph[ri];bioRot.classList.remove('rot-out')},350)},3600)}
 if(bioEl&&bioEl.dataset.tw){
   const txt=bioEl.dataset.tw;
-  bioEl.innerHTML = '<span class="tw-txt"></span><span class="tw-cursor">|</span>';
+  bioEl.innerHTML = '<span class="tw-txt"></span><span class="tw-cursor" aria-hidden="true">|</span><span class="tw-ghost" style="visibility:hidden;position:absolute;pointer-events:none;inset:0" aria-hidden="true">' + txt + '</span>';
   const txtSpan = bioEl.querySelector('.tw-txt');
   const curSpan = bioEl.querySelector('.tw-cursor');
   let i = 0;
