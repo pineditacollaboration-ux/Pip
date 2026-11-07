@@ -677,13 +677,23 @@ ${s.card_anim === 'rainbow' ? `.card::after{content:"";position:absolute;inset:-
 .gl-dc-sub{font-family:var(--hf);font-size:13px;color:rgba(255,255,255,.55);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
 /* Typewriter Cursor (guns.lol signature bio feature) */
+.bio .tw-txt{
+  display:inline;
+  font:inherit;
+  color:inherit;
+  letter-spacing:inherit;
+}
 .bio .tw-cursor{
   display:inline-block;
+  font-family:inherit;
+  font-size:inherit;
+  line-height:1;
   font-weight:300;
   color:var(--a);
   margin-left:2px;
   animation:tw-blink 0.8s infinite;
   user-select:none;
+  vertical-align:baseline;
 }
 @keyframes tw-blink{0%,100%{opacity:1}50%{opacity:0}}
 .verified-wrapper{
