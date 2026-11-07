@@ -684,7 +684,7 @@ ${s.card_anim === 'rainbow' ? `.card::after{content:"";position:absolute;inset:-
   letter-spacing:inherit;
 }
 .bio .tw-cursor{
-  display:inline-block;
+  position:absolute;
   font-family:inherit;
   font-size:inherit;
   line-height:1;
@@ -693,7 +693,7 @@ ${s.card_anim === 'rainbow' ? `.card::after{content:"";position:absolute;inset:-
   margin-left:2px;
   animation:tw-blink 0.8s infinite;
   user-select:none;
-  vertical-align:baseline;
+  pointer-events:none;
 }
 @keyframes tw-blink{0%,100%{opacity:1}50%{opacity:0}}
 .verified-wrapper{
@@ -772,6 +772,7 @@ ${s.card_anim === 'rainbow' ? `.card::after{content:"";position:absolute;inset:-
 
 
 .bio{
+  position:relative;
   width:100%;
   margin:8px auto 14px;
   font-size:14px;
