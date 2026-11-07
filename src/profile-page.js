@@ -55,7 +55,7 @@ export function renderProfile({
 }) {
   const s = { ...DEFAULTS, ...settings }, nm = display_name || username, name = esc(nm), ini = esc(([...nm][0] || '?').toUpperCase());
   const ar = { circle: '50%', rounded: '22%', square: '0' }[s.avatar_shape];
-  const dur = preview ? 0.001 : { slow: 1.1, normal: 0.7, fast: 0.4 }[s.enter_speed];
+  const dur = preview ? 0.001 : { slow: 0.9, normal: 0.5, fast: 0.3 }[s.enter_speed];
   const cfg = JSON.stringify({ pt: s.particles_type, tr: s.trail, tc: s.trail_color, sn: s.click_sound, tilt: s.tilt, ta: s.title_anim, title: nm, cf: s.click_fx, tz: s.w_tz, cd: s.w_cd_on ? s.w_cd_date : '', cl: s.w_cd_label }).replace(/</g, '\\u003c');
   
   const decorationUrl = discord?.decoration ? `https://cdn.discordapp.com/avatar-decoration-presets/${encodeURIComponent(discord.decoration)}.png?size=256` : '';
@@ -877,10 +877,10 @@ ${BADGE_CSS}
   background:rgba(12,14,20,${/\.(mp4|webm)$/.test(bg_media) ? '0.94' : '0.88'});
   border:1px solid rgba(255,255,255,0.1);
   ${/\.(mp4|webm)$/.test(bg_media) ? '' : 'backdrop-filter:blur(18px) saturate(170%);-webkit-backdrop-filter:blur(18px) saturate(170%);'}
-  overflow:hidden;contain:layout style;
+  overflow:hidden;contain:layout style paint;
   box-shadow:0 14px 36px -12px rgba(0,0,0,.9),inset 0 1px 0 rgba(255,255,255,.12);
-  transition:transform .3s cubic-bezier(.16,1,.3,1),border-color .3s,box-shadow .3s;
-  animation:spotify-in .5s cubic-bezier(.16,1,.3,1) both;
+  transition:transform .2s cubic-bezier(.16,1,.3,1),border-color .2s,box-shadow .2s;
+  animation:spotify-in .35s cubic-bezier(.16,1,.3,1) both;
   -webkit-tap-highlight-color:transparent;
 }
 .gl-spotify[data-sync]{cursor:pointer}
@@ -902,7 +902,7 @@ ${BADGE_CSS}
 .gl-spotify[data-state="playing"] .gl-spotify-disc::before{animation-play-state:running}
 .gl-spotify:hover .gl-spotify-disc{transform:translateX(9px)}
 @keyframes spindisc{to{transform:rotate(360deg)}}
-@keyframes spotify-in{from{opacity:0;transform:translateY(10px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes spotify-in{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
 .gl-spotify-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
 .gl-spotify-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:2px}
 .gl-spotify-now{display:inline-flex;align-items:center;gap:6px;min-width:0;color:#1ED760;font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
@@ -1238,7 +1238,7 @@ ${s.card_float ? '.stage{animation:fl 6s ease-in-out infinite}@keyframes fl{50%{
   box-shadow:0 4px 14px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.07);
   backdrop-filter:blur(10px);
   -webkit-backdrop-filter:blur(10px);
-  transition:transform .18s cubic-bezier(0.16,1,0.3,1), background .18s ease, border-color .18s ease, box-shadow .18s ease;
+  transition:transform .14s cubic-bezier(0.16,1,0.3,1), background .14s ease, border-color .14s ease, box-shadow .14s ease;
   position:relative;overflow:hidden;
   will-change:transform;
   transform:translateZ(0);
@@ -1309,9 +1309,9 @@ ${s.card_float ? '.stage{animation:fl 6s ease-in-out infinite}@keyframes fl{50%{
   position:relative;
   overflow:hidden;
 }
-.stats:nth-child(1){animation:stat-in .65s cubic-bezier(.16,1,.3,1) .12s both}
-.stats:nth-child(2){animation:stat-in .65s cubic-bezier(.16,1,.3,1) .2s both}
-@keyframes stat-in{from{opacity:0;transform:translateY(10px) scale(.94)}to{opacity:1;transform:translateY(0) scale(1)}}
+.stats:nth-child(1){animation:stat-in .4s cubic-bezier(.16,1,.3,1) .08s both}
+.stats:nth-child(2){animation:stat-in .4s cubic-bezier(.16,1,.3,1) .14s both}
+@keyframes stat-in{from{opacity:0;transform:translateY(8px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}
 .stats-icon{width:25px;height:25px;object-fit:contain;padding:4px;border-radius:9px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);filter:drop-shadow(0 0 7px color-mix(in srgb,var(--a) 48%,transparent));}
 .stats-icon-loc{filter:grayscale(.15) drop-shadow(0 0 7px rgba(226,232,240,.5))}
 .stats-icon-views{filter:drop-shadow(0 0 8px color-mix(in srgb,var(--a) 72%,transparent))}
@@ -1583,9 +1583,9 @@ ${s.card_float ? '.stage{animation:fl 6s ease-in-out infinite}@keyframes fl{50%{
 .links[data-lh=slide] .l:hover,.links[data-lh=slide] .l:focus-visible{transform:translateX(7px) translateZ(0)}
 .links[data-lh=none] .l:hover,.links[data-lh=none] .l:focus-visible{transform:none;box-shadow:none}
 .links[data-lh=none] .l::before{display:none}
-.links .l{animation:l-in .6s cubic-bezier(.16,1,.3,1) both}
-.links .l:nth-child(2){animation-delay:.06s}.links .l:nth-child(3){animation-delay:.12s}.links .l:nth-child(4){animation-delay:.18s}.links .l:nth-child(5){animation-delay:.24s}.links .l:nth-child(n+6){animation-delay:.3s}
-@keyframes l-in{from{opacity:0;transform:translateY(14px) scale(.98)}to{opacity:1;transform:none}}
+.links .l{animation:l-in .4s cubic-bezier(.16,1,.3,1) both}
+.links .l:nth-child(2){animation-delay:.04s}.links .l:nth-child(3){animation-delay:.08s}.links .l:nth-child(4){animation-delay:.12s}.links .l:nth-child(5){animation-delay:.16s}.links .l:nth-child(n+6){animation-delay:.2s}
+@keyframes l-in{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:none}}
 .card::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;padding:1px;background:linear-gradient(160deg,rgba(255,255,255,.28),rgba(255,255,255,0) 28%,rgba(255,255,255,0) 72%,color-mix(in srgb,var(--a) 40%,transparent));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:.7}
 .bio[data-rot]{transition:opacity .35s ease,transform .35s ease}.bio.rot-out{opacity:0;transform:translateY(5px)}
 .p-name[data-effect="shine"] span:not(.verified-wrapper):not(.verified-badge-anim){background:linear-gradient(100deg,#8b93a1 0%,#fff 22%,#9aa3b2 40%,#fff 58%,#8b93a1 78%,#fff 100%);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:name-shine 3.6s linear infinite}
@@ -1763,7 +1763,7 @@ function updateActivityProgress(){
 }
 // Un solo temporizador; se detiene mientras la pestaña está oculta.
 function tickLive(){ if(document.hidden)return; updateSpotifyProgress(); updateActivityProgress(); }
-setInterval(tickLive,1000); tickLive();
+setInterval(tickLive,500); tickLive();
 
 // Abrir la canción (clic o teclado)
 function openTrack(){
@@ -1855,12 +1855,12 @@ function applyPresence(p){
 // Sondeo de presencia: nunca solapado, más lento si no hay nada en vivo, con espera creciente
 // si falla y detenido mientras la pestaña está oculta. En la vista previa el panel envía los datos.
 let _pBusy=false,_pFail=0,_pT=0;
-function _pDelay(){const live=Boolean((SP&&SP.title)||(ACT&&ACT.name));return Math.min(30000,(live?2500:6000)*Math.pow(2,Math.min(_pFail,3)));}
+function _pDelay(){const live=Boolean((SP&&SP.title)||(ACT&&ACT.name));return Math.min(20000,(live?1500:4000)*Math.pow(2,Math.min(_pFail,3)));}
 function schedulePoll(){clearTimeout(_pT);if(document.hidden)return;_pT=setTimeout(pollPresence,_pDelay());}
 async function pollPresence(){
   if(_pBusy||document.hidden)return;
   _pBusy=true;
-  const ac=new AbortController(), to=setTimeout(()=>ac.abort(),6000);
+  const ac=new AbortController(), to=setTimeout(()=>ac.abort(),4000);
   try{
     const res=await fetch('/api/presence/'+encodeURIComponent(${jsonJs(username)}),{cache:'no-store',signal:ac.signal});
     if(!res.ok)throw new Error('presence');
@@ -2051,12 +2051,12 @@ if(CFG.tilt){
 
   const lerp=(a,b,t)=>a+(b-a)*t;
   const tiltLoop=()=>{
-    _stx=lerp(_stx,_tx,0.06); _sty=lerp(_sty,_ty,0.06);
+    _stx=lerp(_stx,_tx,0.08); _sty=lerp(_sty,_ty,0.08);
     if(!_isPointerDown){
       k.style.transform='perspective(900px) rotateY('+(_stx*18).toFixed(2)+'deg) rotateX('+(-_sty*14).toFixed(2)+'deg)';
     }
     const d=Math.abs(_stx-_tx)+Math.abs(_sty-_ty);
-    if(d>0.0002) requestAnimationFrame(tiltLoop); else _tiltRaf=false;
+    if(d>0.0005) requestAnimationFrame(tiltLoop); else _tiltRaf=false;
   };
   window.addEventListener('pointermove',e=>{
     _tx=(e.clientX/innerWidth)-.5; _ty=(e.clientY/innerHeight)-.5;
