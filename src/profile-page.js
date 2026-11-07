@@ -2034,18 +2034,17 @@ let ac;function snd(t){try{ac=ac||new AudioContext();const o=ac.createOscillator
 if(CFG.sn!=='none')addEventListener('pointerdown',()=>snd(CFG.sn));
 const k=document.getElementById('card'),st=k.parentElement;
 let _tx=0,_ty=0,_stx=0,_sty=0,_tiltRaf=false;
-/* Inclinación 3D suave sin saltos ni desalineación del puntero */
+/* Inclinación 3D fluida y estable (no interfiere con clics ni botones) */
 if(CFG.tilt){
-  // Si la tarjeta tiene animación de entrada con forwards/both, la quitamos al terminar para que transform sea libre
   k.addEventListener('animationend', () => { k.style.animation = 'none'; }, { once: true });
-  setTimeout(() => { if (k.style.animation) k.style.animation = 'none'; }, 1200);
+  setTimeout(() => { if (k.style.animation) k.style.animation = 'none'; }, 1000);
 
   const lerp=(a,b,t)=>a+(b-a)*t;
   const tiltLoop=()=>{
-    _stx=lerp(_stx,_tx,0.08); _sty=lerp(_sty,_ty,0.08);
-    k.style.transform='perspective(1000px) rotateY('+(_stx*14).toFixed(2)+'deg) rotateX('+(-_sty*12).toFixed(2)+'deg) scale3d(1.015,1.015,1)';
+    _stx=lerp(_stx,_tx,0.06); _sty=lerp(_sty,_ty,0.06);
+    k.style.transform='perspective(1200px) rotateY('+(_stx*7).toFixed(2)+'deg) rotateX('+(-_sty*6).toFixed(2)+'deg)';
     const d=Math.abs(_stx-_tx)+Math.abs(_sty-_ty);
-    if(d>0.0003) requestAnimationFrame(tiltLoop); else _tiltRaf=false;
+    if(d>0.0002) requestAnimationFrame(tiltLoop); else _tiltRaf=false;
   };
   window.addEventListener('pointermove',e=>{
     _tx=(e.clientX/innerWidth)-.5; _ty=(e.clientY/innerHeight)-.5;
@@ -2065,22 +2064,22 @@ if(CFG.cf&&CFG.cf!=='none'&&!RM){const cv2=document.createElement('canvas');cv2.
  function L(){c.clearRect(0,0,w,h);c.strokeStyle=c.fillStyle=col;for(const p of F){if(p.t==='r'){p.r+=3.2;p.l-=.028;c.globalAlpha=Math.max(0,p.l)*.7;c.lineWidth=2;c.beginPath();c.arc(p.x,p.y,p.r,0,7);c.stroke()}else{p.x+=p.vx;p.y+=p.vy;p.vx*=.95;p.vy=p.vy*.95+.06;p.l-=.025;c.globalAlpha=Math.max(0,p.l);c.beginPath();c.arc(p.x,p.y,2.2*Math.max(.3,p.l),0,7);c.fill()}}F=F.filter(p=>p.l>0);if(F.length)requestAnimationFrame(L);else{run=false;c.clearRect(0,0,w,h)}}}
 if(CFG.ta){
   let i=0,dir=1;
-  const tStr = CFG.title || 'pip';
+  const tStr = (CFG.title || 'pip') + ' · pip';
   const tick=()=>{
     i+=dir;
     const cur = tStr.slice(0,i)||'·';
     document.title = cur;
-    // Si estamos en un iframe de la vista previa, también actualizamos el navegador simulado del dashboard
     try {
       if (window.parent && window.parent !== window) {
         const bt = window.parent.document.getElementById('bar_txt');
         if (bt) bt.textContent = cur;
       }
     } catch(e){}
-    if(i>=tStr.length+6)dir=-1;
+    if(i>=tStr.length+5)dir=-1;
     if(i<=0)dir=1;
   };
-  setInterval(tick, 180);
+  tick();
+  setInterval(tick, 140);
 }})();
 </script><script>(()=>{if(matchMedia('(prefers-reduced-motion:reduce)').matches)return;const d=document.documentElement,k=document.getElementById('card'),sp=document.querySelector('.fx.spotlight'),gl=document.querySelector('.card-glare');if(!sp&&!gl)return;let f=0,ex=0,ey=0;addEventListener('pointermove',e=>{ex=e.clientX;ey=e.clientY;if(f)return;f=requestAnimationFrame(()=>{f=0;if(sp){d.style.setProperty('--mx',ex+'px');d.style.setProperty('--my',ey+'px')}if(gl&&k){const r=k.getBoundingClientRect();k.style.setProperty('--gx',(ex-r.left)+'px');k.style.setProperty('--gy',(ey-r.top)+'px')}})},{passive:true})})()</script></body></html>`;
 }
