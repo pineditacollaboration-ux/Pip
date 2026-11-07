@@ -2053,7 +2053,7 @@ if(CFG.tilt){
   const tiltLoop=()=>{
     _stx=lerp(_stx,_tx,0.06); _sty=lerp(_sty,_ty,0.06);
     if(!_isPointerDown){
-      k.style.transform='perspective(1200px) rotateY('+(_stx*6).toFixed(2)+'deg) rotateX('+(-_sty*5).toFixed(2)+'deg)';
+      k.style.transform='perspective(900px) rotateY('+(_stx*18).toFixed(2)+'deg) rotateX('+(-_sty*14).toFixed(2)+'deg)';
     }
     const d=Math.abs(_stx-_tx)+Math.abs(_sty-_ty);
     if(d>0.0002) requestAnimationFrame(tiltLoop); else _tiltRaf=false;
