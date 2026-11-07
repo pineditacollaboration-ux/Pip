@@ -201,7 +201,7 @@ export function renderProfile({
   // Header with Verified Badge beside name + name_effect
   const SPARKS = [[6,18,0],[19,-6,.7],[34,84,1.4],[52,-10,.3],[68,92,1.1],[83,2,1.8],[95,70,.5],[12,96,2.1]];
   const sparkHtml = s.name_effect === 'sparkle' ? `<b class="p-sparks" aria-hidden="true">${SPARKS.map(([x, y, d]) => `<i style="left:${x}%;top:${y}%;animation-delay:${d}s"></i>`).join('')}</b>` : '';
-  const nameHtml = s.name_show ? `<h1 class="p-name" data-effect="${esc(s.name_effect || 'none')}"><span>${name}</span>${isVerified ? VERIFIED_SVG : ''}${sparkHtml}</h1>` : '';
+  const nameHtml = s.name_show ? `<h1 class="p-name" id="p-name" data-effect="${esc(s.name_effect || 'none')}" ${s.title_anim ? `data-ta="${esc(nm)}"` : ''}><span class="p-name-txt">${name}</span>${isVerified ? VERIFIED_SVG : ''}${sparkHtml}</h1>` : '';
 
   // Bento/iOS Social Dock extraction from links
   const socialLinks = links.map(l => { const ic = iconFor(l.url); return ic ? { ...l, ic } : null; }).filter(Boolean);
@@ -495,9 +495,9 @@ ${s.card_anim === 'rainbow' ? `.card::after{content:"";position:absolute;inset:-
 .card>.bn,.card>.stats-row,.card>.stats,.card>.f,.card>.shr{width:auto}
 /* Los adornos son decorativos; el contenido siempre queda por encima y es
    interactivo. Esto evita que una capa de composición bloquee hover/click. */
-.card{z-index:10;pointer-events:auto}
+.card{z-index:10;pointer-events:auto;transform-style:flat}
 .card>header,.card>.links,.card>.badge-wrap,.card>.badges-bar,.card>.gl-dc,.card>.gl-spotify,.card>.gl-activity,.card>.social-dock,.card>.stats-row,.card>.f,.card>.shr,.card>.note,.card>.wg,.card>.cta,.card>.quote,.card>.avail{position:relative;z-index:10;pointer-events:auto}
-.card a,.card button,.card [role="button"],.card .badge-item{pointer-events:auto}
+.card a,.card button,.card [role="button"],.card .badge-item,.card .l,.card .dock-item,.card .shr{position:relative;z-index:15;pointer-events:auto !important;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 .badge-item{appearance:none;-webkit-appearance:none;display:grid;place-items:center;width:42px;height:42px;padding:7px;border:1px solid rgba(255,255,255,.12);border-radius:12px;background:rgba(255,255,255,.055);color:inherit;cursor:pointer;transition:transform .18s ease,background .18s ease,border-color .18s ease,box-shadow .18s ease}
 .badge-item:hover,.badge-item:focus-visible{transform:translateY(-3px) scale(1.05);background:rgba(255,255,255,.12);border-color:color-mix(in srgb,var(--a) 70%,rgba(255,255,255,.2));box-shadow:0 8px 20px color-mix(in srgb,var(--a) 22%,transparent);outline:none}
 .badge-item:active{transform:translateY(-1px) scale(.98)}
@@ -589,7 +589,7 @@ ${s.card_anim === 'rainbow' ? `.card::after{content:"";position:absolute;inset:-
   letter-spacing:var(--lsp, -0.04em);
   position:relative;
 }
-.p-name span{
+.p-name span.p-name-txt,.p-name>span:not(.tw-cursor):not(.verified-wrapper){
   display:inline-block;
   line-height:1.15;
   background:linear-gradient(135deg, #ffffff 0%, color-mix(in srgb,var(--a) 40%,#ffffff) 100%);
@@ -597,6 +597,17 @@ ${s.card_anim === 'rainbow' ? `.card::after{content:"";position:absolute;inset:-
   -webkit-text-fill-color:transparent;
   background-clip:text;
   position:relative;
+}
+.p-name .tw-cursor{
+  display:inline-block;
+  line-height:1;
+  font-weight:300;
+  color:var(--a);
+  margin-left:2px;
+  animation:tw-blink 0.8s infinite;
+  user-select:none;
+  pointer-events:none;
+  vertical-align:baseline;
 }
 
 /* Name Effect: Neón Glow (guns.lol top style) */
@@ -2032,7 +2043,7 @@ let ac;function snd(t){try{ac=ac||new AudioContext();const o=ac.createOscillator
  else{o.frequency.setValueAtTime(880,n);o.frequency.setValueAtTime(1320,n+.09);g.gain.setValueAtTime(.12,n);g.gain.exponentialRampToValueAtTime(.001,n+.4);o.start(n);o.stop(n+.42)}}catch(e){}}
 if(CFG.sn!=='none')addEventListener('pointerdown',()=>snd(CFG.sn));
 const k=document.getElementById('card'),st=k.parentElement;
-let _tx=0,_ty=0,_stx=0,_sty=0,_tiltRaf=false;
+let _tx=0,_ty=0,_stx=0,_sty=0,_tiltRaf=false,_isPointerDown=false;
 /* Inclinación 3D fluida y estable (no interfiere con clics ni botones) */
 if(CFG.tilt){
   k.addEventListener('animationend', () => { k.style.animation = 'none'; }, { once: true });
@@ -2041,7 +2052,9 @@ if(CFG.tilt){
   const lerp=(a,b,t)=>a+(b-a)*t;
   const tiltLoop=()=>{
     _stx=lerp(_stx,_tx,0.06); _sty=lerp(_sty,_ty,0.06);
-    k.style.transform='perspective(1200px) rotateY('+(_stx*7).toFixed(2)+'deg) rotateX('+(-_sty*6).toFixed(2)+'deg)';
+    if(!_isPointerDown){
+      k.style.transform='perspective(1200px) rotateY('+(_stx*6).toFixed(2)+'deg) rotateX('+(-_sty*5).toFixed(2)+'deg)';
+    }
     const d=Math.abs(_stx-_tx)+Math.abs(_sty-_ty);
     if(d>0.0002) requestAnimationFrame(tiltLoop); else _tiltRaf=false;
   };
@@ -2049,6 +2062,9 @@ if(CFG.tilt){
     _tx=(e.clientX/innerWidth)-.5; _ty=(e.clientY/innerHeight)-.5;
     if(!_tiltRaf){_tiltRaf=true;requestAnimationFrame(tiltLoop);}
   },{passive:true});
+  window.addEventListener('pointerdown',()=>{ _isPointerDown=true; },{passive:true});
+  window.addEventListener('pointerup',()=>{ _isPointerDown=false; },{passive:true});
+  window.addEventListener('pointercancel',()=>{ _isPointerDown=false; },{passive:true});
   document.addEventListener('pointerleave',()=>{
     _tx=0;_ty=0;
     if(!_tiltRaf){_tiltRaf=true;requestAnimationFrame(tiltLoop);}
@@ -2056,6 +2072,39 @@ if(CFG.tilt){
 }
 
 if(CFG.ta){
+  // 1. Efecto máquina de escribir en el nombre grande de la tarjeta (se escribe y se borra)
+  const nameEl = document.getElementById('p-name');
+  if(nameEl && nameEl.dataset.ta && !RM){
+    const fullNm = nameEl.dataset.ta;
+    const txtSpan = nameEl.querySelector('.p-name-txt') || nameEl.querySelector('span');
+    if(txtSpan){
+      const cursorSpan = document.createElement('span');
+      cursorSpan.className = 'tw-cursor';
+      cursorSpan.setAttribute('aria-hidden', 'true');
+      cursorSpan.textContent = '|';
+      txtSpan.after(cursorSpan);
+
+      let ni = 0, nDir = 1;
+      const nameTick = () => {
+        ni += nDir;
+        txtSpan.textContent = fullNm.slice(0, ni);
+        if(ni >= fullNm.length){
+          nDir = -1;
+          setTimeout(nameTick, 1800);
+          return;
+        }
+        if(ni <= 0){
+          nDir = 1;
+          setTimeout(nameTick, 600);
+          return;
+        }
+        setTimeout(nameTick, nDir === 1 ? 90 : 45);
+      };
+      setTimeout(nameTick, 400);
+    }
+  }
+
+  // 2. Efecto en la pestaña del navegador y barra superior
   let i=0,dir=1;
   const tStr = (CFG.title || 'pip') + ' · pip';
   const tick=()=>{
