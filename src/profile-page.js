@@ -218,7 +218,7 @@ export function renderProfile({
   ` : '';
 
   const bioHtml = s.bio_show && bio
-    ? `<p class="bio" id="bio" ${s.typewriter_bio ? `data-tw="${esc(bio)}"` : ''} ${s.bio_rotate && !s.typewriter_bio ? `data-rot="${esc([bio, ...String(s.bio_rotate).split('|').map((x) => x.trim()).filter(Boolean)].join('|'))}"` : ''}>${s.typewriter_bio ? '' : esc(bio)}</p>`
+    ? `<p class="bio" id="bio" ${s.typewriter_bio ? `data-tw="${esc(bio)}"` : ''} ${s.bio_rotate && !s.typewriter_bio ? `data-rot="${esc([bio, ...String(s.bio_rotate).split('|').map((x) => x.trim()).filter(Boolean)].join('|'))}"` : ''}>${esc(bio)}</p>`
     : '';
 
   const idHtml = `
@@ -1647,22 +1647,26 @@ let ACT = ${jsonJs(activity)};
 const bioEl=document.getElementById('bio');
 const bioRot=document.getElementById('bio');
 if(bioRot&&bioRot.dataset.rot&&!RM){const ph=bioRot.dataset.rot.split('|');let ri=0;setInterval(()=>{bioRot.classList.add('rot-out');setTimeout(()=>{ri=(ri+1)%ph.length;bioRot.textContent=ph[ri];bioRot.classList.remove('rot-out')},350)},3600)}
-if(bioEl&&bioEl.dataset.tw&&!RM){
+if(bioEl&&bioEl.dataset.tw){
   const txt=bioEl.dataset.tw;
-  const cur=document.createElement('span');cur.className='tw-cursor';cur.textContent='|';
-  let i=0;
-  bioEl.textContent='';
-  bioEl.appendChild(cur);
-  const type=()=>{
-    if(i<=txt.length){
-      bioEl.childNodes[0]?.nodeType === 3 ? (bioEl.childNodes[0].textContent = txt.slice(0,i)) : bioEl.insertBefore(document.createTextNode(txt.slice(0,i)), cur);
-      i++;
-      setTimeout(type, 45);
-    } else {
-      setTimeout(()=>{ cur.remove(); }, 2500);
-    }
-  };
-  setTimeout(type, 300);
+  if(RM){
+    bioEl.textContent=txt;
+  } else {
+    const cur=document.createElement('span');cur.className='tw-cursor';cur.textContent='|';
+    let i=0;
+    bioEl.textContent='';
+    bioEl.appendChild(cur);
+    const type=()=>{
+      if(i<=txt.length){
+        bioEl.childNodes[0]?.nodeType === 3 ? (bioEl.childNodes[0].textContent = txt.slice(0,i)) : bioEl.insertBefore(document.createTextNode(txt.slice(0,i)), cur);
+        i++;
+        setTimeout(type, 45);
+      } else {
+        setTimeout(()=>{ cur.remove(); }, 2500);
+      }
+    };
+    setTimeout(type, 150);
+  }
 }
 
 const toast=(m)=>{const t=document.getElementById('toast');if(!t)return;t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),1800)};
