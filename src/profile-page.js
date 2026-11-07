@@ -1649,24 +1649,20 @@ const bioRot=document.getElementById('bio');
 if(bioRot&&bioRot.dataset.rot&&!RM){const ph=bioRot.dataset.rot.split('|');let ri=0;setInterval(()=>{bioRot.classList.add('rot-out');setTimeout(()=>{ri=(ri+1)%ph.length;bioRot.textContent=ph[ri];bioRot.classList.remove('rot-out')},350)},3600)}
 if(bioEl&&bioEl.dataset.tw){
   const txt=bioEl.dataset.tw;
-  if(RM){
-    bioEl.textContent=txt;
-  } else {
-    const cur=document.createElement('span');cur.className='tw-cursor';cur.textContent='|';
-    let i=0;
-    bioEl.textContent='';
-    bioEl.appendChild(cur);
-    const type=()=>{
-      if(i<=txt.length){
-        bioEl.childNodes[0]?.nodeType === 3 ? (bioEl.childNodes[0].textContent = txt.slice(0,i)) : bioEl.insertBefore(document.createTextNode(txt.slice(0,i)), cur);
-        i++;
-        setTimeout(type, 45);
-      } else {
-        setTimeout(()=>{ cur.remove(); }, 2500);
-      }
-    };
-    setTimeout(type, 150);
-  }
+  bioEl.innerHTML = '<span class="tw-txt"></span><span class="tw-cursor">|</span>';
+  const txtSpan = bioEl.querySelector('.tw-txt');
+  const curSpan = bioEl.querySelector('.tw-cursor');
+  let i = 0;
+  const type = () => {
+    if (i <= txt.length) {
+      if (txtSpan) txtSpan.textContent = txt.slice(0, i);
+      i++;
+      setTimeout(type, 45);
+    } else {
+      setTimeout(() => { if (curSpan) curSpan.remove(); }, 3000);
+    }
+  };
+  setTimeout(type, 150);
 }
 
 const toast=(m)=>{const t=document.getElementById('toast');if(!t)return;t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),1800)};
