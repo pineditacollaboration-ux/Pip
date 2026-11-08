@@ -20,7 +20,7 @@ export const SPEC = [
     CH('avatar_pos', 'Dónde va', [['left', 'Izquierda'], ['center', 'Centro'], ['right', 'Derecha'], ['side', 'Nombre al lado']], 'center')] },
   { sec: 'perfil', title: 'Texto y Efectos', sub: 'Qué se muestra y cómo reacciona tu biografía.', items: [
     T('name_show', 'Mostrar nombre', true),
-    CH('name_effect', 'Efecto del nombre', [['none', 'Normal'], ['glow', 'Neón Glow'], ['gradient', 'Degradado Vivo'], ['glitch', 'Cyber Glitch'], ['sparkle', 'Destellos'], ['shine', 'Brillo metálico']], 'none'),
+    CH('name_effect', 'Efecto del nombre', [['none', 'Normal'], ['typewriter', 'Máquina de escribir'], ['glow', 'Neón Glow'], ['gradient', 'Degradado Vivo'], ['glitch', 'Cyber Glitch'], ['sparkle', 'Destellos'], ['shine', 'Brillo metálico']], 'none'),
     T('bio_show', 'Mostrar biografía', true),
     T('typewriter_bio', 'Efecto máquina de escribir', false, 'La biografía se escribe letra a letra al entrar.'),
     X('bio_rotate', 'Frases rotativas', '', 'Separa con | y tu biografía irá cambiando sola entre ellas.', 200, 'Programador | Creador de bots | Colombia'),

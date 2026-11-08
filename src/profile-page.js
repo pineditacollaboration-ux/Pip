@@ -203,7 +203,8 @@ export function renderProfile({
   // Header with Verified Badge beside name + name_effect
   const SPARKS = [[6,18,0],[19,-6,.7],[34,84,1.4],[52,-10,.3],[68,92,1.1],[83,2,1.8],[95,70,.5],[12,96,2.1]];
   const sparkHtml = s.name_effect === 'sparkle' ? `<b class="p-sparks" aria-hidden="true">${SPARKS.map(([x, y, d]) => `<i style="left:${x}%;top:${y}%;animation-delay:${d}s"></i>`).join('')}</b>` : '';
-  const nameHtml = s.name_show ? `<h1 class="p-name" id="p-name" data-effect="${esc(s.name_effect || 'none')}" ${s.title_anim ? `data-ta="${esc(nm)}"` : ''}><span class="p-name-txt">${name}</span>${isVerified ? VERIFIED_SVG : ''}${sparkHtml}</h1>` : '';
+  const isTwName = s.name_effect === 'typewriter' || s.title_anim;
+  const nameHtml = s.name_show ? `<h1 class="p-name" id="p-name" data-effect="${esc(s.name_effect || 'none')}" ${isTwName ? `data-ta="${esc(nm)}"` : ''}><span class="p-name-txt">${name}</span>${isVerified ? VERIFIED_SVG : ''}${sparkHtml}</h1>` : '';
 
   // Bento/iOS Social Dock extraction from links
   const socialLinks = links.map(l => { const ic = iconFor(l.url); return ic ? { ...l, ic } : null; }).filter(Boolean);
@@ -603,15 +604,19 @@ ${s.card_anim === 'rainbow' ? `.card::after{content:"";position:absolute;inset:-
   position:relative;
   filter:drop-shadow(0 2px 12px rgba(0,0,0,0.6));
 }
+/* Typewriter cursor for name — matches zyo.lol style */
 .p-name .name-tw-cursor{
   display:inline-block;
   line-height:1;
-  font-weight:300;
+  font-weight:200;
+  -webkit-text-fill-color:var(--a, #38bdf8);
   color:var(--a, #38bdf8);
-  margin-left:2px;
-  animation:name-cursor-blink 0.75s infinite;
+  margin-left:1px;
+  opacity:1;
+  animation:name-cursor-blink 0.65s step-start infinite;
   user-select:none;
   pointer-events:none;
+  vertical-align:baseline;
 }
 @keyframes name-cursor-blink{0%,100%{opacity:1}50%{opacity:0}}
 
@@ -2085,35 +2090,44 @@ if(CFG.tilt){
   },{passive:true});
 }
 
-if(CFG.ta){
-  // 1. Efecto en el nombre de la tarjeta: se escribe letra por letra y luego se borra desde la última hacia atrás
-  const nameEl = document.getElementById('p-name');
-  if(nameEl && nameEl.dataset.ta){
-    const fullNm = nameEl.dataset.ta;
-    const txtSpan = nameEl.querySelector('.p-name-txt') || nameEl.querySelector('span');
-    if(txtSpan){
-      let ni = 0, nDir = 1;
-      txtSpan.textContent = '';
-      const nameTick = () => {
-        ni += nDir;
-        txtSpan.textContent = fullNm.slice(0, Math.max(0, ni));
-        if(ni >= fullNm.length){
-          nDir = -1;
-          setTimeout(nameTick, 2400); // Pausa cuando el nombre está completo
-          return;
-        }
-        if(ni <= 0){
-          nDir = 1;
-          setTimeout(nameTick, 700); // Pausa cuando se borra
-          return;
-        }
-        setTimeout(nameTick, nDir === 1 ? 120 : 60); // Escribe a ritmo natural y borra fluido
-      };
-      setTimeout(nameTick, 400);
+// 1. Efecto máquina de escribir en el nombre de la tarjeta:
+const nameEl = document.getElementById('p-name');
+if(nameEl && nameEl.dataset.ta){
+  const fullNm = nameEl.dataset.ta;
+  const txtSpan = nameEl.querySelector('.p-name-txt') || nameEl.querySelector('span');
+  if(txtSpan){
+    // Inject blinking cursor next to text if typewriter is active
+    let cursor = nameEl.querySelector('.name-tw-cursor');
+    if(!cursor){
+      cursor = document.createElement('span');
+      cursor.className = 'name-tw-cursor';
+      cursor.setAttribute('aria-hidden', 'true');
+      cursor.textContent = '|';
+      txtSpan.after(cursor);
     }
+    let ni = 0, nDir = 1;
+    txtSpan.textContent = '';
+    const nameTick = () => {
+      ni += nDir;
+      txtSpan.textContent = fullNm.slice(0, Math.max(0, ni));
+      if(ni >= fullNm.length){
+        nDir = -1;
+        setTimeout(nameTick, 2400); // Pausa cuando el nombre está completo
+        return;
+      }
+      if(ni <= 0){
+        nDir = 1;
+        setTimeout(nameTick, 700); // Pausa cuando se borra
+        return;
+      }
+      setTimeout(nameTick, nDir === 1 ? 110 : 55); // Escribe a ritmo natural y borra fluido
+    };
+    setTimeout(nameTick, 350);
   }
+}
 
-  // 2. Efecto en la pestaña del navegador: escribe P -> Pi -> Pin -> Pineda y luego borra hacia atrás
+// 2. Efecto en la pestaña del navegador: escribe y borra hacia atrás
+if(CFG.ta){
   let ti = 0, tDir = 1;
   const baseTitle = CFG.title || 'pip';
   const tabTick = () => {
@@ -2133,6 +2147,7 @@ if(CFG.ta){
     setTimeout(tabTick, tDir === 1 ? 150 : 80);
   };
   setTimeout(tabTick, 300);
-}})();
+}
+})();
 </script><script>(()=>{if(matchMedia('(prefers-reduced-motion:reduce)').matches)return;const d=document.documentElement,k=document.getElementById('card'),sp=document.querySelector('.fx.spotlight'),gl=document.querySelector('.card-glare');if(!sp&&!gl)return;let f=0,ex=0,ey=0;addEventListener('pointermove',e=>{ex=e.clientX;ey=e.clientY;if(f)return;f=requestAnimationFrame(()=>{f=0;if(sp){d.style.setProperty('--mx',ex+'px');d.style.setProperty('--my',ey+'px')}if(gl&&k){const r=k.getBoundingClientRect();k.style.setProperty('--gx',(ex-r.left)+'px');k.style.setProperty('--gy',(ey-r.top)+'px')}})},{passive:true})})()</script></body></html>`;
 }
