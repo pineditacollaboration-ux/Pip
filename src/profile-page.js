@@ -2126,27 +2126,28 @@ if(nameEl && nameEl.dataset.ta){
   }
 }
 
-// 2. Efecto en la pestaña del navegador: escribe y borra hacia atrás
+// 2. Efecto en la pestaña del navegador: estilo idéntico a guns.lol / zyo.lol
+// "@pinedamelhor" escribiéndose hacia adelante y borrándose hacia atrás
 if(CFG.ta){
   let ti = 0, tDir = 1;
-  const baseTitle = CFG.title || 'pip';
+  const baseTitle = (CFG.title || 'pip').trim();
   const tabTick = () => {
     ti += tDir;
     const cur = baseTitle.slice(0, Math.max(0, ti));
-    document.title = (cur || '·') + ' · pip';
+    document.title = '@' + cur;
     if(ti >= baseTitle.length){
       tDir = -1;
-      setTimeout(tabTick, 2000);
+      setTimeout(tabTick, 2200); // Pausa cuando el nombre está completo en la pestaña
       return;
     }
     if(ti <= 0){
       tDir = 1;
-      setTimeout(tabTick, 600);
+      setTimeout(tabTick, 700); // Pausa cuando se borra
       return;
     }
-    setTimeout(tabTick, tDir === 1 ? 150 : 80);
+    setTimeout(tabTick, tDir === 1 ? 250 : 120); // Ritmo idéntico a guns.lol (adelante suave, borrado ágil)
   };
-  setTimeout(tabTick, 300);
+  setTimeout(tabTick, 350);
 }
 })();
 </script><script>(()=>{if(matchMedia('(prefers-reduced-motion:reduce)').matches)return;const d=document.documentElement,k=document.getElementById('card'),sp=document.querySelector('.fx.spotlight'),gl=document.querySelector('.card-glare');if(!sp&&!gl)return;let f=0,ex=0,ey=0;addEventListener('pointermove',e=>{ex=e.clientX;ey=e.clientY;if(f)return;f=requestAnimationFrame(()=>{f=0;if(sp){d.style.setProperty('--mx',ex+'px');d.style.setProperty('--my',ey+'px')}if(gl&&k){const r=k.getBoundingClientRect();k.style.setProperty('--gx',(ex-r.left)+'px');k.style.setProperty('--gy',(ey-r.top)+'px')}})},{passive:true})})()</script></body></html>`;
