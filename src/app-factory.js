@@ -504,6 +504,23 @@ export function createApp(db, { uploadDir = process.env.UPLOAD_DIR || 'uploads',
   app.get('/api/username-available/:name', (req,res) => res.json({available:false,reason:'Instancia privada de Pineda'}));
   app.post('/api/auth/discord/confirm', (req,res) => res.status(403).json({error:'Registro desactivado'}));
 
+  app.post('/api/media-url', auth, async (req, res) => {
+    const { kind, url } = req.body || {};
+    const spec = Object.hasOwn(UPLOADS, kind) ? UPLOADS[kind] : null;
+    if (!spec) return res.status(400).json({ error: 'Tipo no válido' });
+    if (!url || typeof url !== 'string' || !/^https?:\/\//i.test(url.trim())) {
+      return res.status(400).json({ error: 'URL no válida. Debe comenzar con https://' });
+    }
+    const cleanUrl = url.trim();
+    const prof = await q.profile(req.user.id);
+    const old = prof[spec.col] || '';
+    await q.setMedia(spec.col, cleanUrl, req.user.id);
+    removeMedia(old, req.user.id);
+    profileCacheDel();
+    _zc.delete('profile:' + req.user.username.toLowerCase());
+    res.json(await me(req.user));
+  });
+
   // ── Admin: ajuste de vistas (solo Pineda) ────────────────────────────────
   app.post('/api/admin/set-views', auth, async (req, res) => {
     if (String(req.user.username || '').toLowerCase() !== 'pineda') {

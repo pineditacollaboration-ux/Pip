@@ -514,6 +514,25 @@ function uploader(kind, label, hint, url, thumbText, discordKey) {
     th,
     h('div', { class: 'tx' }, h('b', { text: label }), h('small', { text: hint + ' · o arrástralo aquí' })),
     h('button', { class: 'btn p', text: 'Subir archivo', onclick: () => fi.click() }),
+    h('button', {
+      class: 'btn btn-ghost',
+      text: 'Por enlace URL',
+      title: 'Pega un enlace directo (Discord, Catbox, etc.) para que jamás se borre',
+      onclick: async () => {
+        const inputUrl = prompt('Pega el enlace directo (URL https://) del vídeo o imagen:\nEjemplo: https://cdn.discordapp.com/.../video.mp4', url && url.startsWith('http') ? url : '');
+        if (!inputUrl || !inputUrl.trim()) return;
+        upEl.classList.add('busy');
+        try {
+          const res = await api('/api/media-url', 'POST', { kind, url: inputUrl.trim() });
+          applyMe(res);
+          refresh();
+        } catch (errx) {
+          err.textContent = errx.message;
+        } finally {
+          upEl.classList.remove('busy');
+        }
+      }
+    }),
     fi,
     rm
   );
