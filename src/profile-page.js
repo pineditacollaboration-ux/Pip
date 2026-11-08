@@ -2117,20 +2117,13 @@ if(CFG.ta){
     }
   }
 
-  // 2. Efecto en la pestaña del navegador y barra superior
+  // 2. Efecto en la pestaña real del navegador
   let i=0,dir=1;
   const tStr = (CFG.title || 'pip') + ' · pip';
   const tick=()=>{
     i+=dir;
     const cur = tStr.slice(0,i)||'·';
     document.title = cur;
-    try {
-      if (window.parent && window.parent !== window) {
-        window.parent.postMessage({ type: 'pip:title', title: cur }, '*');
-        const bt = window.parent.document.getElementById('bar_txt');
-        if (bt) bt.textContent = cur;
-      }
-    } catch(e){}
     if(i>=tStr.length+5)dir=-1;
     if(i<=0)dir=1;
   };

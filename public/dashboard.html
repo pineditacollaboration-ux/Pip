@@ -1264,10 +1264,7 @@ async function pushPresence() {
 }
 setInterval(pushPresence, 5000);
 window.addEventListener('message', e => {
-  if (e.data && e.data.type === 'pip:title' && e.data.title) {
-    const bt = $('bar_txt');
-    if (bt) bt.textContent = e.data.title;
-  }
+  // Solo mensajes de presencia, la barra URL de la previsualización se mantiene estática con el enlace
 });
 function kpiStrip(m) {
   return h('div', { class: 'kpis', role: 'group', 'aria-label': 'Indicadores del perfil' },
