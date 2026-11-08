@@ -4639,3 +4639,132 @@ input[type=range]:active::-webkit-slider-thumb {
 @media (max-width: 500px) {
   .app .vc-equation { grid-template-columns: 1fr 1fr 1.12fr; }.app .vc-eq-col { min-height: 58px; padding-inline: 7px; }.app .vc-eq-col.res { padding-left: 11px; }
 }
+
+
+
+/* Floating preview button bottom-right (zyo.lol & guns.lol exact style) */
+.floating-preview-btn {
+  position: fixed;
+  bottom: 24px;
+  right: 28px;
+  z-index: 9999;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 22px;
+  border-radius: 999px;
+  background: rgba(18, 18, 24, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  color: #ffffff;
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 14px;
+  font-weight: 700;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s, background 0.2s, border-color 0.2s;
+  user-select: none;
+}
+.floating-preview-btn:hover {
+  transform: translateY(-2px) scale(1.03);
+  background: rgba(28, 28, 38, 0.95);
+  border-color: rgba(255, 255, 255, 0.35);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+.floating-preview-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+.floating-preview-btn svg {
+  width: 17px;
+  height: 17px;
+  flex: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  fill: none;
+}
+
+/* Modal Drawer for Floating Preview */
+.pvw-drawer {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.82);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+.pvw-drawer.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+.pvw-drawer-content {
+  position: relative;
+  width: min(92vw, 1100px);
+  height: min(88vh, 880px);
+  background: #09090d;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 24px;
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  display: grid;
+  grid-template-rows: auto 1fr;
+  overflow: hidden;
+  transform: scale(0.96) translateY(10px);
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.pvw-drawer.is-open .pvw-drawer-content {
+  transform: scale(1) translateY(0);
+}
+.pvw-drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 22px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(14, 14, 20, 0.9);
+}
+.pvw-drawer-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 700;
+  font-size: 15px;
+  color: #fff;
+}
+.pvw-drawer-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  color: #aaa;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s, transform 0.18s;
+}
+.pvw-drawer-close:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  transform: scale(1.08);
+}
+.pvw-drawer-body {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  background: #050508;
+}
+.pvw-drawer-body iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}

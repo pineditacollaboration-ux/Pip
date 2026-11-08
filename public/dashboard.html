@@ -139,6 +139,30 @@
   </section>
 </div>
 
+<!-- Floating Preview Button Bottom-Right (zyo.lol & guns.lol exact style) -->
+<button class="floating-preview-btn" id="floating_preview_btn" type="button" aria-label="Abrir vista previa del perfil">
+  <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+  <span>Vista previa</span>
+</button>
+
+<!-- Floating Preview Modal Drawer -->
+<div class="pvw-drawer" id="pvw_drawer" role="dialog" aria-modal="true" aria-label="Vista previa en vivo">
+  <div class="pvw-drawer-content">
+    <div class="pvw-drawer-header">
+      <div class="pvw-drawer-title">
+        <span class="live-badge">En vivo</span>
+        <span>Vista previa del perfil</span>
+      </div>
+      <button class="pvw-drawer-close" id="pvw_drawer_close" type="button" aria-label="Cerrar vista previa">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="pvw-drawer-body">
+      <iframe id="pv_drawer_iframe" title="Vista previa flotante" sandbox="allow-scripts"></iframe>
+    </div>
+  </div>
+</div>
+
 <script>
 const $ = id => document.getElementById(id);
 let ME, SPEC = [], PLAT = [], CFG, PF, cur = 'resumen', dirty = false, tm, cat = 'Todas';
@@ -305,7 +329,8 @@ async function pvRun() {
       } finally {
         pvAbort = null;
       }
-      const front = $('pv'), back = $('pv2');
+      const front = $('pv'), back = $('pv2'), drawerPv = $('pv_drawer_iframe');
+      if (drawerPv) drawerPv.srcdoc = html;
       if (!pvShown) { front.srcdoc = html; pvShown = true; continue; }
       await new Promise((done) => {
         let ok = false;
@@ -2118,6 +2143,24 @@ addEventListener('beforeunload', e => {
     console.error('Error cargando panel:', err);
     const target = $('view');
     if (target) target.innerHTML = `<div style="padding:40px 20px;text-align:center"><h2 style="color:#FDA4AF;margin-bottom:10px">No se pudo cargar el panel</h2><p style="color:var(--txt-muted);margin-bottom:20px">${err.message || 'Error de conexión'}</p><button class="btn p" onclick="location.reload()">Reintentar</button></div>`;
+  }
+
+  // Floating preview drawer handler
+  const floatBtn = $('floating_preview_btn');
+  const drawer = $('pvw_drawer');
+  const drawerClose = $('pvw_drawer_close');
+  if (floatBtn && drawer) {
+    floatBtn.onclick = () => {
+      refresh(true);
+      drawer.classList.add('is-open');
+    };
+    drawerClose && (drawerClose.onclick = () => drawer.classList.remove('is-open'));
+    drawer.onclick = e => {
+      if (e.target === drawer) drawer.classList.remove('is-open');
+    };
+    window.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && drawer.classList.contains('is-open')) drawer.classList.remove('is-open');
+    });
   }
 })();
 </script>
