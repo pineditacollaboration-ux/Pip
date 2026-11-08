@@ -1311,10 +1311,8 @@ ${s.card_float ? '.stage{animation:fl 6s ease-in-out infinite}@keyframes fl{50%{
   position:relative;
   overflow:hidden;
 }
-.stats:nth-child(1){opacity:0;transform:translateY(8px) scale(.95);transition:opacity .3s .05s ease,transform .3s .05s cubic-bezier(.16,1,.3,1)}
-.stats:nth-child(2){opacity:0;transform:translateY(8px) scale(.95);transition:opacity .3s .1s ease,transform .3s .1s cubic-bezier(.16,1,.3,1)}
-.stats.anim-done{opacity:1;transform:translateY(0) scale(1)}
-@keyframes stat-in{from{opacity:0;transform:translateY(8px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}
+.stats:nth-child(1),.stats:nth-child(2){opacity:1;transform:none}
+.stats.anim-done{opacity:1;transform:none}
 .stats-icon{width:25px;height:25px;object-fit:contain;padding:4px;border-radius:9px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);filter:drop-shadow(0 0 7px color-mix(in srgb,var(--a) 48%,transparent));}
 .stats-icon-loc{filter:grayscale(.15) drop-shadow(0 0 7px rgba(226,232,240,.5))}
 .stats-icon-views{filter:drop-shadow(0 0 8px color-mix(in srgb,var(--a) 72%,transparent))}
@@ -1586,10 +1584,7 @@ ${s.card_float ? '.stage{animation:fl 6s ease-in-out infinite}@keyframes fl{50%{
 .links[data-lh=slide] .l:hover,.links[data-lh=slide] .l:focus-visible{transform:translateX(7px) translateZ(0)}
 .links[data-lh=none] .l:hover,.links[data-lh=none] .l:focus-visible{transform:none;box-shadow:none}
 .links[data-lh=none] .l::before{display:none}
-.links .l{opacity:0;transform:translateY(10px) scale(.98);transition:opacity .35s cubic-bezier(.16,1,.3,1),transform .35s cubic-bezier(.16,1,.3,1),background .14s ease,border-color .14s ease,box-shadow .14s ease}
-.links .l.anim-done{opacity:1;transform:none}
-/* Las animaciones de stagger se disparan via JS después del primer paint para evitar que el navegador las congele en capas compuestas */
-@keyframes l-in{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:none}}
+.links .l{opacity:1;transform:none}
 .card::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;padding:1px;background:linear-gradient(160deg,rgba(255,255,255,.28),rgba(255,255,255,0) 28%,rgba(255,255,255,0) 72%,color-mix(in srgb,var(--a) 40%,transparent));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:.7}
 .bio[data-rot]{transition:opacity .35s ease,transform .35s ease}.bio.rot-out{opacity:0;transform:translateY(5px)}
 .p-name[data-effect="shine"] span:not(.verified-wrapper):not(.verified-badge-anim){background:linear-gradient(100deg,#8b93a1 0%,#fff 22%,#9aa3b2 40%,#fff 58%,#8b93a1 78%,#fff 100%);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:name-shine 3.6s linear infinite}
@@ -1603,8 +1598,7 @@ ${s.card_float ? '.stage{animation:fl 6s ease-in-out infinite}@keyframes fl{50%{
 @keyframes bg-zoom{from{transform:scale(1)}to{transform:scale(1.09)}}
 .card-glare{position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:3;opacity:0;transition:opacity .35s;background:radial-gradient(260px circle at var(--gx,50%) var(--gy,0%),rgba(255,255,255,.13),transparent 62%)}
 .card:hover .card-glare{opacity:1}
-.links[data-stg="1"] .l{--stg-delay:calc(var(--i,0)*40ms + 30ms)}
-.links[data-stg="1"] .l.anim-done{transition-delay:var(--stg-delay,0ms)}
+
 .avail{display:inline-flex;align-items:center;gap:8px;align-self:center;margin:0 auto 12px;padding:7px 14px;border-radius:999px;font-size:12.5px;font-weight:600;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#e9e9ee;width:fit-content;display:flex}
 .avail i{width:8px;height:8px;border-radius:50%;background:var(--ad);box-shadow:0 0 0 0 var(--ad);animation:av-pulse 2s infinite}
 .avail[data-s=open]{--ad:#34d399}.avail[data-s=busy]{--ad:#fb7185}.avail[data-s=away]{--ad:#fbbf24}
@@ -1667,20 +1661,6 @@ ${(views !== null || s.location) ? `<div class="stats-row">${s.location ? `<div 
 (()=>{const CFG=${cfg},RM=matchMedia('(prefers-reduced-motion:reduce)').matches,col=getComputedStyle(document.documentElement).getPropertyValue('--a').trim()||'#7DD3FC';
 let SP = ${jsonJs(spotify)};
 let ACT = ${jsonJs(activity)};
-
-// ── Arrancar animaciones de entrada inmediatamente tras el primer paint ────
-// El navegador congela animaciones CSS en capas compuestas (will-change:transform)
-// hasta la primera interacción del usuario. Usamos doble rAF para garantizar
-// que ya hemos pintado al menos un frame antes de activar las transiciones.
-requestAnimationFrame(()=>requestAnimationFrame(()=>{
-  if(RM) return;
-  document.querySelectorAll('.links .l').forEach((el,i)=>{
-    setTimeout(()=>el.classList.add('anim-done'), i*40);
-  });
-  document.querySelectorAll('.stats-row .stats').forEach((el,i)=>{
-    setTimeout(()=>el.classList.add('anim-done'), 60+i*55);
-  });
-}));
 
 // Typewriter bio animation (guns.lol signature effect)
 const bioEl=document.getElementById('bio');
