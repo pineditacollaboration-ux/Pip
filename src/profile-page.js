@@ -68,6 +68,7 @@ export function renderProfile({
 
   // Whether user has verified badge (verificado or con-cara or admin account pineda)
   const isVerified = String(username || '').toLowerCase() === 'pineda' || badges.some((b) => b.id === 'verificado' || b.id === 'con-cara');
+  const isVideo = typeof bg_media === 'string' && /\.(mp4|webm)($|\?)/i.test(bg_media);
   // Lower badges strip: show remaining badges without duplicating verified
   const lowerBadges = badges.filter((b) => b.id !== 'verificado' && b.id !== 'con-cara');
 
@@ -232,7 +233,7 @@ export function renderProfile({
 <title>${name} · pip</title><meta name="description" content="${esc(s.seo_desc || bio || `Perfil de ${username} en pip`)}">${s.seo_noindex ? '<meta name="robots" content="noindex,nofollow">' : ''}<meta name="theme-color" content="#03050A"><meta property="og:type" content="profile"><meta property="og:title" content="${name} · pip"><meta property="og:description" content="${esc(s.seo_desc || bio || `Perfil de ${username} en pip`)}">${/^https?:/.test(avatar) ? `<meta property="og:image" content="${esc(avatar)}">` : ''}<meta name="twitter:card" content="summary"><link rel="icon" type="image/svg+xml" href="/pip-icono.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">${FONTS[s.font]?.[0].includes(':') ? `<link href="https://fonts.googleapis.com/css2?family=${FONTS[s.font][0]}&display=swap" rel="stylesheet">` : ''}
-${bg_media && /\.(mp4|webm)$/.test(bg_media) ? `<link rel="preload" href="${esc(bg_media)}" as="video" type="video/${bg_media.endsWith('.webm')?'webm':'mp4'}">` : ''}
+${bg_media && isVideo ? `<link rel="preload" href="${esc(bg_media)}" as="video" type="video/${/\.webm($|\?)/i.test(bg_media) ? 'webm' : 'mp4'}">` : ''}
 <style>
 @property --ang{syntax:"<angle>";inherits:false;initial-value:0deg}
 :root{
@@ -875,9 +876,9 @@ ${BADGE_CSS}
 /* ── Spotify · tarjeta en vivo ───────────────────────────────── */
 .gl-spotify{
   position:relative;width:100%;margin-top:16px;border-radius:22px;
-  background:rgba(12,14,20,${/\.(mp4|webm)$/.test(bg_media) ? '0.94' : '0.88'});
+  background:rgba(12,14,20,${isVideo ? '0.94' : '0.88'});
   border:1px solid rgba(255,255,255,0.1);
-  ${/\.(mp4|webm)$/.test(bg_media) ? '' : 'backdrop-filter:blur(18px) saturate(170%);-webkit-backdrop-filter:blur(18px) saturate(170%);'}
+  ${isVideo ? '' : 'backdrop-filter:blur(18px) saturate(170%);-webkit-backdrop-filter:blur(18px) saturate(170%);'}
   overflow:hidden;contain:layout style paint;
   box-shadow:0 14px 36px -12px rgba(0,0,0,.9),inset 0 1px 0 rgba(255,255,255,.12);
   transition:transform .2s cubic-bezier(.16,1,.3,1),border-color .2s,box-shadow .2s;
@@ -951,9 +952,9 @@ ${BADGE_CSS}
   width:100%;
   margin-top:12px;
   border-radius:20px;
-  background:rgba(12,14,22,${/\.(mp4|webm)$/.test(bg_media) ? '0.94' : '0.90'});
+  background:rgba(12,14,22,${isVideo ? '0.94' : '0.90'});
   border:1px solid rgba(255,255,255,0.11);
-  ${/\.(mp4|webm)$/.test(bg_media) ? '' : 'backdrop-filter:blur(18px) saturate(180%);-webkit-backdrop-filter:blur(18px) saturate(180%);'}
+  ${isVideo ? '' : 'backdrop-filter:blur(18px) saturate(180%);-webkit-backdrop-filter:blur(18px) saturate(180%);'}
   box-shadow:0 12px 36px -8px rgba(0,0,0,0.85), inset 0 1px 0 rgba(255,255,255,0.12);
   transition:all 0.25s cubic-bezier(0.16,1,0.3,1);
   overflow:hidden;
@@ -1314,7 +1315,7 @@ ${s.card_float ? '.stage{animation:fl 6s ease-in-out infinite}@keyframes fl{50%{
   border-radius:99px;
   background:linear-gradient(135deg,rgba(255,255,255,.13),rgba(255,255,255,.045) 55%,rgba(0,0,0,.18));
   border:1px solid rgba(255,255,255,0.16);
-  ${/\.(mp4|webm)$/.test(bg_media) ? '' : 'backdrop-filter:blur(16px) saturate(180%);-webkit-backdrop-filter:blur(16px) saturate(180%);'}
+  ${isVideo ? '' : 'backdrop-filter:blur(16px) saturate(180%);-webkit-backdrop-filter:blur(16px) saturate(180%);'}
   box-shadow:0 8px 24px rgba(0,0,0,0.48), inset 0 1px 0 rgba(255,255,255,0.24), inset 0 0 0 1px rgba(0,0,0,.12);
   transition:all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   cursor:default;
@@ -1499,9 +1500,9 @@ ${s.card_float ? '.stage{animation:fl 6s ease-in-out infinite}@keyframes fl{50%{
   width:100%;
   margin-top:12px;
   border-radius:24px;
-  background:rgba(12,14,20,${/\.(mp4|webm)$/.test(bg_media) ? '0.94' : '0.90'});
+  background:rgba(12,14,20,${isVideo ? '0.94' : '0.90'});
   border:1px solid rgba(255,255,255,0.11);
-  ${/\.(mp4|webm)$/.test(bg_media) ? '' : 'backdrop-filter:blur(18px) saturate(190%);-webkit-backdrop-filter:blur(18px) saturate(190%);'}
+  ${isVideo ? '' : 'backdrop-filter:blur(18px) saturate(190%);-webkit-backdrop-filter:blur(18px) saturate(190%);'}
   overflow:hidden;
   box-shadow:0 16px 44px -8px rgba(0,0,0,0.92), inset 0 1px 0 rgba(255,255,255,0.14);
   transition:all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
@@ -1638,7 +1639,7 @@ ${s.card_float ? '.stage{animation:fl 6s ease-in-out infinite}@keyframes fl{50%{
 .stats-row .stats:not(.minimal) span{position:relative;z-index:1;color:#f3f4f6;font-family:Inter,var(--hf),system-ui,sans-serif;font-size:13px!important;font-weight:650!important;line-height:1!important;letter-spacing:-.01em!important;text-shadow:0 1px 8px rgba(0,0,0,.6);font-variant-numeric:tabular-nums}
 .stats-row .stats:not(.minimal)[aria-label^="Ubicación"] span{font-weight:600!important;letter-spacing:0!important}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
-</style><link rel="stylesheet" href="/studio-refresh.css"></head><body>${bg_media ? `<div class="bgm${s.bg_zoom ? ' bgz' : ''}" aria-hidden="true">${/\.(mp4|webm)$/.test(bg_media) ? `<video src="${esc(bg_media)}" autoplay muted loop playsinline preload="auto" id="bgv" style="will-change:transform"></video>` : `<img src="${esc(bg_media)}" alt="" fetchpriority="high">`}</div>` : ''}<div class="vig"></div>${s.particles_type !== 'none' ? '<canvas id="c" aria-hidden="true"></canvas>' : ''}${s.bg_noise ? '<div class="grain" aria-hidden="true"></div>' : ''}${s.bg_motion === 'drift' ? '<div class="drift" aria-hidden="true"></div>' : ''}${s.screen_fx !== 'none' ? `<div class="fx ${s.screen_fx}" aria-hidden="true"></div>` : ''}${s.trail !== 'none' ? '<canvas id="t" aria-hidden="true"></canvas>' : ''}${splash && !preview ? `<button class="sp" id="sp"><span>${esc(splash_text)}</span></button>` : ''}
+</style><link rel="stylesheet" href="/studio-refresh.css"></head><body>${bg_media ? `<div class="bgm${s.bg_zoom ? ' bgz' : ''}" aria-hidden="true">${isVideo ? `<video src="${esc(bg_media)}" autoplay muted loop playsinline preload="auto" id="bgv" style="will-change:transform"></video>` : `<img src="${esc(bg_media)}" alt="" fetchpriority="high">`}</div>` : ''}<div class="vig"></div>${s.particles_type !== 'none' ? '<canvas id="c" aria-hidden="true"></canvas>' : ''}${s.bg_noise ? '<div class="grain" aria-hidden="true"></div>' : ''}${s.bg_motion === 'drift' ? '<div class="drift" aria-hidden="true"></div>' : ''}${s.screen_fx !== 'none' ? `<div class="fx ${s.screen_fx}" aria-hidden="true"></div>` : ''}${s.trail !== 'none' ? '<canvas id="t" aria-hidden="true"></canvas>' : ''}${splash && !preview ? `<button class="sp" id="sp"><span>${esc(splash_text)}</span></button>` : ''}
 <div class="stage"><main class="card" id="card"><div class="card-shimmer" aria-hidden="true"></div>${s.card_glare ? '<div class="card-glare" aria-hidden="true"></div>' : ''}${s.w_share ? `<button class="shr" id="shr" type="button" aria-label="Compartir perfil">${SHR}</button>` : ''}${banner ? `<div class="bn" style="background-image:url('${esc(banner)}')"></div>` : (s.banner_gradient ? `<div class="bn bn-grad" aria-hidden="true"></div>` : '')}
 <header class="hd ${s.avatar_pos}">${avatarHtml}${s.avatar_pos === 'side' ? `<div>${idHtml}</div>` : idHtml}</header>
 ${discordCardHtml}
@@ -1653,7 +1654,7 @@ ${s.w_cta_on && s.w_cta_label && /^https?:\/\//i.test(s.w_cta_url) ? `<a class="
 <div class="links" data-stg="${s.links_stagger ? 1 : 0}" data-lh="${esc(s.link_hover)}" data-ls="${esc(s.link_style)}" data-cols="${esc(s.link_cols)}" data-ic="${s.link_icons ? 1 : 0}">${links.map((l, li) => { const ic = iconFor(l.url); return `<a class="l" style="--i:${li}" href="${preview ? '#' : '/go/' + l.id}" rel="noopener nofollow ugc" target="_blank">${ic ? `<i class="ic${ic.img ? ' ic--img' : ''}" style="--ib:#${ic.h}">${ic.img ? `<img src="${esc(ic.img)}" alt="${esc(ic.n)}" class="lnk-icon-img" aria-hidden="true">` : `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${ic.p}"/></svg>`}</i>` : `<i>${esc([...l.label][0].toUpperCase())}</i>`}<span class="lbl">${esc(l.label)}</span><em><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></em></a>`; }).join('\n')}</div>
 ${s.social_dock_pos === 'bottom' ? socialDockHtml : ''}
 ${(views !== null || s.location) ? `<div class="stats-row">${s.location ? `<div class="stats ${s.views_style === 'minimal' ? 'minimal' : ''}" aria-label="Ubicación: ${esc(s.location)}"><img class="stats-icon stats-icon-loc" src="/ubicacion_128.webp" alt="" aria-hidden="true"><span>${esc(s.location)}</span></div>` : ''}${views !== null ? `<div class="stats ${s.views_style === 'minimal' ? 'minimal' : ''}" id="stats-views" aria-label="${Number(views).toLocaleString('es')} visitas"><img class="stats-icon stats-icon-views" src="/insignia_visitas_128.webp" alt="" aria-hidden="true"><span id="views-count" data-val="${Number(views)}">${Number(views).toLocaleString('es')} visitas</span></div>` : ''}</div>` : ''}
-<div class="f"><span>hecho con</span><a href="/" aria-label="pip">pip</a></div></main></div><div class="toast" id="toast" role="status" aria-live="polite"></div>${/\.(mp4|webm)$/.test(bg_media) ? `
+<div class="f"><span>hecho con</span><a href="/" aria-label="pip">pip</a></div></main></div><div class="toast" id="toast" role="status" aria-live="polite"></div>${isVideo ? `
 <div class="vol-wrap" id="vol-wrap" aria-label="Control de volumen">
   <div class="vol-slider-wrap" id="vol-slider-wrap">
     <div class="vol-track-container" id="vol-track" role="slider" aria-label="Volumen" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50" tabindex="0">

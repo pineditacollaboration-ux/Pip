@@ -248,7 +248,7 @@ export function createApp(db, { uploadDir = process.env.UPLOAD_DIR || 'uploads',
     return res;
   };
   const badgesOf = (u, p, s, links, st) => evalBadges({
-    id: u.id, username: u.username, discord: !!u.discord_id, avatar: !!p.avatar, links: links.length, video: /\.(mp4|webm)$/.test(p.bg_media), designed: designChanged(s),
+    id: u.id, username: u.username, discord: !!u.discord_id, avatar: !!p.avatar, links: links.length, video: typeof p.bg_media === 'string' && /\.(mp4|webm)($|\?)/i.test(p.bg_media), designed: designChanged(s),
     shiny: s.trail !== 'none' && s.particles_type !== 'none', views: st.views, clicks: links.reduce((n, l) => n + l.clicks, 0), days: Math.floor((Date.now() / 1000 - Number(u.created_at)) / 86400)
   });
   const discordPresence = async (u, { skipCache = false } = {}) => {

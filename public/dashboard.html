@@ -459,7 +459,7 @@ function pfRange(k, l, min, max, lo, hi) {
 }
 
 function uploader(kind, label, hint, url, thumbText, discordKey) {
-  const vid = url && /\.(mp4|webm)$/.test(url);
+  const vid = url && /\.(mp4|webm)($|\?)/i.test(url);
   const th = h('div', { class: 'th', text: url ? (vid ? 'video' : '') : thumbText });
   if (url && !vid) th.style.backgroundImage = `url('${url}')`;
   const err = h('p', { class: 'err' });
