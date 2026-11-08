@@ -312,7 +312,7 @@ body{
 
 .bgm{position:fixed;inset:0;z-index:0;overflow:hidden;opacity:${Number(bg_opacity) / 100};transform:translate3d(0,0,0);backface-visibility:hidden;contain:strict}
 .bgm>img,.bgm>video{filter:saturate(${Number(s.bg_sat)/100}) brightness(${Number(s.bg_bright)/100});width:100%;height:100%;object-fit:cover;transform:${Number(bg_blur) > 0 ? 'scale(1.08) translateZ(0)' : 'translateZ(0)'};will-change:transform}
-${Number(bg_blur) > 0 ? `.bgm::after{content:"";position:absolute;inset:0;backdrop-filter:blur(${Number(bg_blur)}px);-webkit-backdrop-filter:blur(${Number(bg_blur)}px);z-index:1;pointer-events:none}` : ''}
+${Number(bg_blur) > 0 && !isVideo ? `.bgm::after{content:"";position:absolute;inset:0;backdrop-filter:blur(${Number(bg_blur)}px);-webkit-backdrop-filter:blur(${Number(bg_blur)}px);z-index:1;pointer-events:none}` : ''}
 .vig{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse at center,transparent 40%,rgba(0,0,0,0.55) 100%)}
 
 /* Ultra-Premium Glassmorphic Volume Capsule Dock */
@@ -439,8 +439,8 @@ canvas{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index
   padding:38px 32px 30px;
   border-radius:${Number(s.card_radius) ?? 22}px;
   background:${Number(s.card_bg) === 0 ? 'rgba(255,255,255,0.02)' : `linear-gradient(135deg, rgba(255,255,255,${((Number(s.card_bg) ?? 12) * 0.45) / 100}) 0%, rgba(12,16,24,${((Number(s.card_bg) ?? 12) * 0.95) / 100}) 100%)`};
-  backdrop-filter:blur(${Number(s.card_glass) > 0 ? Number(s.card_glass) : 16}px) saturate(180%);
-  -webkit-backdrop-filter:blur(${Number(s.card_glass) > 0 ? Number(s.card_glass) : 16}px) saturate(180%);
+  backdrop-filter:blur(${isVideo ? Math.min(8, Number(s.card_glass) || 8) : (Number(s.card_glass) > 0 ? Number(s.card_glass) : 16)}px) saturate(150%);
+  -webkit-backdrop-filter:blur(${isVideo ? Math.min(8, Number(s.card_glass) || 8) : (Number(s.card_glass) > 0 ? Number(s.card_glass) : 16)}px) saturate(150%);
   border:${s.card_border ? `${Number(s.card_border_w) || 1}px solid rgba(255,255,255,0.18)` : 'none'};
   box-shadow:
     inset 0 1px 1px 0 rgba(255,255,255,0.35),
@@ -2087,7 +2087,7 @@ if(CFG.tilt){
 
   const lerp=(a,b,t)=>a+(b-a)*t;
   const tiltLoop=()=>{
-    _stx=lerp(_stx,_tx,0.1); _sty=lerp(_sty,_ty,0.1);
+    _stx=lerp(_stx,_tx,0.22); _sty=lerp(_sty,_ty,0.22);
     if(!_isPointerDown){
       k.style.transform='perspective(750px) rotateY('+(_stx*32).toFixed(2)+'deg) rotateX('+(-_sty*26).toFixed(2)+'deg)';
     }
