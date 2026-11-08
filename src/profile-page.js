@@ -908,13 +908,15 @@ ${BADGE_CSS}
 .gl-spotify-now{display:inline-flex;align-items:center;gap:6px;min-width:0;color:#1ED760;font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
 .gl-spotify[data-state="syncing"] .gl-spotify-now{color:#94a3b8}
 .gl-spotify-icon{width:14px;height:14px;flex:none}
-.gl-spotify-eq{display:inline-flex;align-items:flex-end;gap:2px;height:14px;flex:none}
-.gl-spotify-eq i{display:block;width:3px;height:100%;border-radius:2px;background:#1ED760;transform-origin:50% 100%;transform:scaleY(.25);animation:spotify-eq 1s ease-in-out infinite;animation-play-state:paused}
-.gl-spotify-eq i:nth-child(2){animation-duration:.8s;animation-delay:-.4s}
-.gl-spotify-eq i:nth-child(3){animation-duration:1.15s;animation-delay:-.7s}
-.gl-spotify-eq i:nth-child(4){animation-duration:.9s;animation-delay:-.2s}
+.gl-spotify-eq{display:inline-flex;align-items:flex-end;gap:2.5px;height:14px;flex:none}
+.gl-spotify-eq i{display:block;width:3px;height:100%;border-radius:2px;background:#1ED760;transform-origin:50% 100%;transform:scaleY(.3);animation:spotify-eq .75s ease-in-out infinite alternate}
+.gl-spotify-eq i:nth-child(1){animation-delay:0s;height:100%}
+.gl-spotify-eq i:nth-child(2){animation-delay:.22s;animation-duration:.6s;height:100%}
+.gl-spotify-eq i:nth-child(3){animation-delay:.4s;animation-duration:.85s;height:100%}
+.gl-spotify-eq i:nth-child(4){animation-delay:.15s;animation-duration:.65s;height:100%}
 .gl-spotify[data-state="playing"] .gl-spotify-eq i{animation-play-state:running}
-@keyframes spotify-eq{0%,100%{transform:scaleY(.25)}50%{transform:scaleY(1)}}
+.gl-spotify[data-state="syncing"] .gl-spotify-eq i{animation-play-state:paused;opacity:.5}
+@keyframes spotify-eq{0%{transform:scaleY(.2)}100%{transform:scaleY(1)}}
 .gl-spotify-title{color:#fff;font-size:15.5px;font-weight:800;letter-spacing:-.02em;line-height:1.25;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .gl-spotify-artist{color:#cbd5e1;font-size:13px;font-weight:500;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .gl-spotify-progress-wrap{margin-top:9px;display:flex;flex-direction:column;gap:5px}
@@ -1309,8 +1311,9 @@ ${s.card_float ? '.stage{animation:fl 6s ease-in-out infinite}@keyframes fl{50%{
   position:relative;
   overflow:hidden;
 }
-.stats:nth-child(1){animation:stat-in .4s cubic-bezier(.16,1,.3,1) .08s both}
-.stats:nth-child(2){animation:stat-in .4s cubic-bezier(.16,1,.3,1) .14s both}
+.stats:nth-child(1){opacity:0;transform:translateY(8px) scale(.95);transition:opacity .3s .05s ease,transform .3s .05s cubic-bezier(.16,1,.3,1)}
+.stats:nth-child(2){opacity:0;transform:translateY(8px) scale(.95);transition:opacity .3s .1s ease,transform .3s .1s cubic-bezier(.16,1,.3,1)}
+.stats.anim-done{opacity:1;transform:translateY(0) scale(1)}
 @keyframes stat-in{from{opacity:0;transform:translateY(8px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}
 .stats-icon{width:25px;height:25px;object-fit:contain;padding:4px;border-radius:9px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);filter:drop-shadow(0 0 7px color-mix(in srgb,var(--a) 48%,transparent));}
 .stats-icon-loc{filter:grayscale(.15) drop-shadow(0 0 7px rgba(226,232,240,.5))}
@@ -1583,8 +1586,9 @@ ${s.card_float ? '.stage{animation:fl 6s ease-in-out infinite}@keyframes fl{50%{
 .links[data-lh=slide] .l:hover,.links[data-lh=slide] .l:focus-visible{transform:translateX(7px) translateZ(0)}
 .links[data-lh=none] .l:hover,.links[data-lh=none] .l:focus-visible{transform:none;box-shadow:none}
 .links[data-lh=none] .l::before{display:none}
-.links .l{animation:l-in .4s cubic-bezier(.16,1,.3,1) both}
-.links .l:nth-child(2){animation-delay:.04s}.links .l:nth-child(3){animation-delay:.08s}.links .l:nth-child(4){animation-delay:.12s}.links .l:nth-child(5){animation-delay:.16s}.links .l:nth-child(n+6){animation-delay:.2s}
+.links .l{opacity:0;transform:translateY(10px) scale(.98);transition:opacity .35s cubic-bezier(.16,1,.3,1),transform .35s cubic-bezier(.16,1,.3,1),background .14s ease,border-color .14s ease,box-shadow .14s ease}
+.links .l.anim-done{opacity:1;transform:none}
+/* Las animaciones de stagger se disparan via JS después del primer paint para evitar que el navegador las congele en capas compuestas */
 @keyframes l-in{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:none}}
 .card::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;padding:1px;background:linear-gradient(160deg,rgba(255,255,255,.28),rgba(255,255,255,0) 28%,rgba(255,255,255,0) 72%,color-mix(in srgb,var(--a) 40%,transparent));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:.7}
 .bio[data-rot]{transition:opacity .35s ease,transform .35s ease}.bio.rot-out{opacity:0;transform:translateY(5px)}
@@ -1599,8 +1603,8 @@ ${s.card_float ? '.stage{animation:fl 6s ease-in-out infinite}@keyframes fl{50%{
 @keyframes bg-zoom{from{transform:scale(1)}to{transform:scale(1.09)}}
 .card-glare{position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:3;opacity:0;transition:opacity .35s;background:radial-gradient(260px circle at var(--gx,50%) var(--gy,0%),rgba(255,255,255,.13),transparent 62%)}
 .card:hover .card-glare{opacity:1}
-.links[data-stg="1"] .l{animation:lk-in .55s both cubic-bezier(.2,.8,.2,1);animation-delay:calc(var(--i,0)*70ms + 120ms)}
-@keyframes lk-in{from{opacity:0;transform:translateY(12px) scale(.98)}to{opacity:1;transform:none}}
+.links[data-stg="1"] .l{--stg-delay:calc(var(--i,0)*40ms + 30ms)}
+.links[data-stg="1"] .l.anim-done{transition-delay:var(--stg-delay,0ms)}
 .avail{display:inline-flex;align-items:center;gap:8px;align-self:center;margin:0 auto 12px;padding:7px 14px;border-radius:999px;font-size:12.5px;font-weight:600;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#e9e9ee;width:fit-content;display:flex}
 .avail i{width:8px;height:8px;border-radius:50%;background:var(--ad);box-shadow:0 0 0 0 var(--ad);animation:av-pulse 2s infinite}
 .avail[data-s=open]{--ad:#34d399}.avail[data-s=busy]{--ad:#fb7185}.avail[data-s=away]{--ad:#fbbf24}
@@ -1663,6 +1667,20 @@ ${(views !== null || s.location) ? `<div class="stats-row">${s.location ? `<div 
 (()=>{const CFG=${cfg},RM=matchMedia('(prefers-reduced-motion:reduce)').matches,col=getComputedStyle(document.documentElement).getPropertyValue('--a').trim()||'#7DD3FC';
 let SP = ${jsonJs(spotify)};
 let ACT = ${jsonJs(activity)};
+
+// ── Arrancar animaciones de entrada inmediatamente tras el primer paint ────
+// El navegador congela animaciones CSS en capas compuestas (will-change:transform)
+// hasta la primera interacción del usuario. Usamos doble rAF para garantizar
+// que ya hemos pintado al menos un frame antes de activar las transiciones.
+requestAnimationFrame(()=>requestAnimationFrame(()=>{
+  if(RM) return;
+  document.querySelectorAll('.links .l').forEach((el,i)=>{
+    setTimeout(()=>el.classList.add('anim-done'), i*40);
+  });
+  document.querySelectorAll('.stats-row .stats').forEach((el,i)=>{
+    setTimeout(()=>el.classList.add('anim-done'), 60+i*55);
+  });
+}));
 
 // Typewriter bio animation (guns.lol signature effect)
 const bioEl=document.getElementById('bio');
@@ -1855,7 +1873,7 @@ function applyPresence(p){
 // Sondeo de presencia: nunca solapado, más lento si no hay nada en vivo, con espera creciente
 // si falla y detenido mientras la pestaña está oculta. En la vista previa el panel envía los datos.
 let _pBusy=false,_pFail=0,_pT=0;
-function _pDelay(){const live=Boolean((SP&&SP.title)||(ACT&&ACT.name));return Math.min(20000,(live?1500:4000)*Math.pow(2,Math.min(_pFail,3)));}
+function _pDelay(){const live=Boolean((SP&&SP.title)||(ACT&&ACT.name));return Math.min(8000,(live?800:2000)*Math.pow(2,Math.min(_pFail,3)));}
 function schedulePoll(){clearTimeout(_pT);if(document.hidden)return;_pT=setTimeout(pollPresence,_pDelay());}
 async function pollPresence(){
   if(_pBusy||document.hidden)return;
