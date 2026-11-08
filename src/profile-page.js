@@ -881,18 +881,18 @@ ${BADGE_CSS}
   background:rgba(12,14,20,${isVideo ? '0.94' : '0.88'});
   border:1px solid rgba(255,255,255,0.1);
   ${isVideo ? '' : 'backdrop-filter:blur(18px) saturate(170%);-webkit-backdrop-filter:blur(18px) saturate(170%);'}
-  overflow:hidden;contain:layout style paint;
-  box-shadow:0 14px 36px -12px rgba(0,0,0,.9),inset 0 1px 0 rgba(255,255,255,.12);
-  transition:transform .2s cubic-bezier(.16,1,.3,1),border-color .2s,box-shadow .2s;
-  animation:spotify-in .35s cubic-bezier(.16,1,.3,1) both;
+  overflow:hidden;
+  box-shadow:0 14px 36px -12px rgba(0,0,0,.9);
   -webkit-tap-highlight-color:transparent;
+  will-change:transform;
+  transform:translateZ(0);
 }
 .gl-spotify[data-sync]{cursor:pointer}
 .gl-spotify::before{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(135deg,rgba(255,255,255,.1),transparent 42%);pointer-events:none;z-index:2}
-.gl-spotify:hover,.gl-spotify:focus-visible{transform:translateY(-3px);border-color:rgba(29,185,84,.5);box-shadow:0 22px 50px -14px rgba(0,0,0,.95),0 0 36px -10px rgba(29,185,84,.4),inset 0 1px 0 rgba(255,255,255,.2)}
+.gl-spotify:hover,.gl-spotify:focus-visible{transform:translateY(-2px) translateZ(0);border-color:rgba(29,185,84,.5);box-shadow:0 18px 40px -10px rgba(0,0,0,.95),0 0 24px -8px rgba(29,185,84,.4)}
 .gl-spotify:focus-visible{outline:2px solid #1DB954;outline-offset:3px}
 .gl-spotify[data-state="syncing"]{border-color:rgba(255,255,255,.08)}
-.gl-spotify-ambient{position:absolute;inset:-30%;background-size:cover;background-position:center;filter:blur(34px) saturate(220%);opacity:.34;pointer-events:none;z-index:0;transition:background-image .4s ease}
+.gl-spotify-ambient{position:absolute;inset:-30%;background-size:cover;background-position:center;filter:blur(34px) saturate(220%);opacity:.34;pointer-events:none;z-index:0}
 .gl-spotify-content{position:relative;z-index:1;display:flex;align-items:center;gap:15px;padding:16px 18px;text-align:left}
 .gl-spotify-cover-wrap{position:relative;width:72px;height:72px;flex:none;margin-right:12px}
 .gl-spotify-img,.gl-spotify-nocover{position:relative;z-index:2;display:block;width:100%;height:100%;border-radius:14px;object-fit:cover;box-shadow:0 8px 22px rgba(0,0,0,.7),0 0 0 1px rgba(255,255,255,.1)}
@@ -900,13 +900,13 @@ ${BADGE_CSS}
 .gl-spotify-nocover{display:grid;place-items:center;background:linear-gradient(140deg,#1b2a21,#0d1410)}
 .gl-spotify-nocover svg{width:28px;height:28px;fill:none;stroke:var(--a,#1DB954);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .gl-spotify-cover-wrap[data-has="1"] .gl-spotify-nocover{display:none}
-.gl-spotify-disc{position:absolute;top:4px;left:20px;width:64px;height:64px;z-index:1;border-radius:50%;transition:transform .45s cubic-bezier(.34,1.56,.64,1)}
+.gl-spotify-disc{position:absolute;top:4px;left:20px;width:64px;height:64px;z-index:1;border-radius:50%}
 .gl-spotify-disc::before{content:"";position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg,#101113,#1d1e21 20%,#101113 45%,#202124 70%,#101113);box-shadow:0 4px 14px rgba(0,0,0,.8);animation:spindisc 5s linear infinite;animation-play-state:paused}
 .gl-spotify-disc::after{content:"";position:absolute;top:50%;left:50%;width:15px;height:15px;margin:-7.5px 0 0 -7.5px;border-radius:50%;background:#090a0f;border:2px solid #1DB954}
 .gl-spotify[data-state="playing"] .gl-spotify-disc::before{animation-play-state:running}
-.gl-spotify:hover .gl-spotify-disc{transform:translateX(9px)}
+.gl-spotify:hover .gl-spotify-disc{transform:translateX(8px)}
 @keyframes spindisc{to{transform:rotate(360deg)}}
-@keyframes spotify-in{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes spotify-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 .gl-spotify-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
 .gl-spotify-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:2px}
 .gl-spotify-now{display:inline-flex;align-items:center;gap:6px;min-width:0;color:#1ED760;font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
