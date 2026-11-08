@@ -521,6 +521,19 @@ input[type=range]::-moz-range-progress { height: 5px; border-radius: 99px; backg
   transition: box-shadow 0.2s ease;
 }
 .up .tx { flex: 1; min-width: 0; }
+.up .tx {
+  flex: 1 1 200px !important;
+  min-width: 140px !important;
+}
+
+.up-btns {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  flex-wrap: wrap !important;
+  flex-shrink: 0 !important;
+}
+
 .up .tx b { display: block; margin-bottom: 3px; font: 650 13.5px var(--font-display); color: #fff; }
 .up small { font-size: 12px; color: var(--txt-muted); line-height: 1.45; }
 
@@ -4456,6 +4469,19 @@ input[type=range]:active::-webkit-slider-thumb {
   background: #08090d center/cover !important;
   border: 1px solid rgba(255, 255, 255, 0.14) !important;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5) !important;
+}
+
+.up .tx {
+  flex: 1 1 200px !important;
+  min-width: 140px !important;
+}
+
+.up-btns {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  flex-wrap: wrap !important;
+  flex-shrink: 0 !important;
 }
 
 .up .tx b {
