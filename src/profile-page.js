@@ -202,7 +202,7 @@ export function renderProfile({
   // Header with Verified Badge beside name + name_effect
   const SPARKS = [[6,18,0],[19,-6,.7],[34,84,1.4],[52,-10,.3],[68,92,1.1],[83,2,1.8],[95,70,.5],[12,96,2.1]];
   const sparkHtml = s.name_effect === 'sparkle' ? `<b class="p-sparks" aria-hidden="true">${SPARKS.map(([x, y, d]) => `<i style="left:${x}%;top:${y}%;animation-delay:${d}s"></i>`).join('')}</b>` : '';
-  const nameHtml = s.name_show ? `<h1 class="p-name" id="p-name" data-effect="${esc(s.name_effect || 'none')}" ${s.title_anim ? `data-ta="${esc(nm)}"` : ''}><span class="p-name-txt">${name}</span>${isVerified ? VERIFIED_SVG : ''}${sparkHtml}</h1>` : '';
+  const nameHtml = s.name_show ? `<h1 class="p-name" id="p-name" data-effect="${esc(s.name_effect || 'none')}"><span class="p-name-txt">${name}</span>${isVerified ? VERIFIED_SVG : ''}${sparkHtml}</h1>` : '';
 
   // Bento/iOS Social Dock extraction from links
   const socialLinks = links.map(l => { const ic = iconFor(l.url); return ic ? { ...l, ic } : null; }).filter(Boolean);
@@ -582,8 +582,8 @@ ${s.card_anim === 'rainbow' ? `.card::after{content:"";position:absolute;inset:-
   display:inline-flex;
   align-items:center;
   justify-content:center;
-  gap:6px;
-  margin:6px auto 4px;
+  gap:8px;
+  margin:8px auto 4px;
   text-align:center;
   font-family:var(--hf, 'Plus Jakarta Sans', -apple-system, sans-serif);
   font-weight:800;
@@ -592,25 +592,15 @@ ${s.card_anim === 'rainbow' ? `.card::after{content:"";position:absolute;inset:-
   letter-spacing:var(--lsp, -0.04em);
   position:relative;
 }
-.p-name span.p-name-txt,.p-name>span:not(.tw-cursor):not(.verified-wrapper){
+.p-name span.p-name-txt{
   display:inline-block;
   line-height:1.2;
-  background:linear-gradient(135deg, #ffffff 0%, color-mix(in srgb,var(--a) 40%,#ffffff) 100%);
+  background:linear-gradient(180deg, #ffffff 0%, rgba(255,255,255,0.85) 100%);
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
   background-clip:text;
   position:relative;
-}
-.p-name .tw-cursor{
-  display:inline-block;
-  line-height:1;
-  font-weight:300;
-  color:var(--a);
-  margin-left:3px;
-  animation:tw-blink 0.8s infinite;
-  user-select:none;
-  pointer-events:none;
-  vertical-align:middle;
+  filter:drop-shadow(0 2px 12px rgba(0,0,0,0.6));
 }
 
 /* Name Effect: Neón Glow (guns.lol top style) */
@@ -2083,42 +2073,7 @@ if(CFG.tilt){
 }
 
 if(CFG.ta){
-  // 1. Efecto máquina de escribir en el nombre grande de la tarjeta (se escribe y se borra)
-  const nameEl = document.getElementById('p-name');
-  if(nameEl && nameEl.dataset.ta){
-    const fullNm = nameEl.dataset.ta;
-    const txtSpan = nameEl.querySelector('.p-name-txt') || nameEl.querySelector('span');
-    if(txtSpan){
-      let cursorSpan = nameEl.querySelector('.tw-cursor');
-      if(!cursorSpan){
-        cursorSpan = document.createElement('span');
-        cursorSpan.className = 'tw-cursor';
-        cursorSpan.setAttribute('aria-hidden', 'true');
-        cursorSpan.textContent = '|';
-        txtSpan.after(cursorSpan);
-      }
-
-      let ni = fullNm.length, nDir = -1;
-      const nameTick = () => {
-        ni += nDir;
-        txtSpan.textContent = fullNm.slice(0, ni);
-        if(ni >= fullNm.length){
-          nDir = -1;
-          setTimeout(nameTick, 2000);
-          return;
-        }
-        if(ni <= 0){
-          nDir = 1;
-          setTimeout(nameTick, 500);
-          return;
-        }
-        setTimeout(nameTick, nDir === 1 ? 85 : 45);
-      };
-      setTimeout(nameTick, 1500);
-    }
-  }
-
-  // 2. Efecto en la pestaña real del navegador
+  // Efecto en la pestaña real del navegador (escribe y borra el título en la pestaña)
   let i=0,dir=1;
   const tStr = (CFG.title || 'pip') + ' · pip';
   const tick=()=>{
