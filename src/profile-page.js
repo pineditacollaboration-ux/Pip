@@ -122,7 +122,7 @@ export function renderProfile({
               <svg class="gl-spotify-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="#1DB954" d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424c-.18.295-.563.387-.857.207-2.35-1.435-5.308-1.76-8.793-.963-.335.077-.67-.133-.746-.468-.077-.334.132-.67.467-.746 3.808-.87 7.076-.496 9.722 1.115.294.18.386.562.207.855zm1.224-2.72c-.226.367-.707.483-1.074.257-2.69-1.653-6.79-2.132-9.97-1.166-.413.125-.85-.11-1.026-.522-.126-.413.11-.85.523-1.026 3.633-1.103 8.147-.568 11.233 1.33.367.227.483.708.257 1.075zm.105-2.835C14.692 8.95 9.375 8.775 6.297 9.71c-.494.15-1.02-.13-1.17-.624-.15-.494.13-1.02.624-1.17 3.532-1.073 9.404-.866 13.115 1.338.445.264.59.838.327 1.282-.264.444-.838.59-1.282.327z"/></svg>
               <span id="sp-state">Escuchando en Spotify</span>
             </span>
-            <span class="gl-spotify-eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+            <span class="gl-spotify-eq" aria-hidden="true"><img class="gl-spotify-eq-img" src="/ecualizador_128.webp" alt="Ecualizador" width="22" height="22"></span>
           </div>
           <div class="gl-spotify-title" id="sp-title" title="${esc(spotify?.title || '')}">${esc(spotify?.title || '')}</div>
           <div class="gl-spotify-artist" id="sp-artist" title="${esc(spotifyArtist)}">${esc(spotifyArtist)}</div>
@@ -909,21 +909,32 @@ ${BADGE_CSS}
 .gl-spotify-now{display:inline-flex;align-items:center;gap:6px;min-width:0;color:#1ED760;font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
 .gl-spotify[data-state="syncing"] .gl-spotify-now{color:#94a3b8}
 .gl-spotify-icon{width:14px;height:14px;flex:none}
-.gl-spotify-eq{display:inline-flex;align-items:flex-end;gap:2.5px;height:14px;flex:none}
-.gl-spotify-eq i{display:block;width:3px;height:100%;border-radius:2px;background:#1ED760;transform-origin:50% 100%;transform:scaleY(.3);animation:spotify-eq .75s ease-in-out infinite alternate}
-.gl-spotify-eq i:nth-child(1){animation-delay:0s;height:100%}
-.gl-spotify-eq i:nth-child(2){animation-delay:.22s;animation-duration:.6s;height:100%}
-.gl-spotify-eq i:nth-child(3){animation-delay:.4s;animation-duration:.85s;height:100%}
-.gl-spotify-eq i:nth-child(4){animation-delay:.15s;animation-duration:.65s;height:100%}
-.gl-spotify[data-state="playing"] .gl-spotify-eq i{animation-play-state:running}
-.gl-spotify[data-state="syncing"] .gl-spotify-eq i{animation-play-state:paused;opacity:.5}
-@keyframes spotify-eq{0%{transform:scaleY(.2)}100%{transform:scaleY(1)}}
-.gl-spotify-title{color:#fff;font-size:15.5px;font-weight:800;letter-spacing:-.02em;line-height:1.25;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.gl-spotify-artist{color:#cbd5e1;font-size:13px;font-weight:500;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.gl-spotify-progress-wrap{margin-top:9px;display:flex;flex-direction:column;gap:5px}
+.gl-spotify-eq{display:inline-flex;align-items:center;justify-content:center;height:24px;flex:none}
+.gl-spotify-eq-img{
+  width:26px;
+  height:26px;
+  object-fit:contain;
+  display:block;
+  filter:drop-shadow(0 0 6px rgba(30,215,96,0.6));
+  transition:transform 0.2s ease, opacity 0.2s ease;
+}
+.gl-spotify[data-state="playing"] .gl-spotify-eq-img{
+  animation:eq-pulse 1.4s ease-in-out infinite alternate;
+}
+.gl-spotify[data-state="syncing"] .gl-spotify-eq-img{
+  opacity:0.4;
+  filter:none;
+}
+@keyframes eq-pulse{
+  0%{transform:scale(0.94);filter:drop-shadow(0 0 4px rgba(30,215,96,0.4))}
+  100%{transform:scale(1.1);filter:drop-shadow(0 0 10px rgba(30,215,96,0.9))}
+}
+.gl-spotify-title{color:#fff;font-size:16px;font-weight:800;letter-spacing:-0.02em;line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gl-spotify-artist{color:#94a3b8;font-size:12.5px;font-weight:600;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:1px}
+.gl-spotify-progress-wrap{margin-top:10px;display:flex;flex-direction:column;gap:5px}
 .gl-spotify-track-bar{width:100%;height:4px;border-radius:99px;background:rgba(255,255,255,.13);overflow:hidden;contain:strict}
 .gl-spotify-track-fill{width:0;height:100%;border-radius:inherit;background:linear-gradient(90deg,#1DB954,#4ADE80);transition:width 1s linear}
-.gl-spotify-times{display:flex;align-items:center;justify-content:space-between;font-size:10.5px;color:#a3b0c2;font-variant-numeric:tabular-nums;font-weight:600;line-height:1}
+.gl-spotify-times{display:flex;align-items:center;justify-content:space-between;font-size:11px;color:#94a3b8;font-variant-numeric:tabular-nums;font-weight:600;line-height:1}
 
 /* Portada grande */
 .gl-spotify[data-layout="cover"] .gl-spotify-content{flex-direction:column;align-items:stretch;gap:14px;padding:18px}
