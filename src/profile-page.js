@@ -452,6 +452,7 @@ canvas{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index
   display:flex;
   flex-direction:column;
   align-items:center;
+  gap:12px;
   transition:border-color 0.25s ease, box-shadow 0.25s ease;
   ${s.card_anim === 'glow' ? 'animation:card-glow 3.5s ease-in-out infinite alternate;' : ''}
   ${s.card_anim === 'holo' ? 'animation:card-holo 4s ease-in-out infinite alternate;' : ''}
@@ -514,11 +515,12 @@ ${s.card_anim === 'rainbow' ? `.card::after{content:"";position:absolute;inset:-
   align-items:center;
   justify-content:center;
   text-align:center;
+  margin-bottom:6px;
 }
-.hd .av{margin:0 auto 14px}
-.hd.left{align-items:flex-start;text-align:left}.hd.left .av{margin:0 0 14px}
-.hd.right{align-items:flex-end;text-align:right}.hd.right .av{margin:0 0 14px auto}
-.hd.side{flex-direction:row;align-items:center;gap:18px;text-align:left}.hd.side .av{margin:0;flex:none}.hd.side h1{margin-top:0}
+.hd .av{margin:0 auto 16px}
+.hd.left{align-items:flex-start;text-align:left}.hd.left .av{margin:0 0 16px}
+.hd.right{align-items:flex-end;text-align:right}.hd.right .av{margin:0 0 16px auto}
+.hd.side{flex-direction:row;align-items:center;gap:20px;text-align:left}.hd.side .av{margin:0;flex:none}.hd.side h1{margin-top:0}
 .bn+.hd:not(.side) .av{margin-top:-52px}
 
 .av{
@@ -579,19 +581,19 @@ ${s.card_anim === 'rainbow' ? `.card::after{content:"";position:absolute;inset:-
   display:inline-flex;
   align-items:center;
   justify-content:center;
-  gap:5px;
-  margin:4px auto 2px;
+  gap:6px;
+  margin:6px auto 4px;
   text-align:center;
   font-family:var(--hf, 'Plus Jakarta Sans', -apple-system, sans-serif);
   font-weight:800;
   font-size:clamp(22px,5vw,var(--ns));
-  line-height:1.15;
+  line-height:1.2;
   letter-spacing:var(--lsp, -0.04em);
   position:relative;
 }
 .p-name span.p-name-txt,.p-name>span:not(.tw-cursor):not(.verified-wrapper){
   display:inline-block;
-  line-height:1.15;
+  line-height:1.2;
   background:linear-gradient(135deg, #ffffff 0%, color-mix(in srgb,var(--a) 40%,#ffffff) 100%);
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
@@ -603,11 +605,11 @@ ${s.card_anim === 'rainbow' ? `.card::after{content:"";position:absolute;inset:-
   line-height:1;
   font-weight:300;
   color:var(--a);
-  margin-left:2px;
+  margin-left:3px;
   animation:tw-blink 0.8s infinite;
   user-select:none;
   pointer-events:none;
-  vertical-align:baseline;
+  vertical-align:middle;
 }
 
 /* Name Effect: Neón Glow (guns.lol top style) */
@@ -717,24 +719,23 @@ ${s.card_anim === 'rainbow' ? `.card::after{content:"";position:absolute;inset:-
   vertical-align:middle;
   align-self:center;
   flex:none;
-  margin-left:1px;
-  transform:translateY(2px);
+  margin-left:4px;
 }
 .verified-badge-anim{
   position:relative;
   display:inline-flex;
   align-items:center;
   justify-content:center;
-  width:25px;
-  height:25px;
+  width:22px;
+  height:22px;
   transition:transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .verified-wrapper:hover .verified-badge-anim{
   transform:scale(1.15);
 }
 .vb-img{
-  width:25px;
-  height:25px;
+  width:22px;
+  height:22px;
   display:block;
   object-fit:contain;
   margin:0;
@@ -2072,33 +2073,36 @@ if(CFG.tilt){
 if(CFG.ta){
   // 1. Efecto máquina de escribir en el nombre grande de la tarjeta (se escribe y se borra)
   const nameEl = document.getElementById('p-name');
-  if(nameEl && nameEl.dataset.ta && !RM){
+  if(nameEl && nameEl.dataset.ta){
     const fullNm = nameEl.dataset.ta;
     const txtSpan = nameEl.querySelector('.p-name-txt') || nameEl.querySelector('span');
     if(txtSpan){
-      const cursorSpan = document.createElement('span');
-      cursorSpan.className = 'tw-cursor';
-      cursorSpan.setAttribute('aria-hidden', 'true');
-      cursorSpan.textContent = '|';
-      txtSpan.after(cursorSpan);
+      let cursorSpan = nameEl.querySelector('.tw-cursor');
+      if(!cursorSpan){
+        cursorSpan = document.createElement('span');
+        cursorSpan.className = 'tw-cursor';
+        cursorSpan.setAttribute('aria-hidden', 'true');
+        cursorSpan.textContent = '|';
+        txtSpan.after(cursorSpan);
+      }
 
-      let ni = 0, nDir = 1;
+      let ni = fullNm.length, nDir = -1;
       const nameTick = () => {
         ni += nDir;
         txtSpan.textContent = fullNm.slice(0, ni);
         if(ni >= fullNm.length){
           nDir = -1;
-          setTimeout(nameTick, 1800);
+          setTimeout(nameTick, 2000);
           return;
         }
         if(ni <= 0){
           nDir = 1;
-          setTimeout(nameTick, 600);
+          setTimeout(nameTick, 500);
           return;
         }
-        setTimeout(nameTick, nDir === 1 ? 90 : 45);
+        setTimeout(nameTick, nDir === 1 ? 85 : 45);
       };
-      setTimeout(nameTick, 400);
+      setTimeout(nameTick, 1500);
     }
   }
 
