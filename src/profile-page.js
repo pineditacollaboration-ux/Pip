@@ -203,7 +203,7 @@ export function renderProfile({
   // Header with Verified Badge beside name + name_effect
   const SPARKS = [[6,18,0],[19,-6,.7],[34,84,1.4],[52,-10,.3],[68,92,1.1],[83,2,1.8],[95,70,.5],[12,96,2.1]];
   const sparkHtml = s.name_effect === 'sparkle' ? `<b class="p-sparks" aria-hidden="true">${SPARKS.map(([x, y, d]) => `<i style="left:${x}%;top:${y}%;animation-delay:${d}s"></i>`).join('')}</b>` : '';
-  const nameHtml = s.name_show ? `<h1 class="p-name" id="p-name" data-effect="${esc(s.name_effect || 'none')}"><span class="p-name-txt">${name}</span>${isVerified ? VERIFIED_SVG : ''}${sparkHtml}</h1>` : '';
+  const nameHtml = s.name_show ? `<h1 class="p-name" id="p-name" data-effect="${esc(s.name_effect || 'none')}" ${s.title_anim ? `data-ta="${esc(nm)}"` : ''}><span class="p-name-txt">${name}</span>${isVerified ? VERIFIED_SVG : ''}${sparkHtml}</h1>` : '';
 
   // Bento/iOS Social Dock extraction from links
   const socialLinks = links.map(l => { const ic = iconFor(l.url); return ic ? { ...l, ic } : null; }).filter(Boolean);
@@ -501,8 +501,8 @@ ${s.card_anim === 'rainbow' ? `.card::after{content:"";position:absolute;inset:-
 .card{z-index:10;pointer-events:auto;transform-style:flat}
 .card>header,.card>.links,.card>.badge-wrap,.card>.badges-bar,.card>.gl-dc,.card>.gl-spotify,.card>.gl-activity,.card>.social-dock,.card>.stats-row,.card>.f,.card>.shr,.card>.note,.card>.wg,.card>.cta,.card>.quote,.card>.avail{position:relative;z-index:10;pointer-events:auto}
 .card a,.card button,.card [role="button"],.card .badge-item,.card .l,.card .dock-item,.card .shr{position:relative;z-index:15;pointer-events:auto !important;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
-.badge-item{appearance:none;-webkit-appearance:none;display:grid;place-items:center;width:42px;height:42px;padding:7px;border:1px solid rgba(255,255,255,.12);border-radius:12px;background:rgba(255,255,255,.055);color:inherit;cursor:pointer;transition:transform .18s ease,background .18s ease,border-color .18s ease,box-shadow .18s ease}
-.badge-item:hover,.badge-item:focus-visible{transform:translateY(-3px) scale(1.05);background:rgba(255,255,255,.12);border-color:color-mix(in srgb,var(--a) 70%,rgba(255,255,255,.2));box-shadow:0 8px 20px color-mix(in srgb,var(--a) 22%,transparent);outline:none}
+.badge-item{appearance:none;-webkit-appearance:none;display:grid;place-items:center;width:42px;height:42px;padding:7px;border:1px solid rgba(255,255,255,.12);border-radius:12px;background:rgba(255,255,255,.055);color:inherit;cursor:pointer;transition:transform .12s cubic-bezier(0.16,1,0.3,1),background .12s ease,border-color .12s ease,box-shadow .12s ease;will-change:transform}
+.badge-item:hover,.badge-item:focus-visible{transform:translateY(-2px) scale(1.04);background:rgba(255,255,255,.12);border-color:color-mix(in srgb,var(--a) 70%,rgba(255,255,255,.2));box-shadow:0 8px 20px color-mix(in srgb,var(--a) 22%,transparent);outline:none}
 .badge-item:active{transform:translateY(-1px) scale(.98)}
 .badge-item svg,.badge-item img{display:block;width:100%;height:100%;object-fit:contain;pointer-events:none}
 
@@ -603,6 +603,17 @@ ${s.card_anim === 'rainbow' ? `.card::after{content:"";position:absolute;inset:-
   position:relative;
   filter:drop-shadow(0 2px 12px rgba(0,0,0,0.6));
 }
+.p-name .name-tw-cursor{
+  display:inline-block;
+  line-height:1;
+  font-weight:300;
+  color:var(--a, #38bdf8);
+  margin-left:2px;
+  animation:name-cursor-blink 0.75s infinite;
+  user-select:none;
+  pointer-events:none;
+}
+@keyframes name-cursor-blink{0%,100%{opacity:1}50%{opacity:0}}
 
 /* Name Effect: Neón Glow (guns.lol top style) */
 .p-name[data-effect="glow"] span{
@@ -1202,19 +1213,20 @@ ${BADGE_CSS}
   background:rgba(255,255,255,0.05);
   border:1px solid rgba(255,255,255,0.09);
   box-shadow:0 4px 12px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.1);
-  transition:transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1),
-              background 0.2s ease,
-              color 0.2s ease,
-              border-color 0.2s ease,
-              box-shadow 0.2s ease;
+  transition:transform 0.12s cubic-bezier(0.16,1,0.3,1),
+              background 0.12s ease,
+              color 0.12s ease,
+              border-color 0.12s ease,
+              box-shadow 0.12s ease;
   cursor:pointer;
   outline:none;
+  will-change:transform;
 }
 .dock-item svg{
   width:18px;
   height:18px;
   fill:currentColor;
-  transition:transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition:transform 0.12s cubic-bezier(0.16,1,0.3,1);
 }
 .dock-item.dock--img{background:none;border:none;box-shadow:none;width:46px;height:46px;border-radius:14px;overflow:hidden}
 .dock-icon-img{
@@ -1222,7 +1234,7 @@ ${BADGE_CSS}
   height:46px;
   object-fit:contain;
   display:block;
-  transition:transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition:transform 0.12s cubic-bezier(0.16,1,0.3,1);
   mix-blend-mode:screen;
 }
 .dock-item:hover .dock-icon-img{
@@ -1265,9 +1277,8 @@ ${s.card_float ? '.stage{animation:fl 6s ease-in-out infinite}@keyframes fl{50%{
   background:rgba(255,255,255,0.035);
   border:1px solid rgba(255,255,255,0.08);
   box-shadow:0 4px 14px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.07);
-  backdrop-filter:blur(10px);
-  -webkit-backdrop-filter:blur(10px);
-  transition:transform .14s cubic-bezier(0.16,1,0.3,1), background .14s ease, border-color .14s ease, box-shadow .14s ease;
+  ${isVideo ? '' : 'backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);'}
+  transition:transform .1s cubic-bezier(0.16,1,0.3,1), background .1s ease, border-color .1s ease, box-shadow .1s ease;
   position:relative;overflow:hidden;
   will-change:transform;
   transform:translateZ(0);
@@ -2097,18 +2108,53 @@ if(CFG.tilt){
 }
 
 if(CFG.ta){
-  // Efecto en la pestaña real del navegador (escribe y borra el título en la pestaña)
-  let i=0,dir=1;
-  const tStr = (CFG.title || 'pip') + ' · pip';
-  const tick=()=>{
-    i+=dir;
-    const cur = tStr.slice(0,i)||'·';
-    document.title = cur;
-    if(i>=tStr.length+5)dir=-1;
-    if(i<=0)dir=1;
+  // 1. Efecto en el nombre de la tarjeta: se escribe letra por letra y luego se borra desde la última hacia atrás
+  const nameEl = document.getElementById('p-name');
+  if(nameEl && nameEl.dataset.ta){
+    const fullNm = nameEl.dataset.ta;
+    const txtSpan = nameEl.querySelector('.p-name-txt') || nameEl.querySelector('span');
+    if(txtSpan){
+      let ni = 0, nDir = 1;
+      txtSpan.textContent = '';
+      const nameTick = () => {
+        ni += nDir;
+        txtSpan.textContent = fullNm.slice(0, Math.max(0, ni));
+        if(ni >= fullNm.length){
+          nDir = -1;
+          setTimeout(nameTick, 2400); // Pausa cuando el nombre está completo
+          return;
+        }
+        if(ni <= 0){
+          nDir = 1;
+          setTimeout(nameTick, 700); // Pausa cuando se borra
+          return;
+        }
+        setTimeout(nameTick, nDir === 1 ? 120 : 60); // Escribe a ritmo natural y borra fluido
+      };
+      setTimeout(nameTick, 400);
+    }
+  }
+
+  // 2. Efecto en la pestaña del navegador: escribe P -> Pi -> Pin -> Pineda y luego borra hacia atrás
+  let ti = 0, tDir = 1;
+  const baseTitle = CFG.title || 'pip';
+  const tabTick = () => {
+    ti += tDir;
+    const cur = baseTitle.slice(0, Math.max(0, ti));
+    document.title = (cur || '·') + ' · pip';
+    if(ti >= baseTitle.length){
+      tDir = -1;
+      setTimeout(tabTick, 2000);
+      return;
+    }
+    if(ti <= 0){
+      tDir = 1;
+      setTimeout(tabTick, 600);
+      return;
+    }
+    setTimeout(tabTick, tDir === 1 ? 150 : 80);
   };
-  tick();
-  setInterval(tick, 140);
+  setTimeout(tabTick, 300);
 }})();
 </script><script>(()=>{if(matchMedia('(prefers-reduced-motion:reduce)').matches)return;const d=document.documentElement,k=document.getElementById('card'),sp=document.querySelector('.fx.spotlight'),gl=document.querySelector('.card-glare');if(!sp&&!gl)return;let f=0,ex=0,ey=0;addEventListener('pointermove',e=>{ex=e.clientX;ey=e.clientY;if(f)return;f=requestAnimationFrame(()=>{f=0;if(sp){d.style.setProperty('--mx',ex+'px');d.style.setProperty('--my',ey+'px')}if(gl&&k){const r=k.getBoundingClientRect();k.style.setProperty('--gx',(ex-r.left)+'px');k.style.setProperty('--gy',(ey-r.top)+'px')}})},{passive:true})})()</script></body></html>`;
 }
